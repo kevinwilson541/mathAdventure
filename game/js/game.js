@@ -9,6 +9,7 @@ function preload() {
     //game.load.image('ground', 'assets/platform.png');
     //game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/Block Ninja/Spritesheet.png', 16, 16);
+    game.load.spritesheet('portal', 'assets/portal_sprite.png')
 
 }
 
@@ -16,24 +17,18 @@ var player;
 var layer;
 var cursors;
 
-var stars;
-var score = 0;
-var scoreText;
 var facing = 'left';
 
 function create() {
 
-    //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    //  A simple background for our game
-    //game.add.sprite(0, 0, 'sky');
     var map = game.add.tilemap("level1");
     map.addTilesetImage("dungeon", "tiles-1");
-    map.setCollisionByExclusion([4, 104]);
+    map.setCollisionByExclusion([33,104]);
     layer = map.createLayer("Tile Layer 1");
     layer.resizeWorld();
-    player = game.add.sprite(32, 16, 'dude');
+    player = game.add.sprite(48, 16, 'dude');
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.gravity.y = 0;
@@ -67,8 +62,8 @@ function update() {
 
         if (facing !== 'left') {
             facing = 'left';
-            player.animations.play('left');
         }
+        player.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
@@ -76,8 +71,8 @@ function update() {
         player.body.velocity.x = 150;
         if (facing !== 'right') {
             facing = 'right';
-            player.animations.play('right');
         }
+        player.animations.play('right');
     }
     else if (cursors.up.isDown) {
         player.body.velocity.y = -150;
