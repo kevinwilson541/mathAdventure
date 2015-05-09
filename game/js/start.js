@@ -2,9 +2,9 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: p
 
 function preload() {
 
-    game.load.image('atari', 'assets/demoscene/atari.png');
-    game.load.image('raster', 'assets/demoscene/pink-raster.png');
-    game.load.image('floor', 'assets/demoscene/checker-floor.png');
+    game.load.image('atari', '../assets/atari.png');
+    game.load.image('raster', '../assets/pink-raster.png');
+    game.load.image('floor', '../assets/checker-floor.png');
 
 }
 
