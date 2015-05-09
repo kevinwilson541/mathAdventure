@@ -41,6 +41,4 @@ function update() {
 
     effect.alphaMask('raster', effect, mask);
 
-    image.rotation += 0.01;
-
 }
