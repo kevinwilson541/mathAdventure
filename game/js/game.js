@@ -1,5 +1,8 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
+var h = 600;
+var w = 800;
+
 function preload() {
     game.load.crossOrigin = 'Anonymous'
 
@@ -46,6 +49,32 @@ function create() {
 
     game.camera.follow(player);
     cursors = game.input.keyboard.createCursorKeys();
+
+    pause_label = game.add.text(w-110, 5, 'Pause', { font: '24px Arial', fill: '#fff' });
+    pause_label.inputEnabled = true;
+    pause_label.fixedToCamera = true;
+    
+    unpause_label = game.add.text(w-110, 5, 'Resume', { font: '24px Arial', fill: '#fff'});
+    unpause_label.inputEnabled = true;
+    unpause_label.fixedToCamera = true;
+    unpause_label.visible = false;
+
+    pause_label.events.onInputUp.add(function () {
+        // When the paus button is pressed, we pause the game
+        game.paused = true;
+	
+	pause_label.visible = false;
+ 	unpause_label.visible = true;
+	
+	game.input.onDown.add(unpause, self);
+
+	function unpause(event){
+		
+	    game.paused = false;
+	    pause_label.visible = true;
+	    unpause_label.visible = false;
+    	}
+    });   	
     
 }
 
@@ -59,6 +88,7 @@ function update() {
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
+    
 
     if (cursors.left.isDown)
     {
