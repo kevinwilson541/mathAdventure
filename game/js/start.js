@@ -5,16 +5,25 @@ function preload() {
     game.load.image('atari', 'assets/atari.png');
     game.load.image('raster', 'assets/pink-raster.png');
     game.load.image('floor', 'assets/checker-floor.png');
+    game.load.image('bluePink', 'assets/bluepink_font.png');
 
 }
 
 var effect;
 var image;
 var mask = new Phaser.Rectangle();
+var font;
+var image2;
 
 function create() {
 
-    game.stage.backgroundColor = '#000042';
+    font = game.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
+    font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_TOP);
+
+    image2 = game.add.image(game.world.centerX, 50, font);
+    image2.anchor.set(0.5);
+	
+    game.stage.backgroundColor = '#000000';
 
     var floor = game.add.image(0, game.height, 'floor');
     floor.width = 800;
@@ -32,8 +41,9 @@ function create() {
     //  Tween the rasters
     game.add.tween(mask).to( { y: -(mask.height - effect.height) }, 3000, Phaser.Easing.Sinusoidal.InOut, true, 0, 100, true);
 
+    game.add.tween(image2.scale).to( { x: 1.2, y: 1.2 }, 3000, Phaser.Easing.Bounce.Out, true);
     //  Tween the image
-    game.add.tween(image.scale).to( { x: 4, y: 4 }, 3000, Phaser.Easing.Quartic.InOut, true, 0, 100, true);
+    game.add.tween(image.scale).to( { x: 2, y: 2 }, 3000, Phaser.Easing.Quartic.InOut, true);
 
 }
 
