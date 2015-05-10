@@ -14,7 +14,7 @@ Ninja.MainMenu.prototype = {
         this.load.image('raster', 'assets/pink-raster.png');
         this.load.image('floor', 'assets/checker-floor.png');
         this.load.image('bluePink', 'assets/bluepink_font.png');
-        this.load.image('start_theme', 'assets/start_theme');
+        this.load.audio('start_theme', 'assets/start_theme');
     },
     create: function () {
         start_music = this.game.add.audio('start_theme');

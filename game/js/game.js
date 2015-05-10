@@ -5,6 +5,7 @@ Ninja.Game = function (game) {
     this.cursors;
     this.portal;
     this.facing;
+    this.chests;
 };
 
 Ninja.Game.prototype = {
@@ -42,6 +43,14 @@ Ninja.Game.prototype = {
 
         this.camera.follow(this.player);
         this.cursors = this.game.input.keyboard.createCursorKeys();
+
+        this.chests = this.game.add.group();
+        ths.chests.enableBody = true;
+
+        for (var i = 0; i < 13; ++i) {
+            var chest = this.chests.create(loc1x, loc1y, 'chest');
+            chest.body.gravity.y = 0;
+        }
 
         pause_label = this.add.text(this.width-110, 5, 'Pause', { font: '24px Arial', fill: '#fff' });
         pause_label.inputEnabled = true;
