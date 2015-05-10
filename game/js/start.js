@@ -6,6 +6,7 @@ function preload() {
     game.load.image('raster', 'assets/pink-raster.png');
     game.load.image('floor', 'assets/checker-floor.png');
     game.load.image('bluePink', 'assets/bluepink_font.png');
+    game.load.audio('start_theme', 'assets/start_theme.mp3');
 
 }
 
@@ -16,7 +17,8 @@ var font;
 var image2;
 
 function create() {
-
+    start_music = game.add.audio('start_theme');
+    start_music.play();
     font = game.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
     font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_TOP);
 
