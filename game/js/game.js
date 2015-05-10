@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Ninja.Game = function (game) {
     this.game = game;
     this.player;
@@ -44,27 +43,28 @@ Ninja.Game.prototype = {
         this.camera.follow(this.player);
         this.cursors = this.game.input.keyboard.createCursorKeys();
 
-        pause_label = this.add.text(w-110, 5, 'Pause', { font: '24px Arial', fill: '#fff' });
+        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: '24px Arial', fill: '#fff' });
         pause_label.inputEnabled = true;
         pause_label.fixedToCamera = true;
         
-        unpause_label = this.add.text(w-110, 5, 'Resume', { font: '24px Arial', fill: '#fff'});
+        unpause_label = this.add.text(this.width-110, 5, 'Resume', { font: '24px Arial', fill: '#fff'});
         unpause_label.inputEnabled = true;
         unpause_label.fixedToCamera = true;
         unpause_label.visible = false;
-
+        
+        var self = this;
         pause_label.events.onInputUp.add(function () {
             // When the paus button is pressed, we pause the game
-            this.paused = true;
+            self.game.paused = true;
         
             pause_label.visible = false;
             unpause_label.visible = true;
         
-            this.input.onDown.add(unpause, self);
+            self.game.input.onDown.add(unpause, self);
 
             function unpause(event){
             
-                this.paused = false;
+                self.game.paused = false;
                 pause_label.visible = true;
                 unpause_label.visible = false;
             }
