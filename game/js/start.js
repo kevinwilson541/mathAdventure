@@ -7,18 +7,27 @@ Ninja.MainMenu.prototype = {
     preload: function () {
         this.effect;
         this.image;
+        this.image2;
+        this.font;
         this.mask;
         this.load.image('atari', 'assets/atari.png');
         this.load.image('raster', 'assets/pink-raster.png');
         this.load.image('floor', 'assets/checker-floor.png');
+        this.load.image('bluePink', 'assets/bluepink_font.png');
+        this.load.image('start_theme', 'assets/start_theme');
     },
     create: function () {
-        this.mask = new Phaser.Rectangle();
-        this.stage.backgroundColor = '#000042';
+        start_music = this.add.audio('start_theme');
+        start_music.play();
+        this.font = this.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
+        this.font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_TOP);
 
-        //var floor = this.add.image(0, this.height, 'floor');
-        //floor.width = 800;
-        //floor.anchor.y = 1;
+        this.image2 = this.add.image(this.world.centerX, 50, this.font);
+        this.image2.anchor.set(0.5);
+
+        this.mask = new Phaser.Rectangle();
+        this.stage.backgroundColor = '#000000';
+
         var floor = this.add.image(0, this.height, 'floor')
         floor.width = 800;
         floor.y = 300;
