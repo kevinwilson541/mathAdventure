@@ -14,7 +14,7 @@ Ninja.MainMenu.prototype = {
         this.load.image('raster', 'assets/pink-raster.png');
         this.load.image('floor', 'assets/checker-floor.png');
         this.load.image('bluePink', 'assets/bluepink_font.png');
-        this.load.image('start_theme', 'assets/start_theme');
+        this.load.audio('start_theme', 'assets/start_theme.mp3');
     },
     create: function () {
         start_music = this.game.add.audio('start_theme');
@@ -45,9 +45,12 @@ Ninja.MainMenu.prototype = {
         this.game.add.tween(this.mask).to( { y: -(this.mask.height - this.effect.height) }, 3000, Phaser.Easing.Sinusoidal.InOut, true, 0, 100, true);
 
         //  Tween the image
-        this.game.add.tween(this.image.scale).to( { x: 4, y: 4 }, 3000, Phaser.Easing.Quartic.InOut, true, 0, 100, true);
-        
-        var self = this;
+        this.game.add.tween(this.image.scale).to( { x: 2, y: 2 }, 3000, Phaser.Easing.Quartic.InOut, true);
+	        
+        this.game.add.tween(this.image.scale).to( { x: 2, y: 2 }, 3000, Phaser.Easing.Quartic.InOut, true);
+	        
+        this.game.add.tween(this.image2.scale).to( { x: 1.2, y: 1.2 }, 3000, Phaser.Easing.Bounce.Out, true);
+	var self = this;
         var space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         space.onDown.add(this.trans, this);
     },
