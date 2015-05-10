@@ -8,6 +8,38 @@ Ninja.Game = function (game) {
     this.chests;
 };
 
+var chestLocs = [
+    [32, 64],
+    [64, 64],
+    [112, 80],
+    [16, 208],
+    [16, 288],
+    [16, 336],
+    [64, 480],
+    [288, 352],
+    [288, 112],
+    [464,448],
+    [704, 368],
+    [560, 80],
+    [688, 208],
+    [832, 256],
+    [928, 288],
+    [1008, 32],
+    [784, 560],
+    [1120, 528],
+    [1088, 528],
+    [1136, 224],
+    [1168, 224],
+    [1456, 34*16], // started getting lazy (or smart)
+    [97*16, 18*16],
+    [98*16, 18*16],
+    [85*16, 12*16],
+    [90*16, 2*16],
+    [94*16, 16*16],
+    [80*16, 22*16],
+    [83*16, 22*16]
+];
+
 Ninja.Game.prototype = {
     preload: function () {
         this.game.load.crossOrigin = 'Anonymous'
@@ -16,6 +48,7 @@ Ninja.Game.prototype = {
         this.game.load.image("tiles-1", "assets/dungeon.png")
         this.game.load.spritesheet('dude', 'assets/Block Ninja/Spritesheet.png', 16, 16);
         this.game.load.image('portal', 'assets/door-5.png');
+        this.game.load.image('chest', 'assets/question.png');
     },
     create: function () {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -45,10 +78,10 @@ Ninja.Game.prototype = {
         this.cursors = this.game.input.keyboard.createCursorKeys();
 
         this.chests = this.game.add.group();
-        ths.chests.enableBody = true;
+        this.chests.enableBody = true;
 
-        for (var i = 0; i < 13; ++i) {
-            var chest = this.chests.create(loc1x, loc1y, 'chest');
+        for (var i = 0; i < chestLocs.length; ++i) {
+            var chest = this.chests.create(chestLocs[i][0], chestLocs[i][1], 'chest');
             chest.body.gravity.y = 0;
         }
 
@@ -83,6 +116,7 @@ Ninja.Game.prototype = {
         //  Collide the player and the stars with the platforms
         this.physics.arcade.collide(this.player, this.layer);
         this.physics.arcade.overlap(this.player, this.portal, this.finish, null, this);
+        this.physics.arcade.overlap(this.player, this.chests, this.collect, null, this);
 
         //  Reset the players velocity (movement)
         this.player.body.velocity.x = 0;
@@ -137,5 +171,8 @@ Ninja.Game.prototype = {
     },
     finish: function (player, door) {
         player.reset(48,16);
+    },
+    collect: function (player, chest) {
+        chest.kill();
     }
 }
