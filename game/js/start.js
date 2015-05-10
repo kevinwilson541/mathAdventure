@@ -8,20 +8,26 @@ Ninja.MainMenu.prototype = {
         this.effect;
         this.image;
         this.image2;
+	this.image3;
         this.font;
+	this.font2;
         this.mask;
         this.load.image('atari', 'assets/atari.png');
         this.load.image('raster', 'assets/pink-raster.png');
         this.load.image('floor', 'assets/checker-floor.png');
         this.load.image('bluePink', 'assets/bluepink_font.png');
-        this.load.audio('start_theme', 'assets/start_theme.mp3');
+        this.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
+	this.load.audio('start_theme', 'assets/start_theme.mp3');
+
     },
     create: function () {
         start_music = this.game.add.audio('start_theme');
         start_music.play();
         this.font = this.game.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
-        this.font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_TOP);
+        this.font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_CENTER);
 
+	this.font2 = this.game.add.bitmapText(100, 500, 'carrier_command','Press Space To Begin Game', 24);
+	
         this.image2 = this.game.add.image(this.world.centerX, 50, this.font);
         this.image2.anchor.set(0.5);
 
@@ -30,7 +36,7 @@ Ninja.MainMenu.prototype = {
 
         var floor = this.game.add.image(0, this.height, 'floor')
         floor.width = 800;
-        floor.y = 350;
+        floor.y = 220;
 
         this.effect = this.make.bitmapData();
         this.effect.load('atari');
@@ -46,10 +52,11 @@ Ninja.MainMenu.prototype = {
 
         //  Tween the image
         this.game.add.tween(this.image.scale).to( { x: 2, y: 2 }, 3000, Phaser.Easing.Quartic.InOut, true);
-	        
-        this.game.add.tween(this.image.scale).to( { x: 2, y: 2 }, 3000, Phaser.Easing.Quartic.InOut, true);
-	        
+	         
         this.game.add.tween(this.image2.scale).to( { x: 1.2, y: 1.2 }, 3000, Phaser.Easing.Bounce.Out, true);
+		
+        this.game.add.tween(this.font2.scale).to( { x: .8, y: .8}, 3000, Phaser.Easing.Back.InOut, true);
+			
 	var self = this;
         var space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         space.onDown.add(this.trans, this);
@@ -58,6 +65,7 @@ Ninja.MainMenu.prototype = {
         this.effect.alphaMask('raster', this.effect, this.mask);
     },
     trans: function () {
+	start_music.stop();
         this.state.start('Game');
     }
 }
