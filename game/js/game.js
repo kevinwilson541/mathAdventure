@@ -8,6 +8,54 @@ Ninja.Game = function (game) {
     this.chests;
 };
 
+var encounterLocs = {
+
+    [0,0].toString() : 0,
+    [91, 370].toString() : 0,
+    [145, 555].toString() : 0,
+    [1150, 370].toString(): 0,
+    [260, 443].toString(): 0,
+    [586, 234].toString(): 0,
+    [682, 680].toString(): 0,
+    [429, 120].toString(): 0,
+    [539, 283].toString(): 0,
+    [521, 489].toString(): 0,
+    [482, 367].toString(): 0,
+    [1291, 291].toString(): 0,
+    [423, 721].toString(): 0,
+    [304, 499].toString(): 0,
+    [425, 933].toString(): 0,
+    [700, 312].toString(): 0,
+    [1156, 788].toString(): 0,
+    [515, 690].toString(): 0,
+    [235, 275].toString(): 0,
+    [983, 983].toString(): 0,
+    [683, 652].toString(): 0,
+    [345, 721].toString(): 0,
+    [1128, 745].toString(): 0,
+    [752, 525].toString(): 0,
+    [722, 367].toString(): 0,
+    [852, 624].toString(): 0,
+    [1277, 855].toString(): 0,
+    [547, 893].toString(): 0,
+    [456, 654].toString(): 0,
+    [822, 828].toString(): 0,
+    [182, 455].toString(): 0,
+    [676, 890].toString(): 0,
+    [754, 747].toString(): 0,
+    [474, 323].toString(): 0,
+    [399, 365].toString(): 0,
+    [737, 742].toString(): 0,
+    [634, 947].toString(): 0,
+    [632, 1329].toString(): 0,
+    [555, 1200].toString(): 0,
+}
+
+
+
+
+}
+
 var chestLocs = [
     [32, 64],
     [64, 64],
@@ -158,6 +206,13 @@ Ninja.Game.prototype = {
                 this.player.animations.play('right');
             }
         }
+
+        else if(('[' + this.player.x.toString() + ', ' + this.player.y.toString() + ']') in encounterLocs ){
+            
+            this.player.animations.stop();
+            console.log("encounter");
+        }
+
         else
         {
             //  Stand still
@@ -169,6 +224,7 @@ Ninja.Game.prototype = {
         }
 
     },
+
     finish: function (player, door) {
         player.reset(48,16);
     },
