@@ -1,44 +1,60 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+var Ninja = {};
+Ninja.MainMenu = function (game) {
+    this.game = game;
+};
 
-function preload() {
+Ninja.MainMenu.prototype = {
+    preload: function () {
+        this.effect;
+        this.image;
+        this.image2;
+        this.font;
+        this.mask;
+        this.load.image('atari', 'assets/atari.png');
+        this.load.image('raster', 'assets/pink-raster.png');
+        this.load.image('floor', 'assets/checker-floor.png');
+        this.load.image('bluePink', 'assets/bluepink_font.png');
+        this.load.audio('start_theme', 'assets/start_theme');
+    },
+    create: function () {
+        start_music = this.game.add.audio('start_theme');
+        start_music.play();
+        this.font = this.game.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
+        this.font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_TOP);
 
-    game.load.image('atari', 'assets/atari.png');
-    game.load.image('raster', 'assets/pink-raster.png');
-    game.load.image('floor', 'assets/checker-floor.png');
+        this.image2 = this.game.add.image(this.world.centerX, 50, this.font);
+        this.image2.anchor.set(0.5);
 
-}
+        this.mask = new Phaser.Rectangle();
+        this.stage.backgroundColor = '#000000';
 
-var effect;
-var image;
-var mask = new Phaser.Rectangle();
+        var floor = this.game.add.image(0, this.height, 'floor')
+        floor.width = 800;
+        floor.y = 350;
 
-function create() {
+        this.effect = this.make.bitmapData();
+        this.effect.load('atari');
 
-    game.stage.backgroundColor = '#000042';
+        this.image = this.game.add.image(this.world.centerX, this.world.centerY, this.effect);
+        this.image.anchor.set(0.5);
+        this.image.smoothed = false;
 
-    var floor = game.add.image(0, game.height, 'floor');
-    floor.width = 800;
-    floor.anchor.y = 1;
+        this.mask.setTo(0, 0, this.effect.width, this.cache.getImage('raster').height);
 
-    effect = game.make.bitmapData();
-    effect.load('atari');
+        //  Tween the rasters
+        this.game.add.tween(this.mask).to( { y: -(this.mask.height - this.effect.height) }, 3000, Phaser.Easing.Sinusoidal.InOut, true, 0, 100, true);
 
-    image = game.add.image(game.world.centerX, game.world.centerY, effect);
-    image.anchor.set(0.5);
-    image.smoothed = false;
-
-    mask.setTo(0, 0, effect.width, game.cache.getImage('raster').height);
-
-    //  Tween the rasters
-    game.add.tween(mask).to( { y: -(mask.height - effect.height) }, 3000, Phaser.Easing.Sinusoidal.InOut, true, 0, 100, true);
-
-    //  Tween the image
-    game.add.tween(image.scale).to( { x: 4, y: 4 }, 3000, Phaser.Easing.Quartic.InOut, true, 0, 100, true);
-
-}
-
-function update() {
-
-    effect.alphaMask('raster', effect, mask);
-
+        //  Tween the image
+        this.game.add.tween(this.image.scale).to( { x: 4, y: 4 }, 3000, Phaser.Easing.Quartic.InOut, true, 0, 100, true);
+        
+        var self = this;
+        var space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        space.onDown.add(this.trans, this);
+    },
+    update: function () {
+        this.effect.alphaMask('raster', this.effect, this.mask);
+    },
+    trans: function () {
+        this.state.start('Game');
+    }
 }
