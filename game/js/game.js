@@ -6,41 +6,53 @@ Ninja.Game = function (game) {
     this.portal;
     this.facing;
     this.chests;
+    this.initX;
+    this.initY;
+    this.chestLocs;
 };
 
-var chestLocs = [
-    [32, 64],
-    [64, 64],
-    [112, 80],
-    [16, 208],
-    [16, 288],
-    [16, 336],
-    [64, 480],
-    [288, 352],
-    [288, 112],
-    [464,448],
-    [704, 368],
-    [560, 80],
-    [688, 208],
-    [832, 256],
-    [928, 288],
-    [1008, 32],
-    [784, 560],
-    [1120, 528],
-    [1088, 528],
-    [1136, 224],
-    [1168, 224],
-    [1456, 34*16], // started getting lazy (or smart)
-    [97*16, 18*16],
-    [98*16, 18*16],
-    [85*16, 12*16],
-    [90*16, 2*16],
-    [94*16, 16*16],
-    [80*16, 22*16],
-    [83*16, 22*16]
-];
-
 Ninja.Game.prototype = {
+    init: function (param) {
+        this.chestLocs = {
+            '32,64': 0,
+            '64,64': 0,
+            '112,80': 0,
+            '16,208': 0,
+            '16,288': 0,
+            '16,336': 0,
+            '64,480': 0,
+            '288,352': 0,
+            '288,112': 0,
+            '464,448': 0,
+            '704,368': 0,
+            '560,80': 0,
+            '688,208': 0,
+            '832,256': 0,
+            '928,288': 0,
+            '1008,32': 0,
+            '784,560': 0,
+            '1120,528': 0,
+            '1088,528': 0,
+            '1136,224': 0,
+            '1168,224': 0,
+            '1456,544': 0, // started getting lazy (or smart)
+            '1552,288': 0,
+            '1568,288': 0,
+            '1360,192': 0,
+            '1440,32': 0,
+            '1504,256': 0,
+            '1280,352': 0,
+            '1328,352': 0
+        };
+        this.initX = 48;
+        this.initY = 16;
+        console.log(param);
+        if (param) {
+            this.chestLocs = param.chestLocs || this.chestLocs;
+            this.initX = param.initX || this.initX;
+            this.initY = param.initY || this.initY;
+        }
+    },
     preload: function () {
         this.game.load.crossOrigin = 'Anonymous'
 
@@ -58,7 +70,7 @@ Ninja.Game.prototype = {
         map.setCollisionByExclusion([33,104]);
         this.layer = map.createLayer("Tile Layer 1");
         this.layer.resizeWorld();
-        this.player = this.add.sprite(48, 16, 'dude');
+        this.player = this.add.sprite(this.initX, this.initY, 'dude');
         this.portal = this.add.sprite(1288,64,'portal');
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.portal, Phaser.Physics.ARCADE);
@@ -80,12 +92,17 @@ Ninja.Game.prototype = {
         this.chests = this.game.add.group();
         this.chests.enableBody = true;
 
-        for (var i = 0; i < chestLocs.length; ++i) {
-            var chest = this.chests.create(chestLocs[i][0], chestLocs[i][1], 'chest');
+        var self = this;
+        Object.keys(this.chestLocs).forEach(function (loc) {
+            loc = loc.split(',');
+            loc = loc.map(function (item) {
+                return parseInt(item);
+            });
+            var chest = self.chests.create(loc[0], loc[1], 'chest');
             chest.body.gravity.y = 0;
-        }
+        });
 
-        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: '24px Arial', fill: '#fff' });
+        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: 'bold 24px Arial', fill: '#fff' });
         pause_label.inputEnabled = true;
         pause_label.fixedToCamera = true;
         
@@ -170,9 +187,15 @@ Ninja.Game.prototype = {
 
     },
     finish: function (player, door) {
-        player.reset(48,16);
+        var params = {
+            'initX': 64,
+            'initY': 16,
+            'chestLocs': this.chestLocs
+        }
+        this.game.state.start('Game', true, false, params);
     },
     collect: function (player, chest) {
         chest.kill();
+        delete this.chestLocs[[chest.x, chest.y].toString()];
     }
 }
