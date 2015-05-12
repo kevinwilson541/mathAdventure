@@ -55,6 +55,7 @@ Ninja.MainMenu.prototype = {
         this.effect.alphaMask('raster', this.effect, this.mask);
     },
     trans: function () {
-        this.state.start('Game');
+        //this.state.start('Game');
+        this.state.start('Encounter');
     }
 }
