@@ -8,9 +8,9 @@ Ninja.MainMenu.prototype = {
         this.effect;
         this.image;
         this.image2;
-	this.image3;
+	    this.image3;
         this.font;
-	this.font2;
+	    this.font2;
         this.mask;
         this.load.image('atari', 'assets/atari.png');
         this.load.image('raster', 'assets/pink-raster.png');
@@ -19,7 +19,6 @@ Ninja.MainMenu.prototype = {
         this.load.audio('start_theme', 'assets/start_theme.mp3');
         $("#menu").hide();
         this.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
-
     },
     create: function () {
         start_music = this.game.add.audio('start_theme');
