@@ -1,10 +1,7 @@
 Ninja.Encounter = function (game) {
     this.game = game;
     this.params;
-<<<<<<< HEAD
     this.menu;
-=======
->>>>>>> 4f676458da1a8903b036690f747da4a1b5ab9e9f
 };
 
 Ninja.Encounter.prototype = {
@@ -16,7 +13,6 @@ Ninja.Encounter.prototype = {
 
         this.game.load.image('dude', 'assets/Block Ninja/idle.png');
         this.game.load.image('enemy', 'assets/boss_sprites/carrot.png');
-<<<<<<< HEAD
         this.game.load.image('health', 'assets/8_bit_heart.png');
         this.game.load.audio('battle_theme', 'assets/battle.mp3');
         this.game.load.tilemap("battle", "assets/battle.json", null, Phaser.Tilemap.TILED_JSON);
@@ -35,17 +31,6 @@ Ninja.Encounter.prototype = {
         this.player.addChild(new Phaser.Sprite(this.game, -36, -36, 'health'));
         this.enemy = this.add.sprite(this.game.width-162, 325, 'enemy');
         this.enemy.addChild(new Phaser.Sprite(this.game, -36, -36, 'health'));
-=======
-        this.game.load.image('background', 'assets/rocklavacave.png');
-    },
-    create: function () {
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        var bg = this.add.tileSprite(0, 0, 800, 600, 'background');
-        bg.fixedToCamera = true;
-        this.player = this.add.sprite(90, 325, 'dude');
-        this.enemy = this.add.sprite(630, 325, 'enemy');
->>>>>>> 4f676458da1a8903b036690f747da4a1b5ab9e9f
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.enemy, Phaser.Physics.ARCADE);
 
@@ -56,19 +41,11 @@ Ninja.Encounter.prototype = {
         this.enemy.body.gravity.y = 0;
         this.enemy.body.collideWorldBounds = true;
 
-<<<<<<< HEAD
         pause_label = this.add.text(this.width-110, 5, 'Pause', { font: '24px "Press Start 2P"', fill: '#fff' });
         pause_label.inputEnabled = true;
         pause_label.fixedToCamera = true;
         
         unpause_label = this.add.text(this.width-110, 5, 'Resume', { font: '24px "Press Start 2P"', fill: '#fff'});
-=======
-        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: '24px Arial', fill: '#fff' });
-        pause_label.inputEnabled = true;
-        pause_label.fixedToCamera = true;
-        
-        unpause_label = this.add.text(this.width-110, 5, 'Resume', { font: '24px Arial', fill: '#fff'});
->>>>>>> 4f676458da1a8903b036690f747da4a1b5ab9e9f
         unpause_label.inputEnabled = true;
         unpause_label.fixedToCamera = true;
         unpause_label.visible = false;
@@ -90,7 +67,6 @@ Ninja.Encounter.prototype = {
                 unpause_label.visible = false;
             }
         }); 
-<<<<<<< HEAD
 
         this.menu = $("#menu");
         this.menu.append($("<h2>").text("Battle Menu"));
@@ -101,8 +77,6 @@ Ninja.Encounter.prototype = {
         var $retreat = $("<div>").append($("<a>").text("Retreat"));
         this.menu.append($attack_menu, $item_menu, $retreat);
         this.menu.show();
-=======
->>>>>>> 4f676458da1a8903b036690f747da4a1b5ab9e9f
     },
     update: function () {
         return;
