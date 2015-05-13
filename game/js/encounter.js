@@ -33,7 +33,6 @@ Ninja.Encounter.prototype = {
     },
     
     create: function () {
-        
         battle_music = this.game.add.audio('battle_theme');
         battle_music.play('', 0, 1, true);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);

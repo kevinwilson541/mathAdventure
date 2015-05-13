@@ -26,7 +26,7 @@ Ninja.MainMenu.prototype = {
         this.font = this.game.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
         this.font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_CENTER);
 
-	this.font2 = this.game.add.bitmapText(100, 500, 'carrier_command','Press Space To Begin Game', 24);
+	    this.font2 = this.game.add.bitmapText(100, 500, 'carrier_command','Press Space To Begin Game', 24);
 	
         this.image2 = this.game.add.image(this.world.centerX, 50, this.font);
         this.image2.anchor.set(0.5);
