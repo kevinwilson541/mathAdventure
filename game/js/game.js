@@ -180,7 +180,14 @@ Ninja.Game.prototype = {
         //  Reset the players velocity (movement)
         this.player.body.velocity.x = 0;
         this.player.body.velocity.y = 0;
-        if (this.cursors.left.isDown)
+        var loc = [this.player.x, this.player.y].toString();
+        if ((typeof encounterLocs[loc]) !== 'undefined') {
+            delete encounterLocs[loc];
+            this.player.animations.stop();
+            console.log("encounter");
+        }
+
+        else if (this.cursors.left.isDown)
         {
             //  Move to the left
             this.player.body.velocity.x = -150;
@@ -217,13 +224,6 @@ Ninja.Game.prototype = {
                 this.player.animations.play('right');
             }
         }
-
-        else if(('[' + this.player.x.toString() + ', ' + this.player.y.toString() + ']') in encounterLocs ){
-            
-            this.player.animations.stop();
-            console.log("encounter");
-        }
-
         else
         {
             //  Stand still
