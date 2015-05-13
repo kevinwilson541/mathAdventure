@@ -28,9 +28,9 @@ Ninja.Encounter.prototype = {
         var layer = map.createLayer("Tile Layer 1");
         layer.resizeWorld();
         this.player = this.add.sprite(90, 325, 'dude');
-        this.player.addChild(new Phaser.Sprite(this.game, -36, -36, 'health'));
+        this.player.addChild(new Phaser.Sprite(this.game, -36, -48, 'health'));
         this.enemy = this.add.sprite(this.game.width-162, 325, 'enemy');
-        this.enemy.addChild(new Phaser.Sprite(this.game, -36, -36, 'health'));
+        this.enemy.addChild(new Phaser.Sprite(this.game, -1*(144-this.enemy.width)/2, -48, 'health'));
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.enemy, Phaser.Physics.ARCADE);
 

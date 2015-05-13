@@ -50,7 +50,8 @@ var encounterLocs = {
     '737, 742': 0,
     '634, 947': 0,
     '632, 1329': 0,
-    '555, 1200': 0
+    '555, 1200': 0,
+    '64,16': 0
 };
 
 Ninja.Game.prototype = {
@@ -180,11 +181,14 @@ Ninja.Game.prototype = {
         //  Reset the players velocity (movement)
         this.player.body.velocity.x = 0;
         this.player.body.velocity.y = 0;
-        var loc = [this.player.x, this.player.y].toString();
+        var loc = [Math.floor(this.player.x / 16) * 16, Math.floor(this.player.y / 16)*16].toString();
         if ((typeof encounterLocs[loc]) !== 'undefined') {
             delete encounterLocs[loc];
-            this.player.animations.stop();
-            console.log("encounter");
+            this.game.state.start('Encounter', true, false, {
+                initX: Math.floor(this.player.x / 16)*16,
+                initY: Math.floor(this.player.y / 16)*16,
+                chestLocs: this.chestLocs
+            });
         }
 
         else if (this.cursors.left.isDown)
