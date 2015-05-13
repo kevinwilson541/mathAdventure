@@ -187,7 +187,9 @@ Ninja.Game.prototype = {
             this.game.state.start('Encounter', true, false, {
                 initX: Math.floor(this.player.x / 16)*16,
                 initY: Math.floor(this.player.y / 16)*16,
-                chestLocs: this.chestLocs
+                chestLocs: this.chestLocs,
+                numAttacks: 1,
+                numItemUse: 1
             });
         }
 
