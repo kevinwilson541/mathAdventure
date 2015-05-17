@@ -3,43 +3,12 @@
 <head> 
 	<meta charset="UTF-8" />
     <title>Phaser - Making your first game, part 9</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type='text/javascript' src='js/start.js'></script>
     <script type='text/javascript' src='js/game.js'></script>
-<<<<<<< HEAD
     <link rel="stylesheet" type="text/css" href="style/style.css" />
-</head>
-<body>
-<script type='text/javascript'>
-(function () {
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
-game.state.add('MainMenu', Ninja.MainMenu);
-game.state.add('Game', Ninja.Game);
-game.state.start('MainMenu');
-})();
-function overlay() {
-    el = document.getElementById("overlay");
-    el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
-    window.scrollTo(0, 0);
-}
-</script>
-    <!-- Game Area -->
-    <div id = "gameDiv"></div>
- 
-    <!-- Shop -->
-    <div id="overlay">
-    	<div id = "shopContent">
-	    What is the answer to:<br>
-	    <p id="question">2 + 2 </p>
-	    <input id="chestAnswer" name="Enter Answer">
-	    <br>
- 	    <br>
-	    <button id="chestButton" type="button">Submit</button>
-	</div>
-=======
     <script type='text/javascript' src='js/encounter.js'></script>
-    <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Press+Start+2P'>
+    <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Press+Start+2P'>
     <style type="text/css">
         body {
             margin: 0;
@@ -76,7 +45,7 @@ function overlay() {
     </style>
 </head>
 <body>
-    <script src='http://code.jquery.com/jquery-2.0.3.min.js'></script>
+    <script src='https://code.jquery.com/jquery-2.0.3.min.js'></script>
     <div id='game'>
     <script type='text/javascript'>
         (function () {
@@ -89,7 +58,24 @@ function overlay() {
     </script>
     </div>
     <div id='menu'>
->>>>>>> 02c366f03a743db8c6f245246dcfb929c2b9729c
+    </div>
+    <script type='text/javascript'>
+function overlay() {
+    el = document.getElementById("overlay");
+    el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+    window.scrollTo(0, 0);
+}
+</script>
+    <!-- Shop -->
+    <div id="overlay">
+    	<div id = "shopContent">
+	    What is the answer to:<br>
+	    <p id="question">2 + 2 </p>
+	    <input id="chestAnswer" name="Enter Answer">
+	    <br>
+ 	    <br>
+	    <button id="chestButton" type="button">Submit</button>
+	</div>
     </div>
 </body>
 </html>
