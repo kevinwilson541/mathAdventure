@@ -1,31 +1,37 @@
-function add() {
+function add(a,b) {
+return a+b;
 
 }
 
-function sub() {
+function sub(a,b) {
 
+return a-b;
 }
 
-function div() {
+function div(a,b) {
 
+return a/b;
 }
 
-function mult() {
-
+function mult(a,b) {
+return a*b;
 }
 
 function easy() {
 
-var num1 = Math.floor((Math.random()*100)+0);
-var num2 = Math.floor((Math.random()*100)+0);
-var answer = num1+num2;
+var randnum = Math.floor((Math.random()*100)+0);
+var num1 = Math.floor((Math.random()*10)+0);
+var num2 = Math.floor((Math.random()*10)+0);
+var func;
 
-if (randnum % 2 != 0)
+if (randnum % 2 != 0) {
 	func = sub;
+	if (num1 < num2)
+		num1 += num2;
+}
 else
 	func = add;
-
-
+return func(num1, num2);
 }
 
 function med() {
