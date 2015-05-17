@@ -48,8 +48,9 @@
     <script src='https://code.jquery.com/jquery-2.0.3.min.js'></script>
     <div id='game'>
     <script type='text/javascript'>
+	var game;
         (function () {
-            var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+            game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
             game.state.add('MainMenu', Ninja.MainMenu);
             game.state.add('Game', Ninja.Game);
             game.state.add('Encounter', Ninja.Encounter);
@@ -61,21 +62,30 @@
     </div>
     <script type='text/javascript'>
 function overlay() {
-    el = document.getElementById("overlay");
+    var el = document.getElementById("overlay");
     el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
-    window.scrollTo(0, 0);
 }
 </script>
-    <!-- Shop -->
+        <!-- Shop -->
     <div id="overlay">
     	<div id = "shopContent">
 	    What is the answer to:<br>
 	    <p id="question">2 + 2 </p>
 	    <input id="chestAnswer" name="Enter Answer">
 	    <br>
- 	    <br>
 	    <button id="chestButton" type="button">Submit</button>
 	</div>
     </div>
+    <script type='text/javascript'>
+	var button = document.getElementById('chestButton');
+	button.addEventListener('click', function () {
+		var answer = document.getElementById('chestAnswer').value;
+		window.alert(answer);
+		document.getElementById('chestAnswer').value = '';
+		overlay();
+		game.paused = false;
+	});
+    </script>
+
 </body>
 </html>

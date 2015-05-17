@@ -145,11 +145,11 @@ Ninja.Game.prototype = {
             chest.body.gravity.y = 0;
         });
 
-        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: 'bold 24px "Press Start 2P"', fill: '#fff' });
+        pause_label = this.add.text(this.game.width-110, 5, 'Pause', { font: '18px "Press Start 2P"', fill: '#fff' });
         pause_label.inputEnabled = true;
         pause_label.fixedToCamera = true;
         
-        unpause_label = this.add.text(this.width-110, 5, 'Resume', { font: '24px "Press Start 2P"', fill: '#fff'});
+        unpause_label = this.add.text(this.game.width-110, 5, 'Resume', { font: '18px "Press Start 2P"', fill: '#fff'});
         unpause_label.inputEnabled = true;
         unpause_label.fixedToCamera = true;
         unpause_label.visible = false;
@@ -256,15 +256,5 @@ Ninja.Game.prototype = {
 	this.game.paused = true;  	
 	overlay();
          
-	var button = document.getElementById('chestButton');
-	
-	var self = this;	
-	button.addEventListener("click", function (){
-		var answer = document.getElementById('chestAnswer').value;
-		alert(answer);
-		overlay();
-		self.game.paused = false;
-	});
-        delete this.chestLocs[[chest.x, chest.y].toString()];
     }
 }

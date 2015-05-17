@@ -6,7 +6,7 @@
 
     @font-face {
 	font-family: "8bit";
- 	src: url(8bit.ttf) format("truetype");
+ 	src: url(../assets/8bit.ttf) format("truetype");
     } 
     
     #overlay {
@@ -25,6 +25,7 @@
     #overlay div {
 	font-family: "8bit", sans serif;
 	font-size: 75%;
+	display: block;
 	margin: 0 auto;
 	background-color: #A4A4A4;
 	border-radius: 15px;
@@ -37,6 +38,7 @@
     }
 
     #chestAnswer {
+	display: block;
 	margin: 0 auto;
 	width: 75px;
     }     
