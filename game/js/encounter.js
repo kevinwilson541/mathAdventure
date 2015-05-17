@@ -6,6 +6,7 @@ Ninja.Encounter = function (game) {
     this.numAttacks;
     this.numItemUse;
     this.enemyHealth;
+    this.battle_music;
     this.itemButtonOn, this.attackButtonOn;
 };
 
@@ -33,8 +34,8 @@ Ninja.Encounter.prototype = {
     },
     
     create: function () {
-        battle_music = this.game.add.audio('battle_theme');
-        battle_music.play('', 0, 1, true);
+        this.battle_music = this.game.add.audio('battle_theme');
+        this.battle_music.play('', 0, 1, true);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         var map = this.add.tilemap("battle");
@@ -84,6 +85,12 @@ Ninja.Encounter.prototype = {
                 unpause_label.visible = false;
             }
         }); 
+
+        var muted = this.game.input.keyboard.addKey(77);
+        muted.onDown.add(function () {
+            if (self.battle_music.muted) self.battle_music.muted = false;
+            else self.battle_music.muted = true;
+        }, this);
 
         this.initJQuery();
     
@@ -221,6 +228,7 @@ Ninja.Encounter.prototype = {
     },
 
     end: function () {
+        this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
         this.game.state.start("Game", true, false, this.params);

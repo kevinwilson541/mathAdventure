@@ -12,6 +12,7 @@ Ninja.MainMenu.prototype = {
         this.font;
 	    this.font2;
         this.mask;
+        this.start_music;
         this.load.image('atari', 'assets/atari.png');
         this.load.image('raster', 'assets/pink-raster.png');
         this.load.image('floor', 'assets/checker-floor.png');
@@ -21,8 +22,8 @@ Ninja.MainMenu.prototype = {
         this.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
     },
     create: function () {
-        start_music = this.game.add.audio('start_theme');
-        start_music.play();
+        this.start_music = this.game.add.audio('start_theme');
+        this.start_music.play();
         this.font = this.game.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
         this.font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_CENTER);
 
@@ -57,15 +58,22 @@ Ninja.MainMenu.prototype = {
 		
         this.game.add.tween(this.font2.scale).to( { x: .8, y: .8}, 3000, Phaser.Easing.Back.InOut, true);
 			
-	var self = this;
+	    var self = this;
+        
         var space = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         space.onDown.add(this.trans, this);
+        
+        var mute = this.game.input.keyboard.addKey(77);
+        mute.onDown.add(function () {
+            if (self.start_music.muted) self.start_music.muted = false;
+            else self.start_music.muted = true;
+        }, this);
     },
     update: function () {
         this.effect.alphaMask('raster', this.effect, this.mask);
     },
     trans: function () {
-	    start_music.stop();
+	    this.start_music.stop();
         this.game.state.start('Game');
     }
 }
