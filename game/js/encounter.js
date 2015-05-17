@@ -111,9 +111,12 @@ Ninja.Encounter.prototype = {
             var $anchor = $("<a>").text(key + "  " + attacks[key].toString());
             $anchor.on("click", function () {
                 if (self.turn && self.numAttacks) {
-                    // do attack
+                    // do attacki
+		    self.enemy.body.bounce.setTo(1,1);
+		    self.player.body.velocity.x += 500;
                     self.numAttacks--;
                     self.enemyHealth -= attacks[key];
+		    self.menu.hide(); 
                     // maybe display a message with the move
                     if (self.enemyHealth <= 0) {
                         self.end();
@@ -211,8 +214,22 @@ Ninja.Encounter.prototype = {
     },
 
     update: function () {
+        var self = this;
+	self.physics.arcade.overlap(self.player, self.enemy, function() {
+		self.physics.arcade.collide(self.player, self.enemy);
+		self.player.body.velocity.x *= -2;
+	})		
+	if (self.enemy.x >= (self.game.width-((self.enemy.width+self.enemy.getChildAt(0).width)/2))) {
+		self.enemy.body.velocity.x = 0;
+		self.enemy.body.angularVelocity = 150;
+	}
+	if (self.enemy.angle >= 90) {
+		self.enemy.reset(this.game.width-162, 325);
+		self.enemy.angle = 0;
+		self.player.reset(90, 325);
+		self.menu.show();
+	} 
         if (!this.turn) {
-            var self = this;
             setTimeout(function () {
                 self.turn = true;
                 self.numAttacks = self.params.numAttacks;
