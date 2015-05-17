@@ -3,14 +3,11 @@
 <head> 
 	<meta charset="UTF-8" />
     <title>Phaser - Making your first game, part 9</title>
-	<script type="text/javascript" src="js/phaser.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type='text/javascript' src='js/start.js'></script>
     <script type='text/javascript' src='js/game.js'></script>
-    <style type="text/css">
-        body {
-            margin: 0;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style/style.css" />
 </head>
 <body>
 <script type='text/javascript'>
@@ -20,7 +17,25 @@ game.state.add('MainMenu', Ninja.MainMenu);
 game.state.add('Game', Ninja.Game);
 game.state.start('MainMenu');
 })();
+function overlay() {
+    el = document.getElementById("overlay");
+    el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+    window.scrollTo(0, 0);
+}
 </script>
-
+    <!-- Game Area -->
+    <div id = "gameDiv"></div>
+ 
+    <!-- Shop -->
+    <div id="overlay">
+    	<div id = "shopContent">
+	    What is the answer to:<br>
+	    <p id="question">2 + 2 </p>
+	    <input id="chestAnswer" name="Enter Answer">
+	    <br>
+ 	    <br>
+	    <button id="chestButton" type="button">Submit</button>
+	</div>
+    </div>
 </body>
 </html>
