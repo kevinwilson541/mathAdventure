@@ -6,6 +6,7 @@ Ninja.Encounter = function (game) {
     this.numAttacks;
     this.numItemUse;
     this.enemyHealth;
+    this.playerHealth;
     this.battle_music;
     this.itemButtonOn, this.attackButtonOn;
 };
@@ -45,10 +46,10 @@ Ninja.Encounter.prototype = {
 
         this.player = this.add.sprite(90, 325, 'dude');
         this.player.addChild(new Phaser.Sprite(this.game, -36, -48, 'health'));
-        
+ 
         this.enemy = this.add.sprite(this.game.width-162, 325, 'enemy');
         this.enemy.addChild(new Phaser.Sprite(this.game, -1*(144-this.enemy.width)/2, -48, 'health'));
-        
+
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.enemy, Phaser.Physics.ARCADE);
 
@@ -233,6 +234,7 @@ Ninja.Encounter.prototype = {
 		self.enemy.reset(this.game.width-162, 325);
 		self.enemy.angle = 0;
 		self.player.reset(90, 325);
+		self.enemy.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.enemyHealth/200) * self.enemy.getChildAt(0).width),48)); 
 		self.menu.show();
 	} 
         if (!this.turn) {
