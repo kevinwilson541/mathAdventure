@@ -189,8 +189,7 @@ Ninja.Game.prototype = {
                 initX: Math.floor(this.player.x / 16)*16,
                 initY: Math.floor(this.player.y / 16)*16,
                 chestLocs: this.chestLocs,
-                numAttacks: 1,
-                numItemUse: 1
+                numUses: 1
             });
         }
 

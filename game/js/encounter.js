@@ -3,8 +3,7 @@ Ninja.Encounter = function (game) {
     this.params;
     this.menu;
     this.turn;
-    this.numAttacks;
-    this.numItemUse;
+    this.numUses;
     this.enemyHealth;
     this.playerHealth;
     this.battle_music;
@@ -15,8 +14,7 @@ Ninja.Encounter.prototype = {
     init: function (param) {
         this.params = param;
         this.turn = true;
-        this.numAttacks = this.params.numAttacks;
-        this.numItemUse = this.params.numItemUse;
+        this.numUses = this.params.numUses;
         this.enemyHealth = 100 + Math.floor(Math.random()*100);
         this.itemButtonOn = false, this.attackButtonOn = false;
     },
@@ -117,21 +115,21 @@ Ninja.Encounter.prototype = {
             var $elem = $("<li>");
             var $anchor = $("<a>").text(key + "  " + attacks[key].toString());
             $anchor.on("click", function () {
-                if (self.turn && self.numAttacks) {
-                    // do attacki
-		    self.enemy.body.bounce.setTo(1,1);
-		    self.player.body.velocity.x += 500;
-                    self.numAttacks--;
-                    self.enemyHealth -= attacks[key];
-		    self.menu.hide(); 
-                    // maybe display a message with the move
-                    if (self.enemyHealth <= 0) {
-                        self.end();
-                    }
+            if (self.turn && self.numUses) {
+                // do attacki
+                self.enemy.body.bounce.setTo(1,1);
+                self.player.body.velocity.x += 500;
+                self.numUses--;
+                self.enemyHealth -= attacks[key];
+		        self.menu.hide(); 
+                // maybe display a message with the move
+                if (self.enemyHealth <= 0) {
+                    self.end();
                 }
-                else {
-                    window.alert("You can only attack " 
-                        + self.params.numAttacks + " time(s) per turn!");
+            }
+            else {
+                window.alert("You can only do " 
+                    + self.params.numUses + " actions per turn!");
                 }
             });
             $elem.append($anchor);
@@ -165,8 +163,8 @@ Ninja.Encounter.prototype = {
                 var $anchor = $("<a>").text(key + "  x"
                     + self.params.itemBag[key][0]);
                 $anchor.on("click", function () {
-                    if (self.turn && self.numItemUse) {
-                        self.numItemUse--;
+                    if (self.turn && self.numUses) {
+                        self.numUses--;
                         self.params.itemBag[key][0]--;
                         self.useItem(self.player, self.params.itemBag[key][1]);
                         if (self.params.itemBag[key][0] == 0) {
@@ -178,8 +176,8 @@ Ninja.Encounter.prototype = {
                         }
                     }
                     else {
-                        window.alert("You can only use " 
-                            + self.params.numItemUse + " items per turn");
+                        window.alert("You can only do" 
+                            + self.params.numUses + " actions per turn");
                     }
                 });
                 $elem.append($anchor);
@@ -222,26 +220,25 @@ Ninja.Encounter.prototype = {
 
     update: function () {
         var self = this;
-	self.physics.arcade.overlap(self.player, self.enemy, function() {
-		self.physics.arcade.collide(self.player, self.enemy);
-		self.player.body.velocity.x *= -2;
-	})		
-	if (self.enemy.x >= (self.game.width-((self.enemy.width+self.enemy.getChildAt(0).width)/2))) {
-		self.enemy.body.velocity.x = 0;
-		self.enemy.body.angularVelocity = 150;
-	}
-	if (self.enemy.angle >= 90) {
-		self.enemy.reset(this.game.width-162, 325);
-		self.enemy.angle = 0;
-		self.player.reset(90, 325);
-		self.enemy.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.enemyHealth/200) * self.enemy.getChildAt(0).width),48)); 
-		self.menu.show();
-	} 
+        self.physics.arcade.overlap(self.player, self.enemy, function() {
+            self.physics.arcade.collide(self.player, self.enemy);
+            self.player.body.velocity.x *= -2;
+        })		
+        if (self.enemy.x >= (self.game.width-((self.enemy.width+self.enemy.getChildAt(0).width)/2))) {
+            self.enemy.body.velocity.x = 0;
+            self.enemy.body.angularVelocity = 150;
+        }
+        if (self.enemy.angle >= 90) {
+            self.enemy.reset(this.game.width-162, 325);
+            self.enemy.angle = 0;
+            self.player.reset(90, 325);
+            self.enemy.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.enemyHealth/200) * self.enemy.getChildAt(0).width),48)); 
+            self.menu.show();
+        } 
         if (!this.turn) {
             setTimeout(function () {
                 self.turn = true;
-                self.numAttacks = self.params.numAttacks;
-                self.numItemUse = self.params.numItemUse;
+                self.numUses = self.params.numUses;
             }, 1000);
         }
     },
