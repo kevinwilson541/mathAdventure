@@ -145,7 +145,7 @@ Ninja.Game.prototype = {
             chest.body.gravity.y = 0;
         });
 
-        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: 'bold 24px "Press Start 2P"', fill: '#fff' });
+        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: '24px "Press Start 2P"', fill: '#fff' });
         pause_label.inputEnabled = true;
         pause_label.fixedToCamera = true;
         
@@ -188,8 +188,7 @@ Ninja.Game.prototype = {
                 initX: Math.floor(this.player.x / 16)*16,
                 initY: Math.floor(this.player.y / 16)*16,
                 chestLocs: this.chestLocs,
-                numAttacks: 1,
-                numItemUse: 1
+                numUses: 1
             });
         }
 
