@@ -33,8 +33,9 @@ Ninja.Encounter.prototype = {
     },
     
     create: function () {
-        this.battle_music = this.game.add.audio('battle_theme');
-        this.battle_music.play('', 0, 1, true);
+        this.battle_music = new Audio('assets/battle.mp3');
+        this.battle_music.loop = true;
+	this.battle_music.play();
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         var map = this.add.tilemap("battle");
@@ -58,11 +59,11 @@ Ninja.Encounter.prototype = {
         this.enemy.body.gravity.y = 0;
         this.enemy.body.collideWorldBounds = true;
 
-        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: '24px "Press Start 2P"', fill: '#fff' });
+        pause_label = this.add.text(this.game.width-110, 5, 'Pause', { font: '24px "Press Start 2P"', fill: '#fff' });
         pause_label.inputEnabled = true;
         pause_label.fixedToCamera = true;
         
-        unpause_label = this.add.text(this.width-110, 5, 'Resume', { font: '24px "Press Start 2P"', fill: '#fff'});
+        unpause_label = this.add.text(this.game.width-110, 5, 'Resume', { font: '24px "Press Start 2P"', fill: '#fff'});
         unpause_label.inputEnabled = true;
         unpause_label.fixedToCamera = true;
         unpause_label.visible = false;
@@ -115,13 +116,15 @@ Ninja.Encounter.prototype = {
             var $elem = $("<li>");
             var $anchor = $("<a>").text(key + "  " + attacks[key].toString());
             $anchor.on("click", function () {
-            if (self.turn && self.numUses) {
+		self.game.paused = true;
+		overlay();	
+		if (self.turn && self.numUses) {
                 // do attacki
                 self.enemy.body.bounce.setTo(1,1);
                 self.player.body.velocity.x += 500;
                 self.numUses--;
                 self.enemyHealth -= attacks[key];
-		        self.menu.hide(); 
+		self.menu.hide(); 
                 // maybe display a message with the move
                 if (self.enemyHealth <= 0) {
                     self.end();
