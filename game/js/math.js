@@ -28,8 +28,15 @@ else
 
 }
 
+/*
+    2 ints add / sub
+    1 int mult
+*/
 function med() {
-
+    var num1 = Math.floor((Math.random()*99)+10);
+    var num2 = Math.floor((Math.random()*99)+10);
+    var operator = Math.random()*1;
+      
 }
 
 function hard() {
