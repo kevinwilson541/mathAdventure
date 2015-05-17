@@ -7,6 +7,7 @@
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type='text/javascript' src='js/start.js'></script>
     <script type='text/javascript' src='js/game.js'></script>
+<<<<<<< HEAD
     <link rel="stylesheet" type="text/css" href="style/style.css" />
 </head>
 <body>
@@ -36,6 +37,59 @@ function overlay() {
  	    <br>
 	    <button id="chestButton" type="button">Submit</button>
 	</div>
+=======
+    <script type='text/javascript' src='js/encounter.js'></script>
+    <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Press+Start+2P'>
+    <style type="text/css">
+        body {
+            margin: 0;
+            background-color: #000000
+        }
+        #game {
+            float: left;
+        }
+        #menu {
+            border-radius: 10px;
+            border-color: white;
+            border-width: 5px;
+            border-style: solid;
+            display: block;
+            font-family: 'Press Start 2P', sans-serif;
+            color: white;
+            background-color: blue;
+            font-size: 18px;
+            margin-left: 810px;
+            margin-right: 10px;
+            margin-top: 10px;
+            height: 100%;
+        }
+        #menu h2, div {
+            padding: 5px;
+        }
+        a {
+            cursor: pointer;
+            color: white;
+        }
+        li {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <script src='http://code.jquery.com/jquery-2.0.3.min.js'></script>
+    <div id='game'>
+    <script type='text/javascript'>
+        (function () {
+            var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+            game.state.add('MainMenu', Ninja.MainMenu);
+            game.state.add('Game', Ninja.Game);
+            game.state.add('Encounter', Ninja.Encounter);
+            game.state.start('MainMenu');
+        })();
+    </script>
+    </div>
+    <div id='menu'>
+>>>>>>> 02c366f03a743db8c6f245246dcfb929c2b9729c
     </div>
 </body>
 </html>

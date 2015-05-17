@@ -6,41 +6,96 @@ Ninja.Game = function (game) {
     this.portal;
     this.facing;
     this.chests;
+    this.initX;
+    this.initY;
+    this.chestLocs;
 };
 
-var chestLocs = [
-    [32, 64],
-    [64, 64],
-    [112, 80],
-    [16, 208],
-    [16, 288],
-    [16, 336],
-    [64, 480],
-    [288, 352],
-    [288, 112],
-    [464,448],
-    [704, 368],
-    [560, 80],
-    [688, 208],
-    [832, 256],
-    [928, 288],
-    [1008, 32],
-    [784, 560],
-    [1120, 528],
-    [1088, 528],
-    [1136, 224],
-    [1168, 224],
-    [1456, 34*16], // started getting lazy (or smart)
-    [97*16, 18*16],
-    [98*16, 18*16],
-    [85*16, 12*16],
-    [90*16, 2*16],
-    [94*16, 16*16],
-    [80*16, 22*16],
-    [83*16, 22*16]
-];
+var encounterLocs = {
+    '0,0' : 0,
+    '91,370' : 0,
+    '145,555' : 0,
+    '1150,370': 0,
+    '260,443': 0,
+    '586,234': 0,
+    '682,680': 0,
+    '429,120': 0,
+    '539,283': 0,
+    '521,489': 0,
+    '482,367': 0,
+    '1291,291': 0,
+    '423, 721': 0,
+    '304, 499': 0,
+    '425, 933': 0,
+    '700, 312': 0,
+    '1156, 788': 0,
+    '515, 690': 0,
+    '235, 275': 0,
+    '983, 983': 0,
+    '683, 652': 0,
+    '345, 721': 0,
+    '1128, 745': 0,
+    '752, 525': 0,
+    '722, 367': 0,
+    '852, 624': 0,
+    '1277, 855': 0,
+    '547, 893': 0,
+    '456, 654': 0,
+    '822, 828': 0,
+    '182, 455': 0,
+    '676, 890': 0,
+    '754, 747': 0,
+    '474, 323': 0,
+    '399, 365': 0,
+    '737, 742': 0,
+    '634, 947': 0,
+    '632, 1329': 0,
+    '555, 1200': 0,
+    '64,16': 0
+};
 
 Ninja.Game.prototype = {
+    init: function (param) {
+        this.chestLocs = {
+            '32,64': 0,
+            '64,64': 0,
+            '112,80': 0,
+            '16,208': 0,
+            '16,288': 0,
+            '16,336': 0,
+            '64,480': 0,
+            '288,352': 0,
+            '288,112': 0,
+            '464,448': 0,
+            '704,368': 0,
+            '560,80': 0,
+            '688,208': 0,
+            '832,256': 0,
+            '928,288': 0,
+            '1008,32': 0,
+            '784,560': 0,
+            '1120,528': 0,
+            '1088,528': 0,
+            '1136,224': 0,
+            '1168,224': 0,
+            '1456,544': 0, // started getting lazy (or smart)
+            '1552,288': 0,
+            '1568,288': 0,
+            '1360,192': 0,
+            '1440,32': 0,
+            '1504,256': 0,
+            '1280,352': 0,
+            '1328,352': 0
+        };
+        this.initX = 48;
+        this.initY = 16;
+        console.log(param);
+        if (param) {
+            this.chestLocs = param.chestLocs || this.chestLocs;
+            this.initX = param.initX || this.initX;
+            this.initY = param.initY || this.initY;
+        }
+    },
     preload: function () {
         this.game.load.crossOrigin = 'Anonymous'
 
@@ -58,7 +113,7 @@ Ninja.Game.prototype = {
         map.setCollisionByExclusion([33,104]);
         this.layer = map.createLayer("Tile Layer 1");
         this.layer.resizeWorld();
-        this.player = this.add.sprite(48, 16, 'dude');
+        this.player = this.add.sprite(this.initX, this.initY, 'dude');
         this.portal = this.add.sprite(1288,64,'portal');
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.portal, Phaser.Physics.ARCADE);
@@ -80,16 +135,29 @@ Ninja.Game.prototype = {
         this.chests = this.game.add.group();
         this.chests.enableBody = true;
 
-        for (var i = 0; i < chestLocs.length; ++i) {
-            var chest = this.chests.create(chestLocs[i][0], chestLocs[i][1], 'chest');
+        var self = this;
+        Object.keys(this.chestLocs).forEach(function (loc) {
+            loc = loc.split(',');
+            loc = loc.map(function (item) {
+                return parseInt(item);
+            });
+            var chest = self.chests.create(loc[0], loc[1], 'chest');
             chest.body.gravity.y = 0;
-        }
+        });
 
+<<<<<<< HEAD
         pause_label = this.add.text(800-110, 5, 'Pause', { font: '24px Arial', fill: '#fff' });
         pause_label.inputEnabled = true;
         pause_label.fixedToCamera = true;
         
         unpause_label = this.add.text(800-110, 5, 'Resume', { font: '24px Arial', fill: '#fff'});
+=======
+        pause_label = this.add.text(this.width-110, 5, 'Pause', { font: 'bold 24px "Press Start 2P"', fill: '#fff' });
+        pause_label.inputEnabled = true;
+        pause_label.fixedToCamera = true;
+        
+        unpause_label = this.add.text(this.width-110, 5, 'Resume', { font: '24px "Press Start 2P"', fill: '#fff'});
+>>>>>>> 02c366f03a743db8c6f245246dcfb929c2b9729c
         unpause_label.inputEnabled = true;
         unpause_label.fixedToCamera = true;
         unpause_label.visible = false;
@@ -122,7 +190,19 @@ Ninja.Game.prototype = {
         //  Reset the players velocity (movement)
         this.player.body.velocity.x = 0;
         this.player.body.velocity.y = 0;
-        if (this.cursors.left.isDown)
+        var loc = [Math.floor(this.player.x / 16) * 16, Math.floor(this.player.y / 16)*16].toString();
+        if ((typeof encounterLocs[loc]) !== 'undefined') {
+            delete encounterLocs[loc];
+            this.game.state.start('Encounter', true, false, {
+                initX: Math.floor(this.player.x / 16)*16,
+                initY: Math.floor(this.player.y / 16)*16,
+                chestLocs: this.chestLocs,
+                numAttacks: 1,
+                numItemUse: 1
+            });
+        }
+
+        else if (this.cursors.left.isDown)
         {
             //  Move to the left
             this.player.body.velocity.x = -150;
@@ -170,11 +250,18 @@ Ninja.Game.prototype = {
         }
 
     },
+
     finish: function (player, door) {
-        player.reset(48,16);
+        var params = {
+            'initX': 64,
+            'initY': 16,
+            'chestLocs': this.chestLocs
+        }
+        this.game.state.start('Game', true, false, params);
     },
     collect: function (player, chest) {
         chest.kill();
+<<<<<<< HEAD
 	this.game.paused = true;  	
 	overlay();
          
@@ -188,4 +275,8 @@ Ninja.Game.prototype = {
 		self.game.paused = false;
 	});
     },  
+=======
+        delete this.chestLocs[[chest.x, chest.y].toString()];
+    }
+>>>>>>> 02c366f03a743db8c6f245246dcfb929c2b9729c
 }
