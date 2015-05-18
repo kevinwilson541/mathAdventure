@@ -41,8 +41,11 @@ return func(num1, num2);
 function med() {
     var num1 = Math.floor((Math.random()*99)+10);
     var num2 = Math.floor((Math.random()*99)+10);
-    var operator = Math.random()*1;
-      
+    var randnum = Math.floor((Math.random()*3)+0);
+
+    
+
+          
 }
 
 function hard() {
