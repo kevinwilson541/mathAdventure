@@ -65,8 +65,8 @@ Ninja.MainMenu.prototype = {
         
         var mute = this.game.input.keyboard.addKey(77);
         mute.onDown.add(function () {
-            if (self.start_music.muted) self.start_music.muted = false;
-            else self.start_music.muted = true;
+            if (self.start_music.volume) self.start_music.volume = 0;
+            else self.start_music.volume = 1;
         }, this);
     },
     update: function () {
