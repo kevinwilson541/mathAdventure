@@ -37,6 +37,7 @@ Ninja.Encounter.prototype = {
         this.battle_music = this.game.add.audio('battle_theme');
         this.battle_music.loop = true;
         this.battle_music.play();
+
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
         var map = this.add.tilemap("battle");
@@ -63,6 +64,7 @@ Ninja.Encounter.prototype = {
         this.enemy.body.gravity.y = 0;
         this.enemy.body.collideWorldBounds = true;
 
+<<<<<<< HEAD
         this.arrow = this.game.add.sprite(this.player.width/2-24, -1*this.heartHeight-48,'arrow');
         this.player.addChild(this.arrow);
 
@@ -71,6 +73,13 @@ Ninja.Encounter.prototype = {
         pause_label.fixedToCamera = true;
         
         unpause_label = this.add.text(this.game.width-140, 5, 'Resume', { font: '18px "Press Start 2P"', fill: '#fff'});
+=======
+        pause_label = this.add.text(this.game.width-110, 5, 'Pause', { font: '24px "Press Start 2P"', fill: '#fff' });
+        pause_label.inputEnabled = true;
+        pause_label.fixedToCamera = true;
+        
+        unpause_label = this.add.text(this.game.width-110, 5, 'Resume', { font: '24px "Press Start 2P"', fill: '#fff'});
+>>>>>>> d1c44d1433040a4cf5297ef02cf771e222d26a49
         unpause_label.inputEnabled = true;
         unpause_label.fixedToCamera = true;
         unpause_label.visible = false;
@@ -123,11 +132,32 @@ Ninja.Encounter.prototype = {
             var $elem = $("<li>");
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
             $anchor.on("click", function () {
+<<<<<<< HEAD
                 // do attacki
                 self.enemy.body.bounce.setTo(1,1);
                 self.player.body.velocity.x = 500;
                 self.enemyHealth -= self.attacks[key];
                 $anchor.off('click'); 
+=======
+		self.game.paused = true;
+		overlay();	
+		if (self.turn && self.numUses) {
+                // do attacki
+                self.enemy.body.bounce.setTo(1,1);
+                self.player.body.velocity.x += 500;
+                self.numUses--;
+                self.enemyHealth -= attacks[key];
+		self.menu.hide(); 
+                // maybe display a message with the move
+                if (self.enemyHealth <= 0) {
+                    self.end();
+                }
+            }
+            else {
+                window.alert("You can only do " 
+                    + self.params.numUses + " actions per turn!");
+                }
+>>>>>>> d1c44d1433040a4cf5297ef02cf771e222d26a49
             });
             $elem.append($anchor);
             $attack_list.append($elem);
