@@ -4,7 +4,9 @@
 	<meta charset="UTF-8" />
     <title>Phaser - Making your first game, part 9</title>
     <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type='text/javascript' src='js/boot.js'></script>
     <script type='text/javascript' src='js/start.js'></script>
+    <script type='text/javascript' src='js/loader.js'></script>
     <script type='text/javascript' src='js/game.js'></script>
     <link rel="stylesheet" type="text/css" href="style/style.css" />
     <script type='text/javascript' src='js/encounter.js'></script>
@@ -51,17 +53,19 @@
 	var game;
         (function () {
             game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+            game.state.add('Boot', Ninja.Boot);
             game.state.add('MainMenu', Ninja.MainMenu);
+            game.state.add('Loader', Ninja.Loader);
             game.state.add('Game', Ninja.Game);
             game.state.add('Encounter', Ninja.Encounter);
-            game.state.start('MainMenu');
+            game.state.start('Boot');
         })();
     </script>
     </div>
     <div id='menu'>
     </div>
     <script type='text/javascript'>
-function overlay(cursor) {
+function overlay() {
     var el = document.getElementById("overlay");
     el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
 }
@@ -80,10 +84,9 @@ function overlay(cursor) {
 	var button = document.getElementById('chestButton');
 	button.addEventListener('click', function () {
 		var answer = document.getElementById('chestAnswer').value;
-		window.alert(answer);
 		document.getElementById('chestAnswer').value = '';
-		overlay();
-		game.paused = false;
+        overlay();
+		//game.paused = false;
 	});
     </script>
 

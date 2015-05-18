@@ -57,13 +57,6 @@ Ninja.Game.prototype = {
     },
     preload: function () {
         this.game.load.crossOrigin = 'Anonymous'
-
-        this.game.load.tilemap("level1", "assets/dungeon1.json", null, Phaser.Tilemap.TILED_JSON)
-        this.game.load.image("tiles-1", "assets/dungeon.png")
-        this.game.load.spritesheet('dude', 'assets/Block Ninja/Spritesheet.png', 16, 16);
-        this.game.load.image('portal', 'assets/door-5.png');
-        this.game.load.image('chest', 'assets/question.png');
-        this.game.load.audio('music', 'assets/dungeon_level.mp3');
     },
     create: function () {
         this.game_music = this.game.add.audio('music');
@@ -72,7 +65,7 @@ Ninja.Game.prototype = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
         var map = this.add.tilemap("level1");
-        map.addTilesetImage("dungeon", "tiles-1");
+        map.addTilesetImage("dungeon", "dungeon_tiles");
         map.setCollisionByExclusion([33,104]);
         this.layer = map.createLayer("Tile Layer 1");
         this.layer.resizeWorld();
@@ -120,35 +113,22 @@ Ninja.Game.prototype = {
             if (randy-16 >= 0) this.encounterLocs[randx.toString()+','+(randy-16).toString()] = 0;
         }
 
-        pause_label = this.add.text(this.game.width-110, 5, 'Pause', { font: '18px "Press Start 2P"', fill: '#fff' });
-        pause_label.inputEnabled = true;
-        pause_label.fixedToCamera = true;
-        
-        unpause_label = this.add.text(this.game.width-110, 5, 'Resume', { font: '18px "Press Start 2P"', fill: '#fff'});
-        unpause_label.inputEnabled = true;
-        unpause_label.fixedToCamera = true;
-        unpause_label.visible = false;
-        
-        var self = this;
-        pause_label.events.onInputUp.add(function () {
-            // When the paus button is pressed, we pause the game
-            self.game.paused = true;
-            pause_label.visible = false;
-            unpause_label.visible = true;
-        
-            self.game.input.onDown.add(unpause, self);
-
-            function unpause(event){
-                self.game.paused = false;
-                pause_label.visible = true;
-                unpause_label.visible = false;
-            }
-        }); 
-
-        var mute = this.game.keyboard.addKey(77);
+        var mute = this.game.input.keyboard.addKey(77);
         mute.onDown.add(function () {
             if (self.game_music.volume) self.game_music.volume = 0;
             else self.game_music.volume = 1;
+        }, this);
+        var pause = this.game.input.keyboard.addKey(80);
+        var txt = new Phaser.Text(this.game, self.game.width/2-50, self.game.height/2, 'Paused', {font: '18px "Press Start 2P"', fill: '#fff'});
+        pause.onDown.add(function () {
+            if (self.game.paused) {
+                self.game.world.remove(txt);
+                self.game.paused = false;
+            }
+            else {
+                self.game.world.add(txt);
+                self.game.paused = true;
+            }
         }, this);
     },
     update: function () {
@@ -233,8 +213,24 @@ Ninja.Game.prototype = {
     },
 
     collect: function (player, chest) {
-        this.game.paused = true;
+        //this.game.paused = true;
+        this.player.body.velocity.x = 0;
+        this.player.body.velocity.y = 0;
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.UP);
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.DOWN);
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.RIGHT);
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.LEFT);
+        this.cursors = {
+            up: {isDown: false},
+            down: {isDown: false},
+            left: {isDown: false},
+            right: {isDown: false}
+        };
         chest.kill();
-	    overlay(); 
+	    overlay();
+        var self = this;
+        $("#chestButton").on('click', function () {
+            self.cursors = self.game.input.keyboard.createCursorKeys();
+        });
     }
 }
