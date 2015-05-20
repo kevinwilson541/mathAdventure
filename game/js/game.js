@@ -9,53 +9,13 @@ Ninja.Game = function (game) {
     this.initX;
     this.initY;
     this.chestLocs;
-};
-
-var encounterLocs = {
-    '0,0' : 0,
-    '91,370' : 0,
-    '145,555' : 0,
-    '1150,370': 0,
-    '260,443': 0,
-    '586,234': 0,
-    '682,680': 0,
-    '429,120': 0,
-    '539,283': 0,
-    '521,489': 0,
-    '482,367': 0,
-    '1291,291': 0,
-    '423, 721': 0,
-    '304, 499': 0,
-    '425, 933': 0,
-    '700, 312': 0,
-    '1156, 788': 0,
-    '515, 690': 0,
-    '235, 275': 0,
-    '983, 983': 0,
-    '683, 652': 0,
-    '345, 721': 0,
-    '1128, 745': 0,
-    '752, 525': 0,
-    '722, 367': 0,
-    '852, 624': 0,
-    '1277, 855': 0,
-    '547, 893': 0,
-    '456, 654': 0,
-    '822, 828': 0,
-    '182, 455': 0,
-    '676, 890': 0,
-    '754, 747': 0,
-    '474, 323': 0,
-    '399, 365': 0,
-    '737, 742': 0,
-    '634, 947': 0,
-    '632, 1329': 0,
-    '555, 1200': 0,
-    '64,16': 0
+    this.encounterLocs;
+    this.game_music;
 };
 
 Ninja.Game.prototype = {
     init: function (param) {
+        this.encounterLocs = [];
         this.chestLocs = {
             '32,64': 0,
             '64,64': 0,
@@ -78,7 +38,7 @@ Ninja.Game.prototype = {
             '1088,528': 0,
             '1136,224': 0,
             '1168,224': 0,
-            '1456,544': 0, // started getting lazy (or smart)
+            '1456,544': 0, 
             '1552,288': 0,
             '1568,288': 0,
             '1360,192': 0,
@@ -89,7 +49,6 @@ Ninja.Game.prototype = {
         };
         this.initX = 48;
         this.initY = 16;
-        console.log(param);
         if (param) {
             this.chestLocs = param.chestLocs || this.chestLocs;
             this.initX = param.initX || this.initX;
@@ -98,18 +57,15 @@ Ninja.Game.prototype = {
     },
     preload: function () {
         this.game.load.crossOrigin = 'Anonymous'
-
-        this.game.load.tilemap("level1", "assets/dungeon1.json", null, Phaser.Tilemap.TILED_JSON)
-        this.game.load.image("tiles-1", "assets/dungeon.png")
-        this.game.load.spritesheet('dude', 'assets/Block Ninja/Spritesheet.png', 16, 16);
-        this.game.load.image('portal', 'assets/door-5.png');
-        this.game.load.image('chest', 'assets/question.png');
     },
     create: function () {
+        this.game_music = this.game.add.audio('music');
+        this.game_music.loop = true;
+        this.game_music.play();
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
         var map = this.add.tilemap("level1");
-        map.addTilesetImage("dungeon", "tiles-1");
+        map.addTilesetImage("dungeon", "dungeon_tiles");
         map.setCollisionByExclusion([33,104]);
         this.layer = map.createLayer("Tile Layer 1");
         this.layer.resizeWorld();
@@ -145,33 +101,35 @@ Ninja.Game.prototype = {
             chest.body.gravity.y = 0;
         });
 
-        pause_label = this.add.text(this.game.width-110, 5, 'Pause', { font: '18px "Press Start 2P"', fill: '#fff' });
-        pause_label.inputEnabled = true;
-        pause_label.fixedToCamera = true;
-        
-        unpause_label = this.add.text(this.game.width-110, 5, 'Resume', { font: '18px "Press Start 2P"', fill: '#fff'});
-        unpause_label.inputEnabled = true;
-        unpause_label.fixedToCamera = true;
-        unpause_label.visible = false;
-        
-        var self = this;
-        pause_label.events.onInputUp.add(function () {
-            // When the paus button is pressed, we pause the game
-            self.game.paused = true;
-        
-            pause_label.visible = false;
-            unpause_label.visible = true;
-        
-            self.game.input.onDown.add(unpause, self);
+        var xTiles = 99;
+        var yTiles = 35;
+        for (var i = 0; i < 25; ++i) {
+            var randx = Math.floor(Math.random()*xTiles)*16;
+            var randy = Math.floor(Math.random()*yTiles)*16;
+            this.encounterLocs[randx.toString()+','+randy.toString()] = 0;
+            if (randx+16 <= xTiles*16) this.encounterLocs[(randx+16).toString()+','+randy.toString()] = 0;
+            if (randx-16 >= 0) this.encounterLocs[(randx-16).toString()+','+randy.toString()] = 0;
+            if (randy+16 <= yTiles*16) this.encounterLocs[randx.toString()+','+(randy+16).toString()] = 0;
+            if (randy-16 >= 0) this.encounterLocs[randx.toString()+','+(randy-16).toString()] = 0;
+        }
 
-            function unpause(event){
-            
+        var mute = this.game.input.keyboard.addKey(77);
+        mute.onDown.add(function () {
+            if (self.game_music.volume) self.game_music.volume = 0;
+            else self.game_music.volume = 1;
+        }, this);
+        var pause = this.game.input.keyboard.addKey(80);
+        var txt = new Phaser.Text(this.game, self.game.width/2-50, self.game.height/2, 'Paused', {font: '18px "Press Start 2P"', fill: '#fff'});
+        pause.onDown.add(function () {
+            if (self.game.paused) {
+                self.game.world.remove(txt);
                 self.game.paused = false;
-                pause_label.visible = true;
-                unpause_label.visible = false;
             }
-        }); 
-    
+            else {
+                self.game.world.add(txt);
+                self.game.paused = true;
+            }
+        }, this);
     },
     update: function () {
         //  Collide the player and the stars with the platforms
@@ -183,13 +141,15 @@ Ninja.Game.prototype = {
         this.player.body.velocity.x = 0;
         this.player.body.velocity.y = 0;
         var loc = [Math.floor(this.player.x / 16) * 16, Math.floor(this.player.y / 16)*16].toString();
-        if ((typeof encounterLocs[loc]) !== 'undefined') {
-            delete encounterLocs[loc];
+        if ((typeof this.encounterLocs[loc]) !== 'undefined') {
+            delete this.encounterLocs[loc];
+            this.game_music.stop();
             this.game.state.start('Encounter', true, false, {
                 initX: Math.floor(this.player.x / 16)*16,
                 initY: Math.floor(this.player.y / 16)*16,
                 chestLocs: this.chestLocs,
-                numUses: 1
+                numUses: 1,
+                playerHealth: 250
             });
         }
 
@@ -243,17 +203,35 @@ Ninja.Game.prototype = {
     },
 
     finish: function (player, door) {
+        this.game_music.stop();
         var params = {
             'initX': 64,
             'initY': 16,
-            'chestLocs': this.chestLocs
+            'chestLocs': this.chestLocs,
         }
         this.game.state.start('Game', true, false, params);
     },
+
     collect: function (player, chest) {
+        //this.game.paused = true;
+        this.player.body.velocity.x = 0;
+        this.player.body.velocity.y = 0;
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.UP);
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.DOWN);
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.RIGHT);
+        this.game.input.keyboard.removeKey(Phaser.Keyboard.LEFT);
+        this.cursors = {
+            up: {isDown: false},
+            down: {isDown: false},
+            left: {isDown: false},
+            right: {isDown: false}
+        };
+        delete this.chestLocs[chest.x.toString()+','+chest.y.toString()];
         chest.kill();
-	this.game.paused = true;  	
-	overlay();
-         
+	    overlay();
+        var self = this;
+        $("#chestButton").on('click', function () {
+            self.cursors = self.game.input.keyboard.createCursorKeys();
+        });
     }
 }

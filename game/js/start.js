@@ -1,4 +1,3 @@
-var Ninja = {};
 Ninja.MainMenu = function (game) {
     this.game = game;
 };
@@ -13,13 +12,6 @@ Ninja.MainMenu.prototype = {
 	    this.font2;
         this.mask;
         this.start_music;
-        this.load.image('atari', 'assets/atari.png');
-        this.load.image('raster', 'assets/pink-raster.png');
-        this.load.image('floor', 'assets/checker-floor.png');
-        this.load.image('bluePink', 'assets/bluepink_font.png');
-        this.load.audio('start_theme', 'assets/start_theme.mp3');
-        $("#menu").hide();
-        this.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
     },
     create: function () {
         this.start_music = this.game.add.audio('start_theme');
@@ -65,8 +57,8 @@ Ninja.MainMenu.prototype = {
         
         var mute = this.game.input.keyboard.addKey(77);
         mute.onDown.add(function () {
-            if (self.start_music.muted) self.start_music.muted = false;
-            else self.start_music.muted = true;
+            if (self.start_music.volume) self.start_music.volume = 0;
+            else self.start_music.volume = 1;
         }, this);
     },
     update: function () {
@@ -74,6 +66,6 @@ Ninja.MainMenu.prototype = {
     },
     trans: function () {
 	    this.start_music.stop();
-        this.game.state.start('Game');
+        this.game.state.start('Loader');
     }
 }
