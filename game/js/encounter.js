@@ -247,7 +247,7 @@ Ninja.Encounter.prototype = {
     },
 
     end: function () {
-        this.battle_music.stop();
+        this.battle_music.pause();
         this.menu.empty();
         this.menu.hide();
         this.game.state.start("Game", true, false, this.params);
