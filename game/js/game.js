@@ -226,6 +226,7 @@ Ninja.Game.prototype = {
             left: {isDown: false},
             right: {isDown: false}
         };
+        delete this.chestLocs[chest.x.toString()+','+chest.y.toString()];
         chest.kill();
 	    overlay();
         var self = this;
