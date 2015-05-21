@@ -27,7 +27,8 @@ Ninja.Encounter.prototype = {
     create: function () {
         this.battle_music = this.game.add.audio('battle_theme');
         this.battle_music.loop = true;
-        this.battle_music.play();
+        if (!this.params.muted) this.battle_music.play();
+        else this.battle_music.mute = true;
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -61,8 +62,13 @@ Ninja.Encounter.prototype = {
         var self = this;
         var muted = this.game.input.keyboard.addKey(77);
         muted.onDown.add(function () {
-            if (self.battle_music.volume) self.battle_music.volume = 0;
-            else self.battle_music.volume = 1;
+            if (!self.battle_music.mute) {
+                self.battle_music.mute = true;
+            }
+            else {
+                if (!self.battle_music.isPlaying) self.battle_music.play();
+                self.battle_music.mute = false;
+            }
         }, this);
 
         var paused = this.game.input.keyboard.addKey(80);
@@ -292,6 +298,7 @@ Ninja.Encounter.prototype = {
     },
 
     end: function () {
+        this.params.muted = !this.battle_music.mute ? false : true;
         this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
