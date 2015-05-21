@@ -57,15 +57,18 @@ Ninja.MainMenu.prototype = {
         
         var mute = this.game.input.keyboard.addKey(77);
         mute.onDown.add(function () {
-            if (self.start_music.volume) self.start_music.volume = 0;
-            else self.start_music.volume = 1;
+            if (self.start_music.mute) self.start_music.mute = false;
+            else self.start_music.mute = true;
         }, this);
     },
     update: function () {
         this.effect.alphaMask('raster', this.effect, this.mask);
     },
     trans: function () {
+        var params = {
+            muted: !this.start_music.mute ? false : true
+        };
 	    this.start_music.stop();
-        this.game.state.start('Loader');
+        this.game.state.start('Loader', true, false, params);
     }
 }
