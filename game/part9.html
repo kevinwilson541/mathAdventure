@@ -3,13 +3,15 @@
 <head> 
 	<meta charset="UTF-8" />
     <title>Phaser - Making your first game, part 9</title>
+    <script src='//code.jquery.com/jquery-2.0.3.min.js'></script>
     <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type='text/javascript' src='js/math.js'></script>
     <script type='text/javascript' src='js/boot.js'></script>
     <script type='text/javascript' src='js/start.js'></script>
     <script type='text/javascript' src='js/loader.js'></script>
     <script type='text/javascript' src='js/game.js'></script>
-    <link rel="stylesheet" type="text/css" href="style/style.css" />
     <script type='text/javascript' src='js/encounter.js'></script>
+    <link rel="stylesheet" type="text/css" href="style/style.css" />
     <link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Press+Start+2P'>
     <style type="text/css">
         body {
@@ -47,7 +49,6 @@
     </style>
 </head>
 <body>
-    <script src='//code.jquery.com/jquery-2.0.3.min.js'></script>
     <div id='game'>
     <script type='text/javascript'>
 	var game;
@@ -67,27 +68,42 @@
     <script type='text/javascript'>
 function overlay() {
     var el = document.getElementById("overlay");
-    el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+    if (el.style.visibility == 'visible') {
+        el.style.visibility = 'hidden';
+        $("#chestButton").remove();
+        $("#closeButton").remove();
+        $("#acceptButton").remove();
+    }
+    else {
+        el.style.visibility = 'visible';
+    }
 }
 </script>
         <!-- Shop -->
     <div id="overlay">
     	<div id = "shopContent">
-	    What is the answer to:<br>
-	    <p id="question">2 + 2 </p>
+        <span id='prompt'></span><br>
+	    <p id="question"></p>
+        <span id='answer'></span>
 	    <input id="chestAnswer" name="Enter Answer">
 	    <br>
-	    <button id="chestButton" type="button">Submit</button>
 	</div>
     </div>
     <script type='text/javascript'>
-	var button = document.getElementById('chestButton');
-	button.addEventListener('click', function () {
-		var answer = document.getElementById('chestAnswer').value;
-		document.getElementById('chestAnswer').value = '';
-        overlay();
-		//game.paused = false;
-	});
+    function genDiff() {
+        var diff = (Math.random()*4);
+        var q = '';
+        if (diff <= 2) q = easy();
+        else if (diff <= 3) q = med();
+        else if (diff <= 3.75) q = hard();
+        else q = xhard();
+        return q;
+    }
+    var start = genDiff();
+    $("#prompt").text(start[0]);
+    $("#question").text(start[1].toString());
+    $("#answer").text(start[2]);
+    $("#answer").hide();
     </script>
 
 </body>

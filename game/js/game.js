@@ -49,10 +49,12 @@ Ninja.Game.prototype = {
         };
         this.initX = 48;
         this.initY = 16;
+        this.muted = false;
         if (param) {
             this.chestLocs = param.chestLocs || this.chestLocs;
             this.initX = param.initX || this.initX;
             this.initY = param.initY || this.initY;
+            this.muted = param.muted;
         }
     },
     preload: function () {
@@ -61,7 +63,12 @@ Ninja.Game.prototype = {
     create: function () {
         this.game_music = this.game.add.audio('music');
         this.game_music.loop = true;
-        this.game_music.play();
+        if (!this.muted) {
+            this.game_music.play();
+        }
+        else {
+            this.game_music.mute = true;
+        }
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
         var map = this.add.tilemap("level1");
@@ -106,17 +113,27 @@ Ninja.Game.prototype = {
         for (var i = 0; i < 25; ++i) {
             var randx = Math.floor(Math.random()*xTiles)*16;
             var randy = Math.floor(Math.random()*yTiles)*16;
-            this.encounterLocs[randx.toString()+','+randy.toString()] = 0;
-            if (randx+16 <= xTiles*16) this.encounterLocs[(randx+16).toString()+','+randy.toString()] = 0;
-            if (randx-16 >= 0) this.encounterLocs[(randx-16).toString()+','+randy.toString()] = 0;
-            if (randy+16 <= yTiles*16) this.encounterLocs[randx.toString()+','+(randy+16).toString()] = 0;
-            if (randy-16 >= 0) this.encounterLocs[randx.toString()+','+(randy-16).toString()] = 0;
+            if (this.chestLocs[randx+','+randy] === undefined)
+                this.encounterLocs[randx.toString()+','+randy.toString()] = 0;
+            if (randx+16 <= xTiles*16 && 
+                this.chestLocs[randx+16+','+randy] === undefined) this.encounterLocs[(randx+16).toString()+','+randy.toString()] = 0;
+            if (randx-16 >= 0 &&
+                this.chestLocs[randx-16+','+randy] === undefined) this.encounterLocs[(randx-16).toString()+','+randy.toString()] = 0;
+            if (randy+16 <= yTiles*16 &&
+                this.chestLocs[randx+','+randy+16] === undefined) this.encounterLocs[randx.toString()+','+(randy+16).toString()] = 0;
+            if (randy-16 >= 0 &&
+                this.chestLocs[randx+','+randy-16] === undefined) this.encounterLocs[randx.toString()+','+(randy-16).toString()] = 0;
         }
 
         var mute = this.game.input.keyboard.addKey(77);
         mute.onDown.add(function () {
-            if (self.game_music.volume) self.game_music.volume = 0;
-            else self.game_music.volume = 1;
+            if (!self.game_music.mute) {
+                self.game_music.mute = true;
+            }
+            else {
+                if (!self.game_music.isPlaying) self.game_music.play();
+                self.game_music.mute = false;
+            }
         }, this);
         var pause = this.game.input.keyboard.addKey(80);
         var txt = new Phaser.Text(this.game, self.game.width/2-50, self.game.height/2, 'Paused', {font: '18px "Press Start 2P"', fill: '#fff'});
@@ -149,7 +166,8 @@ Ninja.Game.prototype = {
                 initY: Math.floor(this.player.y / 16)*16,
                 chestLocs: this.chestLocs,
                 numUses: 1,
-                playerHealth: 250
+                playerHealth: 250,
+                muted: !this.game_music.mute ? false : true
             });
         }
 
@@ -208,6 +226,7 @@ Ninja.Game.prototype = {
             'initX': 64,
             'initY': 16,
             'chestLocs': this.chestLocs,
+            'muted': !this.game_music.mute ? false : true
         }
         this.game.state.start('Game', true, false, params);
     },
@@ -230,8 +249,54 @@ Ninja.Game.prototype = {
         chest.kill();
 	    overlay();
         var self = this;
+        var buttons = {
+            'chestButton': 'Submit',
+            'closeButton': 'Close',
+            'acceptButton': 'Accept'
+        };
+        var $shop = $("#shopContent");
+        Object.keys(buttons).forEach(function (item) {
+            var $but = $("<button>");
+            $but.attr('id', item);
+            $but.attr('type', 'button');
+            $but.text(buttons[item]);
+            $shop.append($but);
+        })
+        $("#acceptButton").hide();
         $("#chestButton").on('click', function () {
+            var answer = $("#chestAnswer").val();
+            $("#chestAnswer").hide();
+            $("#prompt").hide();
+            if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
+                $("#question").text("CORRECT!");
+            }
+            else {
+                $("#question").text("INCORRECT");
+            }
+            $("#chestAnswer").val('');
+            $(this).hide();
+            $("#closeButton").hide();
+            $("#acceptButton").show();
+        });
+        $("#closeButton").on('click', function () {
             self.cursors = self.game.input.keyboard.createCursorKeys();
+            $("chestAnswer").val('');
+            var q = genDiff();
+            $("#question").text(q[1].toString());
+            $("#answer").text(q[2]);
+            $("#prompt").text(q[0]);
+            overlay();
+        });
+        $("#acceptButton").on('click', function () {
+            //add items to bag
+            self.cursors = self.game.input.keyboard.createCursorKeys();
+            var q = genDiff();
+            $("#question").text(q[1]);
+            $("#prompt").show();
+            $("#prompt").text(q[0]);
+            $("#answer").text(q[2]);
+            $("#chestAnswer").show();
+            overlay();
         });
     }
 }

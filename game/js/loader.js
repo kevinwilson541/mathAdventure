@@ -1,8 +1,13 @@
 Ninja.Loader = function (game) {
     this.game = game;
+    this.param;
 };
 
 Ninja.Loader.prototype = {
+    init: function (param) {
+        this.param = param;
+    },
+
     preload: function () {
         this.game.stage.backgroundColor = '0x000000';
         this.preloadBar = this.game.add.sprite(200, 188,'loader');
@@ -27,6 +32,6 @@ Ninja.Loader.prototype = {
     },
 
     create: function () {
-        this.game.state.start('Game'); 
+        this.game.state.start('Game', true, false, this.param); 
     }
 }
