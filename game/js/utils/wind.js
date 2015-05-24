@@ -31,9 +31,9 @@ Wind.prototype.start = function () {
     this.enc.wind.body.gravity.y = 0;
     this.enc.wind.body.collideWorldBounds = true;
     if (this.attacker == this.enc.player) {
-	this.enc.wind.body.velocity.x = 300;
+	this.enc.wind.body.velocity.x = 450;
     } else {
-	this.enc.wind.body.velocity.x = -300;
+	this.enc.wind.body.velocity.x = -450;
     }
     
     this.enc.wind.animations.play('w');
@@ -44,8 +44,6 @@ Wind.prototype.start = function () {
 Wind.prototype.stop = function (timeout) {
     var self = this;
     setTimeout(function () {
-        self.enc.wind.animations.stop('w');
-        self.enc.wind.kill();
         Attack.prototype.stop.apply(self);
     }, timeout);
 };

@@ -92,7 +92,7 @@ Ninja.Encounter.prototype = {
             cyclone: function (dam) {
                 var windattack = new Wind(self, self.player, self.enemy, dam);
                 windattack.start();
-                windattack.stop(1750);
+                windattack.stop(1000);
             }
         }
 
@@ -163,7 +163,15 @@ Ninja.Encounter.prototype = {
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
             $anchor.on("click", function () {
                 // do attack
-                self.player.attack.cyclone(self.attacks[key]);
+	    	
+            var q = genDiff();
+            $("#question").text(q[1]);
+            $("#prompt").show();
+            $("#prompt").text(q[0]);
+            $("#answer").text(q[2]);
+            $("#chestAnswer").show();
+            overlay();
+                self.player.attack.firebolt(self.attacks[key]);
                 $anchor.off('click'); 
             });
             $elem.append($anchor);
@@ -241,7 +249,7 @@ Ninja.Encounter.prototype = {
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.on("click", function () {
-                self.player.attack.cyclone(self.attacks[key]);
+                self.player.attack.firebolt(self.attacks[key]);
                 $anchor.off('click'); 
             });
         });
@@ -280,10 +288,19 @@ Ninja.Encounter.prototype = {
                 this.fireball.kill();
             }, null, this);
         }
-    	this.physics.arcade.overlap(this.wind, this.enemy, function () {
-            self.wind_hit.play();
-            self.wind.kill();
-        }, null, this);
+	if (this.wind) {
+    		this.physics.arcade.overlap(this.wind, this.enemy, function () {
+            	this.wind_hit.play();
+	    	this.wind.animations.stop('w');
+            	this.wind.kill();
+        	}, null, this);
+    		this.physics.arcade.overlap(this.wind, this.player, function () {
+            	this.wind_hit.play();
+	    	this.wind.animations.stop('w');
+            	this.wind.kill();
+        	}, null, this);
+	}
+	
         if (self.finished) {
             return;
         }
