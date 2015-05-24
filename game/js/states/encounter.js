@@ -273,7 +273,7 @@ Ninja.Encounter.prototype = {
             });
         }
     },
-
+	
     disableMenu: function () {
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
@@ -286,7 +286,13 @@ Ninja.Encounter.prototype = {
             });
         }
     },
-
+   
+    enableMenu: function() {
+	var self = this;
+	self.attackMenuFuncs();
+	self.itemMenuFuncs();
+    },
+	
     update: function () {
         var self = this;
         if (this.fireball) {
@@ -350,6 +356,7 @@ Ninja.Encounter.prototype = {
             }
             else {
                 $("#question").text("INCORRECT");
+		self.enemy.addChild(self.player.removeChildAt(1));
                 self.enemyMove();
             }
             $("#chestAnswer").val('');
@@ -372,6 +379,7 @@ Ninja.Encounter.prototype = {
             $("#answer").text(q[2]);
             $("#prompt").text(q[0]);
             overlay();
+	    self.enableMenu();
         });
     },
 
