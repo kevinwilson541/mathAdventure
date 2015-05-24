@@ -162,8 +162,8 @@ Ninja.Encounter.prototype = {
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
             $anchor.on("click", function () {
                 // do attack
-                self.disableMenu();
-                self.player.attack.cyclone(self.attacks[key]);
+		self.disableMenu();
+            	self.attackQuestions(key);	
             });
             $elem.append($anchor);
             $attack_list.append($elem);
@@ -241,7 +241,7 @@ Ninja.Encounter.prototype = {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.on("click", function () {
                 self.disableMenu();
-                self.player.attack.cyclone(self.attacks[key]);
+		self.attackQuestions(key);
             });
         });
     },
@@ -305,6 +305,57 @@ Ninja.Encounter.prototype = {
         if (self.finished) {
             return;
         }
+    },
+
+    attackQuestions: function(key) {
+    	overlay();
+    	var self = this;
+   	var buttons = {
+            'chestButton': 'Submit',
+            'closeButton': 'Close',
+            'acceptButton': 'Accept'
+        };
+        var $shop = $("#shopContent");
+        Object.keys(buttons).forEach(function (item) {
+            var $but = $("<button>");
+            $but.attr('id', item);
+            $but.attr('type', 'button');
+            $but.text(buttons[item]);
+            $shop.append($but);
+        })
+        $("#acceptButton").hide();
+        $("#chestButton").on('click', function () {
+            var answer = $("#chestAnswer").val();
+            $("#chestAnswer").hide();
+            $("#prompt").hide();
+            if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
+                self.player.attack.cyclone(self.attacks[key]);
+            }
+            else {
+                $("#question").text("INCORRECT");
+                self.enemyMove();
+            }
+            $("#chestAnswer").val('');
+            $(this).hide();
+            $("#closeButton").hide();
+       //     $("#acceptButton").show();
+	    var q = genDiff();
+            $("#question").text(q[1]);
+            $("#prompt").show();
+            $("#prompt").text(q[0]);
+            $("#answer").text(q[2]);
+            $("#chestAnswer").show();
+            overlay();
+        });
+        $("#closeButton").on('click', function () {
+            self.cursors = self.game.input.keyboard.createCursorKeys();
+            $("chestAnswer").val('');
+            var q = genDiff();
+            $("#question").text(q[1].toString());
+            $("#answer").text(q[2]);
+            $("#prompt").text(q[0]);
+            overlay();
+        });
     },
 
     enemyMove: function () {
