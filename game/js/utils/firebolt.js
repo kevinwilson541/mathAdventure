@@ -14,33 +14,37 @@ function Firebolt(enc, attacker, receiver, dam) {
 Firebolt.prototype.start = function () {
     Attack.prototype.start.apply(this);
     
+    // one direction of fire attack if attacker is player
     if (this.attacker === this.enc.player) {
         var xLoc = this.attacker.width + this.attacker.x;
-        this.fireball = this.enc.add.sprite(xLoc,300,'fireball');
-        this.fireball.animations.add('fire',[21,20,19,18,17,16,15,14,13,12,11], 15, true);
+        this.enc.fireball = this.enc.add.sprite(xLoc,300,'fireball');
+        this.enc.fireball.animations.add('fire',[11,12,13,14,15,16,17,18,19,20,21], 15, true);
     }
+    // other direction of fire attack if attacker is enemy
     else {
         var xLoc = this.attacker.x - 65;
-        this.fireball = this.enc.add.sprite(xLoc,300,'fireball');
-        this.fireball.animations.add('fire',[0,1,2,3,4,5,6,7,8,9,10],15,true);
+        this.enc.fireball = this.enc.add.sprite(xLoc,300,'fireball');
+        this.enc.fireball.animations.add('fire',[10,9,8,7,6,5,4,3,2,1,0],15,true);
     }
+    this.enc.physics.enable(this.enc.fireball, Phaser.Physics.ARCADE);
+    this.enc.fireball.body.gravity.y = 0;
+    this.enc.fireball.body.collideWorldBounds = true;
 
-    // play animation, and give lightning strike noises as well
-    this.fireball.animations.play('fire');
+    // play animation, and give firebolt noises as well
+    this.enc.fireball.animations.play('fire');
+    if (this.attacker === this.enc.player) {
+        this.enc.fireball.body.velocity.x = 476;
+    }
+    else {
+        this.enc.fireball.body.velocity.x = -476;
+    }
     this.enc.fireball_launch.play();
-    var self = this;
-    this.enc.physics.arcade.overlap(this.fireball, this.receiver, function () {
-        self.enc.fireball_hit.play();
-        self.fireball.kill();
-    }, null, this.enc);
 };
 
 Firebolt.prototype.stop = function (timeout) {
     var self = this;
-    // kill lightning animation after timeout
+    // kill attack after timeout
     setTimeout(function () {
-        self.lightning.animations.stop('shoot');
-        self.lightning.kill();
         Attack.prototype.stop.apply(self);
     }, timeout);
 };

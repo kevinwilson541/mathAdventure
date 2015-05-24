@@ -117,7 +117,6 @@ function genSeq(ops, terms) {
 
 function genSer(seq) {
     return seq.reduce(function (prev, curr) {
-        console.log(prev);
         prev.push(curr + prev[prev.length-1]);
         return prev;
     }, [0]);
