@@ -80,14 +80,14 @@ Ninja.Encounter.prototype = {
                 var lightning = new LightningStrike(self, self.player, self.enemy, dam);
                 lightning.start();
                 lightning.stop(1000);
-            }//,
+            },
 
-            /*ultimateBlast: function (dam) {
+           /* ultimateBlast: function (dam) {
                 var ultimate = new UltimateBlast(self, self.player, self.enemy, dam);
                 ultimate.start();
                 ultimate.stop(1000);
-            }*/
-            },
+            },*/
+           
             
             cyclone: function (dam) {
                 var windattack = new Wind(self, self.player, self.enemy, dam);
