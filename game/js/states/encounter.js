@@ -33,8 +33,10 @@ Ninja.Encounter.prototype = {
         this.lightning_hit = this.game.add.audio('lightningHit');
         this.fireball_hit = this.game.add.audio('fireballHit');
         this.fireball_launch = this.game.add.audio('fireballLaunch');
-	this.wind_launch = this.game.add.audio('windLaunch');
-	this.wind_hit = this.game.add.audio('windHit');
+	    this.wind_launch = this.game.add.audio('windLaunch');
+	    this.wind_hit = this.game.add.audio('windHit');
+        this.blizzard_launch = this.game.add.audio('blizzardLaunch');
+        this.blizzard_hit = this.game.add.audio('blizzardHit');
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -70,11 +72,11 @@ Ninja.Encounter.prototype = {
                 fire.stop(1000);
             },
 
-            /*blizzard: function (dam) {
+            blizzard: function (dam) {
                 var freeze = new Blizzard(self, self.player, self.enemy, dam);
                 freeze.start();
                 freeze.stop(1000);
-            },*/
+            },
 
             lightningStrike: function (dam) {
                 var lightning = new LightningStrike(self, self.player, self.enemy, dam);
@@ -102,6 +104,11 @@ Ninja.Encounter.prototype = {
                 var fire = new Firebolt(self, self.enemy, self.player, dam);
                 fire.start();
                 fire.stop(1000);
+            },
+            blizzard: function (dam) {
+                var bliz = new Blizzard(self, self.enemy, self.player, dam);
+                bliz.start();
+                bliz.stop(1000);
             },
             lightningStrike: function (dam) {
                 var lightning = new LightningStrike(self, self.enemy, self.player, dam);
@@ -163,7 +170,7 @@ Ninja.Encounter.prototype = {
             $anchor.on("click", function () {
                 // do attack
                 self.disableMenu();
-                self.player.attack.cyclone(self.attacks[key]);
+                self.player.attack.blizzard(self.attacks[key]);
             });
             $elem.append($anchor);
             $attack_list.append($elem);
@@ -241,7 +248,7 @@ Ninja.Encounter.prototype = {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.on("click", function () {
                 self.disableMenu();
-                self.player.attack.cyclone(self.attacks[key]);
+                self.player.attack.blizzard(self.attacks[key]);
             });
         });
     },
@@ -302,6 +309,16 @@ Ninja.Encounter.prototype = {
                 self.wind.kill();
             }, null, this);
         }
+        if (this.blizzard) {
+            this.physics.arcade.overlap(this.blizzard, this.player, function () {
+                this.blizzard_hit.play();
+                this.blizzard.kill();
+            }, null, this);
+            this.physics.arcade.overlap(this.blizzard, this.enemy, function () {
+                this.blizzard_hit.play();
+                this.blizzard.kill();
+            }, null, this);
+        }
         if (self.finished) {
             return;
         }
@@ -315,7 +332,7 @@ Ninja.Encounter.prototype = {
                 self.enemy.attack.firebolt(25);
             }
             else if (randnum <= .7) {
-                self.enemy.attack.firebolt(50);
+                self.enemy.attack.blizzard(50);
             }
             else if (randnum <= .9) {
                 self.enemy.attack.lightningStrike(75);
