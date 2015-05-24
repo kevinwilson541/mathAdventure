@@ -61,15 +61,6 @@ Ninja.Encounter.prototype = {
         this.player.body.collideWorldBounds = true;
         this.player.body.setSize(16,16);
 
-        this.fireball = this.add.sprite(162,300,'fireball');
-        this.physics.enable(this.fireball, Phaser.Physics.ARCADE);
-        this.fireball.body.gravity.y = 0;
-        this.fireball.body.collideWorldBounds = true;
-        this.fireball.animations.add('fire', [0,1,2,3,4,5,6,7,8,9,10], 15, true);
-        this.fireball.animations.play('fire');
-        this.fireball.body.velocity.x = 476;
-        this.fireball_launch.play();
-
         this.player.attack = {
             firebolt: function (dam) {
                 var fire = new Firebolt(self, self.player, self.enemy, dam);
@@ -77,28 +68,33 @@ Ninja.Encounter.prototype = {
                 fire.stop(1000);
             },
 
-            blizzard: function (dam) {
+            /*blizzard: function (dam) {
                 var freeze = new Blizzard(self, self.player, self.enemy, dam);
                 freeze.start();
                 freeze.stop(1000);
-            },
+            },*/
 
             lightningStrike: function (dam) {
                 var lightning = new LightningStrike(self, self.player, self.enemy, dam);
                 lightning.start();
                 lightning.stop(1000);
-            },
+            }//,
 
-            ultimateBlast: function (dam) {
+            /*ultimateBlast: function (dam) {
                 var ultimate = new UltimateBlast(self, self.player, self.enemy, dam);
                 ultimate.start();
                 ultimate.stop(1000);
-            }
+            }*/
         }
 
         this.enemy.body.gravity.y = 0;
         this.enemy.body.collideWorldBounds = true;
         this.enemy.attack = {
+            firebolt: function (dam) {
+                var fire = new Firebolt(self, self.enemy, self.player, dam);
+                fire.start();
+                fire.stop(1000);
+            },
             lightningStrike: function (dam) {
                 var lightning = new LightningStrike(self, self.enemy, self.player, dam);
                 lightning.start();
@@ -265,10 +261,16 @@ Ninja.Encounter.prototype = {
 
     update: function () {
         var self = this;
-        this.physics.arcade.overlap(this.fireball, this.enemy, function () {
-            this.fireball_hit.play();
-            this.fireball.kill();
-        }, null, this);
+        if (this.fireball) {
+            this.physics.arcade.overlap(this.fireball, this.enemy, function () {
+                this.fireball_hit.play();
+                this.fireball.kill();
+            }, null, this);
+            this.physics.arcade.overlap(this.fireball, this.player, function () {
+                this.fireball_hit.play();
+                this.fireball.kill();
+            }, null, this);
+        }
         if (self.finished) {
             return;
         }
@@ -282,12 +284,12 @@ Ninja.Encounter.prototype = {
                 self.enemy.attack.firebolt(25);
             }
             else if (randnum <= .7) {
-                self.enemy.attack.blizzard(50);
+                self.enemy.attack.firebolt(50);
             }
             else if (randnum <= .9) {
                 self.enemy.attack.lightningStrike(75);
             }
-            else self.enemy.attack.ultimateBlast(100);
+            else self.enemy.attack.lightningStrike(100);
         }, 1500);
     },
 

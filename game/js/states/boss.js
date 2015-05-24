@@ -15,7 +15,7 @@ Ninja.Boss.prototype = {
     init: function (param) {
         this.params = param;
         this.finished = false;
-        this.enemyHealth = 0 + Math.floor(Math.random()*100);
+        this.enemyHealth = 1000 + Math.floor(Math.random()*100);
         this.playerHealth = this.params.playerHealth;
         this.itemButtonOn = false, this.attackButtonOn = false;
     },
