@@ -43,7 +43,7 @@ Ninja.Loader.prototype = {
         this.game.load.audio('victory', 'assets/victory.mp3');
         this.game.load.audio('fireballHit', 'assets/fireball.wav');
         this.game.load.audio('fireballLaunch', 'assets/fireball_launch.wav');
-        this.game.load.audio('blizzardLanch', 'assets/blizzard_launch.wav');
+        this.game.load.audio('blizzardLaunch', 'assets/blizzard_launch.wav');
         this.game.load.audio('blizzardHit', 'assets/blizzard_hit.wav');
         this.game.load.audio('windHit', 'assets/windhit.wav');
         this.game.load.audio('windLaunch', 'assets/wind.wav');

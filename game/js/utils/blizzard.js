@@ -15,33 +15,20 @@ Blizzard.prototype.start = function () {
     Attack.prototype.start.apply(this);
     
     // one direction of fire attack if attacker is player
-    if (this.attacker === this.enc.player) {
-        var xLoc = 
-        this.enc.blizzard = this.enc.add.sprite(xLoc,300,'blizzard');
-        this.enc.fireball.animations.add('fire',[11,12,13,14,15,16,17,18,19,20,21], 15, true);
-    }
+    var xLoc = this.receiver.x - (165-this.receiver.width)/2;
+    this.enc.blizzard = this.enc.add.sprite(xLoc,0,'blizzard');
+    this.enc.blizzard.animations.add('falling',[0,1,2,3,4,5,6,7,8,9,10], 12, true);
     // other direction of fire attack if attacker is enemy
-    else {
-        var xLoc = this.attacker.x - 65;
-        this.enc.fireball = this.enc.add.sprite(xLoc,300,'fireball');
-        this.enc.fireball.animations.add('fire',[10,9,8,7,6,5,4,3,2,1,0],15,true);
-    }
-    this.enc.physics.enable(this.enc.fireball, Phaser.Physics.ARCADE);
-    this.enc.fireball.body.gravity.y = 0;
-    this.enc.fireball.body.collideWorldBounds = true;
+    this.enc.physics.enable(this.enc.blizzard, Phaser.Physics.ARCADE);
+    this.enc.blizzard.body.gravity.y = 325;
+    this.enc.blizzard.body.collideWorldBounds = true;
 
     // play animation, and give firebolt noises as well
-    this.enc.fireball.animations.play('fire');
-    if (this.attacker === this.enc.player) {
-        this.enc.fireball.body.velocity.x = 476;
-    }
-    else {
-        this.enc.fireball.body.velocity.x = -476;
-    }
-    this.enc.fireball_launch.play();
+    this.enc.blizzard.animations.play('falling');
+    this.enc.blizzard_launch.play();
 };
 
-Firebolt.prototype.stop = function (timeout) {
+Blizzard.prototype.stop = function (timeout) {
     var self = this;
     // kill attack after timeout
     setTimeout(function () {
