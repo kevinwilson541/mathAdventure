@@ -80,14 +80,13 @@ Ninja.Encounter.prototype = {
                 var lightning = new LightningStrike(self, self.player, self.enemy, dam);
                 lightning.start();
                 lightning.stop(1000);
-            }//,
+            },
 
             /*ultimateBlast: function (dam) {
                 var ultimate = new UltimateBlast(self, self.player, self.enemy, dam);
                 ultimate.start();
                 ultimate.stop(1000);
             }*/
-            },
             
             cyclone: function (dam) {
                 var windattack = new Wind(self, self.player, self.enemy, dam);
@@ -163,8 +162,8 @@ Ninja.Encounter.prototype = {
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
             $anchor.on("click", function () {
                 // do attack
+                self.disableMenu();
                 self.player.attack.cyclone(self.attacks[key]);
-                $anchor.off('click'); 
             });
             $elem.append($anchor);
             $attack_list.append($elem);
@@ -196,9 +195,9 @@ Ninja.Encounter.prototype = {
                 var $anchor = $("<a id='"+key.replace("'",'').split(' ').join('_')+"'>").text(key + "  x"
                     + self.params.itemBag[key][0]);
                 $anchor.on("click", function () {
+                    self.disableMenu();
                     self.params.itemBag[key][0]--;
                     self.useItem(self.player, self.params.itemBag[key][1]);
-                    $anchor.off('click');
                     if (self.params.itemBag[key][0] == 0) {
                         delete self.params.itemBag[key];
                         $item_list.remove($elem);
@@ -241,8 +240,8 @@ Ninja.Encounter.prototype = {
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.on("click", function () {
+                self.disableMenu();
                 self.player.attack.cyclone(self.attacks[key]);
-                $anchor.off('click'); 
             });
         });
     },
@@ -251,11 +250,11 @@ Ninja.Encounter.prototype = {
         var self = this;
         if (this.params.itemBag !== undefined) {
             Object.keys(this.params.itemBag).forEach(function (key) {
-                var $anchor = $("<a id='"+key.replace("'",'').split(' ').join('_')+"'>");
+                var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
                 $anchor.on("click", function () {
+                    self.disableMenu();
                     self.params.itemBag[key][0]--;
                     self.useItem(self.player, self.params.itemBag[key][1]);
-                    $anchor.off('click');
                     if (self.params.itemBag[key][0] == 0) {
                         delete self.params.itemBag[key];
                         $item_list.remove($elem);
@@ -264,6 +263,19 @@ Ninja.Encounter.prototype = {
                         }
                     }
                 });
+            });
+        }
+    },
+
+    disableMenu: function () {
+        Object.keys(this.attacks).forEach(function (key) {
+            var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
+            $anchor.off('click');
+        });
+        if (this.params.itemBag !== undefined) {
+            Object.keys(this.params.itemBag).forEach(function (key) {
+                var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
+                $anchor.off("click");
             });
         }
     },
@@ -280,10 +292,16 @@ Ninja.Encounter.prototype = {
                 this.fireball.kill();
             }, null, this);
         }
-    	this.physics.arcade.overlap(this.wind, this.enemy, function () {
-            self.wind_hit.play();
-            self.wind.kill();
-        }, null, this);
+        if (this.wind) {
+            this.physics.arcade.overlap(this.wind, this.enemy, function () {
+                self.wind_hit.play();
+                self.wind.kill();
+            }, null, this);
+            this.physics.arcade.overlap(this.wind, this.player, function () {
+                self.wind_hit.play();
+                self.wind.kill();
+            }, null, this);
+        }
         if (self.finished) {
             return;
         }
