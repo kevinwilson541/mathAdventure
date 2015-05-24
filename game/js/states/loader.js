@@ -19,6 +19,7 @@ Ninja.Loader.prototype = {
         this.game.load.spritesheet('dude', 'assets/Block Ninja/Spritesheet.png', 16, 16);
         this.game.load.spritesheet('lightning', 'assets/lightning.png',160,507);
         this.game.load.spritesheet('fireball', 'assets/fireball.png',65,100);
+        this.game.load.spritesheet('wind', 'assets/wind.png',65,100);
         this.game.load.image('boss_idle', 'assets/sephiroth_game.png');
         this.game.load.image('portal', 'assets/door-5.png');
         this.game.load.image('chest', 'assets/question.png');
@@ -41,6 +42,8 @@ Ninja.Loader.prototype = {
         this.game.load.audio('victory', 'assets/victory.mp3');
         this.game.load.audio('fireballHit', 'assets/fireball.wav');
         this.game.load.audio('fireballLaunch', 'assets/fireball_launch.wav');
+        this.game.load.audio('windHit', 'assets/windhit.wav');
+        this.game.load.audio('windLaunch', 'assets/wind.wav');
     },
 
     create: function () {
