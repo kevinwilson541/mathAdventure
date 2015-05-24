@@ -20,6 +20,7 @@ Ninja.Loader.prototype = {
         this.game.load.spritesheet('lightning', 'assets/lightning.png',160,507);
         this.game.load.spritesheet('fireball', 'assets/fireball.png',65,100);
         this.game.load.spritesheet('blizzard', 'assets/blizzard.png',165,200);
+        this.game.load.spritesheet('wind', 'assets/wind.png',65,100);
         this.game.load.image('boss_idle', 'assets/sephiroth_game.png');
         this.game.load.image('portal', 'assets/door-5.png');
         this.game.load.image('chest', 'assets/question.png');
@@ -44,6 +45,8 @@ Ninja.Loader.prototype = {
         this.game.load.audio('fireballLaunch', 'assets/fireball_launch.wav');
         this.game.load.audio('blizzardLanch', 'assets/blizzard_launch.wav');
         this.game.load.audio('blizzardHit', 'assets/blizzard_hit.wav');
+        this.game.load.audio('windHit', 'assets/windhit.wav');
+        this.game.load.audio('windLaunch', 'assets/wind.wav');
     },
 
     create: function () {

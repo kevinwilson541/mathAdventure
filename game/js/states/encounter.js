@@ -33,6 +33,8 @@ Ninja.Encounter.prototype = {
         this.lightning_hit = this.game.add.audio('lightningHit');
         this.fireball_hit = this.game.add.audio('fireballHit');
         this.fireball_launch = this.game.add.audio('fireballLaunch');
+	this.wind_launch = this.game.add.audio('windLaunch');
+	this.wind_hit = this.game.add.audio('windHit');
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -85,6 +87,13 @@ Ninja.Encounter.prototype = {
                 ultimate.start();
                 ultimate.stop(1000);
             }*/
+            },
+            
+            cyclone: function (dam) {
+                var windattack = new Wind(self, self.player, self.enemy, dam);
+                windattack.start();
+                windattack.stop(1750);
+            }
         }
 
         this.enemy.body.gravity.y = 0;
@@ -154,7 +163,7 @@ Ninja.Encounter.prototype = {
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
             $anchor.on("click", function () {
                 // do attack
-                self.player.attack.lightningStrike(self.attacks[key]);
+                self.player.attack.cyclone(self.attacks[key]);
                 $anchor.off('click'); 
             });
             $elem.append($anchor);
@@ -232,7 +241,7 @@ Ninja.Encounter.prototype = {
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.on("click", function () {
-                self.player.attack.lightningStrike(self.attacks[key]);
+                self.player.attack.cyclone(self.attacks[key]);
                 $anchor.off('click'); 
             });
         });
@@ -271,6 +280,10 @@ Ninja.Encounter.prototype = {
                 this.fireball.kill();
             }, null, this);
         }
+    	this.physics.arcade.overlap(this.wind, this.enemy, function () {
+            self.wind_hit.play();
+            self.wind.kill();
+        }, null, this);
         if (self.finished) {
             return;
         }
