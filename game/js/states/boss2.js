@@ -15,7 +15,7 @@ Ninja.Boss.prototype = {
     init: function (param) {
         this.params = param;
         this.finished = false;
-        this.enemyHealth = 1000; 
+        this.enemyHealth = 1000 + Math.floor(Math.random()*100);
         this.playerHealth = this.params.playerHealth;
         this.itemButtonOn = false, this.attackButtonOn = false;
     },
@@ -25,21 +25,10 @@ Ninja.Boss.prototype = {
     },
 
     create: function () {
-        var self = this;
         this.battle_music = this.game.add.audio('urScrewed');
         this.battle_music.loop = true;
         if (!this.params.muted) this.battle_music.play();
         else this.battle_music.mute = true;
-
-        this.lightning_hit = this.game.add.audio('lightningHit');
-        this.fireball_hit = this.game.add.audio('fireballHit');
-        this.fireball_launch = this.game.add.audio('fireballLaunch');
-	    this.wind_launch = this.game.add.audio('windLaunch');
-	    this.wind_hit = this.game.add.audio('windHit');
-        this.blizzard_launch = this.game.add.audio('blizzardLaunch');
-        this.blizzard_hit = this.game.add.audio('blizzardHit');
-        this.ultimate_hit = this.game.add.audio('ultimateHit');
-        this.ultimate_back = this.game.add.audio('ultimateBack');
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -52,13 +41,8 @@ Ninja.Boss.prototype = {
         this.heartHeight = 48;
 
         this.player = this.add.sprite(90, 325, 'ninja');
-        this.player.health = this.playerHealth;
-        this.player.maxHealth = this.playerHealth;
-      
-        this.enemy = this.add.sprite(this.game.width-162,325,'boss');
-	    this.enemy.health = this.enemyHealth;
-        this.enemy.maxHealth = this.enemyHealth;
-                
+        this.enemy = this.add.sprite(this.game.width-162, 325, 'boss');
+        
         this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
         this.enemy.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.enemy.width)/2, -1*this.heartHeight, 'health'));
 
@@ -69,61 +53,13 @@ Ninja.Boss.prototype = {
         this.player.body.collideWorldBounds = true;
         this.player.body.setSize(16,16);
 
-        this.player.attack = {
-            firebolt: function (dam) {
-                var fire = new Firebolt(self, self.player, self.enemy, dam);
-                fire.start();
-                fire.stop(1000);
-            },
-
-            blizzard: function (dam) {
-                var freeze = new Blizzard(self, self.player, self.enemy, dam);
-                freeze.start();
-                freeze.stop(1000);
-            },
-
-            lightningStrike: function (dam) {
-                var lightning = new LightningStrike(self, self.player, self.enemy, dam);
-                lightning.start();
-                lightning.stop(1500);
-            },
-
-            ultimateBlast: function (dam) {
-                var ultimate = new UltimateBlast(self, self.player, self.enemy, dam);
-                ultimate.start();
-                ultimate.stop(2000);
-            },
-            
-            cyclone: function (dam) {
-                var windattack = new Wind(self, self.player, self.enemy, dam);
-                windattack.start();
-                windattack.stop(1750);
-            }
-        }
-
         this.enemy.body.gravity.y = 0;
         this.enemy.body.collideWorldBounds = true;
-        this.enemy.attack = {
-            firebolt: function (dam) {
-                var fire = new BossFirebolt(self, self.enemy, self.player, dam);
-                fire.start();
-                fire.stop(1000);
-            },
-            blizzard: function (dam) {
-                var bliz = new BossBlizzard(self, self.enemy, self.player, dam);
-                bliz.start();
-                bliz.stop(2000);
-            },
-            lightningStrike: function (dam) {
-                var lightning = new BossLightningStrike(self, self.enemy, self.player, dam);
-                lightning.start();
-                lightning.stop(1000);
-            }
-        };
 
         this.arrow = this.game.add.sprite(this.player.width/2-24, -1*this.heartHeight-48,'arrow');
         this.player.addChild(this.arrow);
 
+        var self = this;
         var muted = this.game.input.keyboard.addKey(77);
         muted.onDown.add(function () {
             if (!self.battle_music.mute) {
@@ -172,9 +108,11 @@ Ninja.Boss.prototype = {
             var $elem = $("<li>");
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
             $anchor.on("click", function () {
-                // do attack
-		        self.disableMenu();
-            	self.attackQuestions(self.attacks[key]);	
+                // do attacki
+                self.enemy.body.bounce.setTo(1,1);
+                self.player.body.velocity.x = 500;
+                self.enemyHealth -= self.attacks[key];
+                $anchor.off('click'); 
             });
             $elem.append($anchor);
             $attack_list.append($elem);
@@ -206,9 +144,9 @@ Ninja.Boss.prototype = {
                 var $anchor = $("<a id='"+key.replace("'",'').split(' ').join('_')+"'>").text(key + "  x"
                     + self.params.itemBag[key][0]);
                 $anchor.on("click", function () {
-                    self.disableMenu();
                     self.params.itemBag[key][0]--;
                     self.useItem(self.player, self.params.itemBag[key][1]);
+                    $anchor.off('click');
                     if (self.params.itemBag[key][0] == 0) {
                         delete self.params.itemBag[key];
                         $item_list.remove($elem);
@@ -251,8 +189,10 @@ Ninja.Boss.prototype = {
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.on("click", function () {
-                self.disableMenu();
-		        self.attackQuestions(self.attacks[key]);
+                self.enemy.body.bounce.setTo(1,1);
+                self.player.body.velocity.x = 500;
+                self.enemyHealth -= self.attacks[key];
+                $anchor.off('click'); 
             });
         });
     },
@@ -261,11 +201,11 @@ Ninja.Boss.prototype = {
         var self = this;
         if (this.params.itemBag !== undefined) {
             Object.keys(this.params.itemBag).forEach(function (key) {
-                var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
+                var $anchor = $("<a id='"+key.replace("'",'').split(' ').join('_')+"'>");
                 $anchor.on("click", function () {
-                    self.disableMenu();
                     self.params.itemBag[key][0]--;
                     self.useItem(self.player, self.params.itemBag[key][1]);
+                    $anchor.off('click');
                     if (self.params.itemBag[key][0] == 0) {
                         delete self.params.itemBag[key];
                         $item_list.remove($elem);
@@ -277,140 +217,84 @@ Ninja.Boss.prototype = {
             });
         }
     },
-	
-    disableMenu: function () {
-        Object.keys(this.attacks).forEach(function (key) {
-            var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
-            $anchor.off('click');
-        });
-        if (this.params.itemBag !== undefined) {
-            Object.keys(this.params.itemBag).forEach(function (key) {
-                var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
-                $anchor.off("click");
-            });
-        }
-    },
-   
-    enableMenu: function() {
-	    var self = this;
-	    self.attackMenuFuncs();
-	    self.itemMenuFuncs();
-    },
-	
+
     update: function () {
         var self = this;
-        if (this.fireball) {
-            this.physics.arcade.overlap(this.fireball, this.enemy, function () {
-                this.fireball_hit.play();
-                this.fireball.kill();
-            }, null, this);
-            this.physics.arcade.overlap(this.fireball, this.player, function () {
-                this.fireball_hit.play();
-                this.fireball.kill();
-            }, null, this);
-        }
-        if (this.wind) {
-            this.physics.arcade.overlap(this.wind, this.enemy, function () {
-                self.wind_hit.play();
-                self.wind.kill();
-            }, null, this);
-            this.physics.arcade.overlap(this.wind, this.player, function () {
-                self.wind_hit.play();
-                self.wind.kill();
-            }, null, this);
-        }
-        if (this.blizzard) {
-            this.physics.arcade.overlap(this.blizzard, this.player, function (player, freeze) {
-                this.blizzard_hit.play();
-                freeze.kill();
-                this.blizzard.remove(freeze);
-            }, null, this);
-            this.physics.arcade.overlap(this.blizzard, this.enemy, function (player, freeze) {
-                this.blizzard_hit.play();
-                freeze.kill();
-                //this.blizzard.remove(freeze);
-            }, null, this);
-        }
+        self.physics.arcade.overlap(self.player, self.enemy, function() {
+            //self.physics.arcade.collide(self.player, self.enemy);
+            if (self.enemy.body.velocity.x) self.enemy.body.velocity.x *= -1;
+            else self.enemy.body.velocity.x = 500;
+            if (self.player.body.velocity.x) self.player.body.velocity.x *= -1;
+            else self.player.body.velocity.x = -500;
+        });
         if (self.finished) {
             return;
         }
+        if (self.enemy.x >= (self.game.width-((self.enemy.width+this.heartWidth)/2))) {
+            self.enemy.body.velocity.x = 0;
+            self.enemy.body.angularVelocity = 150;
+            if (self.enemy.angle >= 90) {
+                self.enemy.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.enemyHealth/200) * self.enemy.getChildAt(0).width),48)); 
+                self.player.reset(90, 325);
+                if (self.enemyHealth <= 0) {
+                    self.finished = true;
+                    self.enemy.body.angularVelocity = 0;
+                    self.game.add.tween(self.enemy).to({tint: 0x000000}, 1000, Phaser.Easing.Exponential.Out, true, 0, 0, true);
+                    setTimeout(function () {
+                        return self.end();
+                    }, 1000);
+                }
+                else {
+                    self.enemy.reset(this.game.width-162, 325);
+                    self.enemy.angle = 0;
+                    self.enemyMove();
+                }
+            }
+        }
+        else if (self.player.x < Math.abs(self.heartWidth-self.player.width)/2) {
+            self.player.body.velocity.x = 0;
+            self.player.body.angularVelocity = -150;
+            if (self.player.angle <= -90) {
+                self.player.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.playerHealth/250) * self.player.getChildAt(0).width),48)); 
+                self.enemy.reset(self.game.width-162,325);
+                if (self.playerHealth <= 0) {
+                    self.finished = true;
+                    self.player.body.angularVelocity = 0;
+                    self.game.add.tween(self.player).to({tint: 0x000000}, 1000, Phaser.Easing.Exponential.Out, true, 0, 0, true);
+                    setTimeout(function () {
+                        return self.end();
+                    }, 1000);
+                }
+                else {
+                    self.player.reset(90, 325);
+                    self.player.angle = 0;
+                    var arrow = self.enemy.removeChildAt(1);
+                    self.player.addChild(arrow);
+                    self.attackMenuFuncs();
+                    self.itemMenuFuncs();
+                }
+            }
+        }
     },
 
-    attackQuestions: function(key) {
-    	overlay();
-    	var self = this;
-   	    var buttons = {
-            'chestButton': 'Submit',
-            'closeButton': 'Close',
-            'acceptButton': 'Accept'
-        };
-        var $shop = $("#shopContent");
-        Object.keys(buttons).forEach(function (item) {
-            var $but = $("<button>");
-            $but.attr('id', item);
-            $but.attr('type', 'button');
-            $but.text(buttons[item]);
-            $shop.append($but);
-        })
-        $("#acceptButton").hide();
-        $("#chestButton").on('click', function () {
-            var answer = $("#chestAnswer").val();
-            $("#chestAnswer").hide();
-            $("#prompt").hide();
-            if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
-                if (key == 25)			
-                    self.player.attack.firebolt(key);
-                else if (key == 50)
-                    self.player.attack.cyclone(key);
-                else if (key == 75)
-                    self.player.attack.blizzard(key);
-                else if (key == 100)
-                    self.player.attack.ultimateBlast(key);
-                else
-                    console.log("error in questionAttacks functionl logic");
-            }
-            else {
-                $("#question").text("INCORRECT");
-                self.enemy.addChild(self.player.removeChildAt(1));
-                self.enemyMove();
-            }
-            $("#chestAnswer").val('');
-            $(this).hide();
-            $("#closeButton").hide();
-	        var q = genDiff();
-            $("#question").text(q[1]);
-            $("#prompt").show();
-            $("#prompt").text(q[0]);
-            $("#answer").text(q[2]);
-            $("#chestAnswer").show();
-            overlay();
-        });
-        $("#closeButton").on('click', function () {
-            self.cursors = self.game.input.keyboard.createCursorKeys();
-            $("chestAnswer").val('');
-            var q = genDiff();
-            $("#question").text(q[1].toString());
-            $("#answer").text(q[2]);
-            $("#prompt").text(q[0]);
-            overlay();
-	        self.enableMenu();
-        });
-    },
-	
     enemyMove: function () {
+        var arrow = this.player.getChildAt(1);
+        this.enemy.addChild(arrow);
         var self = this;
-        var randnum = Math.random();
         setTimeout(function () {
-            if (randnum <= .4) {
-                self.enemy.attack.blizzard(50);
+            var rand = Math.random();
+            if (rand <= .4) {
+                self.playerHealth -= 25;
             }
-            else if (randnum <= .7) {
-                self.enemy.attack.blizzard(100);
+            else if (rand <= .7) {
+                self.playerHealth -= 50;
             }
-            else if (randnum <= .9) {
-                self.enemy.attack.blizzard(150);
+            else if (rand <= .9) {
+                self.playerHealth -= 75;
             }
-            else self.enemy.attack.blizzard(200);
+            else self.playerHealth -= 100;
+            //self.enemy.body.velocity.x = -500;
+
         }, 1500);
     },
 
@@ -419,8 +303,8 @@ Ninja.Boss.prototype = {
         this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
-        if (this.player.health <= 0) {
-            this.game.state.start('Game', true, false, this.params);
+        if (this.playerHealth <= 0) {
+            this.game.state.start("Game", true, false, this.params);
         }
         else {
             this.game.state.start('End');

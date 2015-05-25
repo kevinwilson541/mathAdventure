@@ -38,6 +38,7 @@ Ninja.Encounter.prototype = {
         this.blizzard_launch = this.game.add.audio('blizzardLaunch');
         this.blizzard_hit = this.game.add.audio('blizzardHit');
         this.ultimate_hit = this.game.add.audio('ultimateHit');
+        this.ultimate_back = this.game.add.audio('ultimateBack');
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -366,7 +367,7 @@ Ninja.Encounter.prototype = {
                 else if (key == 75)
                     self.player.attack.blizzard(key);
                 else if (key == 100)
-                    self.player.attack.ultimate(key);
+                    self.player.attack.ultimateBlast(key);
                 else
                     console.log("error in questionAttacks functionl logic");
             }

@@ -19,11 +19,13 @@ UltimateBlast.prototype.start = function () {
     this.ultimate.animations.add('blast', [0,1,2,3,4,5,6,7,8,9,10,11], 15,true);
 
     this.ultimate.animations.play('blast');
+    this.enc.ultimate_back.play();
     this.enc.ultimate_hit.play();
     var self = this;
     for (var i = 1; i <=6; ++i) {
         setTimeout(function () {
             self.enc.ultimate_hit.play();
+            self.enc.ultimate_back.play();
         }, i*300);
     }
 };
