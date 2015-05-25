@@ -116,6 +116,11 @@ Ninja.Encounter.prototype = {
                 var lightning = new LightningStrike(self, self.enemy, self.player, dam);
                 lightning.start();
                 lightning.stop(1000);
+            },
+            cyclone: function (dam) {
+                var windattack = new Wind(self, self.player, self.enemy, dam);
+                windattack.start();
+                windattack.stop(1750);
             }
         };
 
