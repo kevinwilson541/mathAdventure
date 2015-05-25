@@ -27,7 +27,12 @@ Ninja.Loader.prototype = {
         this.game.load.image('fire', 'assets/flame.png');
 
         this.game.load.image('ninja', 'assets/Block Ninja/idle.png');
-        this.game.load.image('enemy', 'assets/boss_sprites/carrot.png');
+        this.game.load.image('carrot', 'assets/boss_sprites/carrot.png');	
+        this.game.load.image('redball', 'assets/boss_sprites/redball.png');
+        this.game.load.image('mustache', 'assets/boss_sprites/mustache.png');
+        this.game.load.image('rook', 'assets/boss_sprites/rook.png');
+        this.game.load.image('starman', 'assets/boss_sprites/starman.png');
+
         this.game.load.image('boss', 'assets/boss_sprites/sephiroth.png');
         this.game.load.image('health', 'assets/8_bit_heart.png');
         this.game.load.image('arrow', 'assets/arrow.png');
