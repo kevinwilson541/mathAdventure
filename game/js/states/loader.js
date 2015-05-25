@@ -54,6 +54,7 @@ Ninja.Loader.prototype = {
         this.game.load.audio('windHit', 'assets/windhit.wav');
         this.game.load.audio('windLaunch', 'assets/wind.wav');
         this.game.load.audio('ultimateHit','assets/ultimate_hit.wav');
+        this.game.load.audio('ultimateBack', 'assets/ultimate_back.wav');
     },
 
     create: function () {
