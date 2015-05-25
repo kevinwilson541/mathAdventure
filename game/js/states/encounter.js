@@ -52,8 +52,9 @@ Ninja.Encounter.prototype = {
         this.player = this.add.sprite(90, 325, 'ninja');
         this.player.health = this.playerHealth;
         this.player.maxHealth = this.playerHealth;
-        this.enemy = this.add.sprite(this.game.width-162, 325, 'enemy');
-        this.enemy.health = this.enemyHealth;
+       
+	this.chooseEnemy(); 
+	this.enemy.health = this.enemyHealth;
         this.enemy.maxHealth = this.enemyHealth;
                 
         this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
@@ -170,8 +171,8 @@ Ninja.Encounter.prototype = {
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
             $anchor.on("click", function () {
                 // do attack
-                self.disableMenu();
-                self.player.attack.ultimateBlast(self.attacks[key]);
+		        self.disableMenu();
+            	self.attackQuestions(self.attacks[key]);	
             });
             $elem.append($anchor);
             $attack_list.append($elem);
@@ -249,7 +250,7 @@ Ninja.Encounter.prototype = {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.on("click", function () {
                 self.disableMenu();
-                self.player.attack.ultimateBlast(self.attacks[key]);
+		        self.attackQuestions(self.attacks[key]);
             });
         });
     },
@@ -274,7 +275,7 @@ Ninja.Encounter.prototype = {
             });
         }
     },
-
+	
     disableMenu: function () {
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
@@ -287,7 +288,13 @@ Ninja.Encounter.prototype = {
             });
         }
     },
-
+   
+    enableMenu: function() {
+	var self = this;
+	self.attackMenuFuncs();
+	self.itemMenuFuncs();
+    },
+	
     update: function () {
         var self = this;
         if (this.fireball) {
@@ -325,6 +332,86 @@ Ninja.Encounter.prototype = {
         }
     },
 
+    attackQuestions: function(key) {
+    	overlay();
+    	var self = this;
+   	    var buttons = {
+            'chestButton': 'Submit',
+            'closeButton': 'Close',
+            'acceptButton': 'Accept'
+        };
+        var $shop = $("#shopContent");
+        Object.keys(buttons).forEach(function (item) {
+            var $but = $("<button>");
+            $but.attr('id', item);
+            $but.attr('type', 'button');
+            $but.text(buttons[item]);
+            $shop.append($but);
+        })
+        $("#acceptButton").hide();
+        $("#chestButton").on('click', function () {
+            var answer = $("#chestAnswer").val();
+            $("#chestAnswer").hide();
+            $("#prompt").hide();
+            if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
+                if (key == 25)			
+                    self.player.attack.firebolt(key);
+                else if (key == 50)
+                    self.player.attack.cyclone(key);
+                else if (key == 75)
+                    self.player.attack.blizzard(key);
+                else if (key == 100)
+                    self.player.attack.ultimate(key);
+                else
+                    console.log("error in questionAttacks functionl logic");
+            }
+            else {
+                $("#question").text("INCORRECT");
+                self.enemy.addChild(self.player.removeChildAt(1));
+                self.enemyMove();
+            }
+            $("#chestAnswer").val('');
+            $(this).hide();
+            $("#closeButton").hide();
+	        var q = genDiff();
+            $("#question").text(q[1]);
+            $("#prompt").show();
+            $("#prompt").text(q[0]);
+            $("#answer").text(q[2]);
+            $("#chestAnswer").show();
+            overlay();
+        });
+        $("#closeButton").on('click', function () {
+            self.cursors = self.game.input.keyboard.createCursorKeys();
+            $("chestAnswer").val('');
+            var q = genDiff();
+            $("#question").text(q[1].toString());
+            $("#answer").text(q[2]);
+            $("#prompt").text(q[0]);
+            overlay();
+	        self.enableMenu();
+        });
+    },
+	
+    chooseEnemy: function () {
+
+    	var self = this;
+        var randnum = Math.random();
+            if (randnum <= .2) 
+              	self.enemy = this.add.sprite(this.game.width-162, 325, 'carrot');
+            
+            else if (randnum <= .4)                
+              	self.enemy = this.add.sprite(this.game.width-162, 325, 'mustache');
+            
+            else if (randnum <= .6) 
+              	self.enemy = this.add.sprite(this.game.width-162, 325, 'starman');
+            
+            else if (randnum <= .8) 
+              	self.enemy = this.add.sprite(this.game.width-162, 325, 'rook');
+             else 
+            	self.enemy = this.add.sprite(this.game.width-162, 325, 'redball');
+    },
+
     enemyMove: function () {
         var self = this;
         var randnum = Math.random();
@@ -333,10 +420,10 @@ Ninja.Encounter.prototype = {
                 self.enemy.attack.firebolt(25);
             }
             else if (randnum <= .7) {
-                self.enemy.attack.blizzard(50);
+                self.enemy.attack.cyclone(50);
             }
             else if (randnum <= .9) {
-                self.enemy.attack.lightningStrike(75);
+                self.enemy.attack.blizzard(75);
             }
             else self.enemy.attack.lightningStrike(100);
         }, 1500);
