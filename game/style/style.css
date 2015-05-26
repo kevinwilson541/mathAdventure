@@ -11,15 +11,15 @@
     
     #overlay {
 	visibility: hidden;
-        position: absolute;
-	width: 200px;
+    position: absolute;
+	width: 500px;
 	padding: 2px;
-        text-align:center;
+    text-align:center;
 	background-color: #000;
 	border-radius: 15px;
-        z-index: 1000;
-	left: 25%;
-	top: 25%;   	
+    z-index: 1000;
+	left: 150px;
+	top: 150px;   	
     }
 
     #overlay div {
@@ -32,7 +32,7 @@
         padding:15px;
     }
 
-    #chestButton {
+    button {
     	font-family: "8bit", sans serif;
     	font-size: 25%;
     }

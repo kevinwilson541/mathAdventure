@@ -1,57 +1,123 @@
-function add(a,b) {
-return a+b;
-
-}
-
-function sub(a,b) {
-
-return a-b;
-}
-
-function div(a,b) {
-
-return a/b;
-}
-
-function mult(a,b) {
-return a*b;
-}
-
 function easy() {
-
-var randnum = Math.floor((Math.random()*100)+0);
-var num1 = Math.floor((Math.random()*10)+0);
-var num2 = Math.floor((Math.random()*10)+0);
-var func;
-
-if (randnum % 2 != 0) {
-	func = sub;
-	if (num1 < num2)
-		num1 += num2;
-}
-else
-	func = add;
-return func(num1, num2);
+    var randnum = Math.floor(Math.random()*2);
+    if (randnum % 2 === 0) {
+        var q = genOOO(0,10);
+        var ans = eval(q);
+        return ['What is the answer to:',q,ans];
+    }
+    var seq = genSeq(1,1);
+    var ans = seq.pop();
+    return ['Find the next number in this sequence:',seq,ans];
 }
 
-/*
-    2 ints add / sub
-    1 int mult
-*/
 function med() {
-    var num1 = Math.floor((Math.random()*99)+10);
-    var num2 = Math.floor((Math.random()*99)+10);
-    var randnum = Math.floor((Math.random()*3)+0);
-
-    
-
-          
+    var randnum = Math.floor(Math.random()*2);
+    if (randnum % 2 === 0) {
+        var q = genOOO(1,10);
+        var ans = eval(q);
+        return ['What is the answer to:',q,ans];
+    }
+    var seq = genSeq(2,1);
+    var ans = seq.pop();
+    return ['Find the next number in this sequence:',seq,ans];
 }
 
 function hard() {
-
+    var randnum = Math.floor(Math.random()*2);
+    if (randnum % 2 === 0) {
+        var ser = genSer(genSeq(1,1));
+        var ans = ser.pop();
+        return ['Find the next number in this series:',ser,ans];
+    }
+    var seq = genSeq(1,2);
+    var ans = seq.pop();
+    return ['Find the next number in this sequence:',seq,ans];
 }
 
 function xhard() {
+    var randnum = Math.floor(Math.random()*2);
+    if (randnum % 2 === 0) {
+        var ser = genSer(genSeq(1,2));
+        var ans = ser.pop();
+        return ['Find the next number in this series:',ser,ans];
+    }
+    var seq = genSeq(2,2);
+    var ans = seq.pop();
+    return ['Find the next number in this sequence:',seq,ans];
+}
 
+function genOOO(depth, lim) {
+    if (depth === 0) {
+        var randnum = Math.floor(Math.random()*4);
+        var op = '';
+        if (randnum % 4 === 0) op = ' + ';
+        else if (randnum === 1) op = ' - ';
+        else if (randnum === 2) op = ' * ';
+        else op = ' / ';
+        var num1 = Math.floor(Math.random()*lim+1);
+        var num2 = Math.floor(Math.random()*lim+1);
+        var num3 = Math.floor(Math.random()*lim+1);
+        var num4 = Math.floor(Math.random()*lim+1);
+        return '('+num1+'/'+num2+')'+op+'('+num3+'/'+num4+')';
+    }
+    else {
+        var randnum = Math.floor(Math.random()*4);
+        var op = '';
+        if (randnum % 4 === 0)  op = ' + ';
+        else if (randnum === 1) op = ' - ';
+        else if (randnum === 2) op = ' * ';
+        else op = ' / ';
+        return '('+genOOO(depth-1,lim)+')'+op+'('+genOOO(depth-1,lim)+')';
+    }
+>>>>>>> 9c6fd4ee1d39bfd511a73e100a73b2cc5344816c
+}
+
+function genSeq(ops, terms) {
+    var opTable = {
+        0: '+',
+        1: '-',
+        2: '*',
+    };
+    var det = '';
+    for (var i = 1; i <= terms; ++i) {
+        for (var j = 1; j <= ops; ++j) {
+            var num = Math.floor(Math.random()*5 + 1);
+            var op = Math.floor(Math.random()*3) % 3;
+            det += opTable[op]+num + ':';
+        }
+        det += '|';
+    }
+    det = det.substr(0,det.length-1).split('|');
+    det = det.map(function (item) {
+        item = item.substr(0,item.length-1);
+        item = item.split(':');
+        item.map(function (elem) {
+            return elem.split('');
+        });
+        return item
+    });
+    var start = Array.apply(null, new Array(terms)).map(function () {
+        return 1;
+    });
+    for (var i = 0; i < 6; ++i) {
+        var val = 0;
+        for (var j = 0; j < terms; ++j) {
+            var inner = start[start.length-terms+j];
+            for (var k = 0; k < ops; ++k) {
+                var op = det[j][k][0];
+                if (op === '+') inner += parseInt(det[j][k][1]);
+                else if (op === '-') inner -= parseInt(det[j][k][1]);
+                else inner *= parseInt(det[j][k][1]);
+            }
+            val += inner;
+        }
+        start.push(val);
+    }
+    return start;
+}
+
+function genSer(seq) {
+    return seq.reduce(function (prev, curr) {
+        prev.push(curr + prev[prev.length-1]);
+    }, [0]);
 }
