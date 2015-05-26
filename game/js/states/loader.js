@@ -14,7 +14,7 @@ Ninja.Loader.prototype = {
         this.load.setPreloadSprite(this.preloadBar);
 
         // images
-        this.game.load.tilemap('level1', 'assets/dungeon1.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.tilemap('level1', 'assets/dungeon_map.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('dungeon_tiles', 'assets/dungeon.png');
         this.game.load.spritesheet('dude', 'assets/Block Ninja/Spritesheet.png', 16, 16);
         this.game.load.spritesheet('lightning', 'assets/lightning.png',160,507);
