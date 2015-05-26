@@ -119,7 +119,7 @@ Ninja.Encounter.prototype = {
                 lightning.stop(1000);
             },
             cyclone: function (dam) {
-                var windattack = new Wind(self, self.player, self.enemy, dam);
+                var windattack = new Wind(self, self.enemy, self.player, dam);
                 windattack.start();
                 windattack.stop(1750);
             }
