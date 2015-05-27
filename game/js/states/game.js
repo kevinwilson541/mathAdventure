@@ -17,42 +17,11 @@ Ninja.Game = function (game) {
 Ninja.Game.prototype = {
     init: function (param) {
         this.encounterLocs = [];
-        this.chestLocs = {
-            '32,64': 0,
-            '64,64': 0,
-            '112,80': 0,
-            '16,208': 0,
-            '16,288': 0,
-            '16,336': 0,
-            '64,480': 0,
-            '288,352': 0,
-            '288,112': 0,
-            '464,448': 0,
-            '704,368': 0,
-            '560,80': 0,
-            '688,208': 0,
-            '832,256': 0,
-            '928,288': 0,
-            '1008,32': 0,
-            '784,560': 0,
-            '1120,528': 0,
-            '1088,528': 0,
-            '1136,224': 0,
-            '1168,224': 0,
-            '1456,544': 0, 
-            '1552,288': 0,
-            '1568,288': 0,
-            '1360,192': 0,
-            '1440,32': 0,
-            '1504,256': 0,
-            '1280,352': 0,
-            '1328,352': 0
-        };
         this.initX = 48;
         this.initY = 16;
         this.muted = false;
         if (param) {
-            this.chestLocs = param.chestLocs || this.chestLocs;
+            this.chestLocs = param.chestLocs;
             this.initX = param.initX || this.initX;
             this.initY = param.initY || this.initY;
             this.muted = param.muted;
@@ -77,12 +46,12 @@ Ninja.Game.prototype = {
 
         var map = this.add.tilemap("level1");
         map.addTilesetImage("dungeon", "dungeon_tiles");
-        map.setCollisionByExclusion([33,104]);
+        map.setCollisionByExclusion([33,104,49,55,21]);
         this.layer = map.createLayer("Tile Layer 1");
         this.layer.resizeWorld();
         this.player = this.add.sprite(this.initX, this.initY, 'dude');
         //this.portal = this.add.sprite(1288,64,'portal');
-        this.boss = this.add.sprite(1296, 80, 'boss_idle');
+        this.boss = this.add.sprite(119*16, 9*16, 'boss_idle');
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         //this.physics.enable(this.portal, Phaser.Physics.ARCADE);
         this.physics.enable(this.boss, Phaser.Physics.ARCADE);
@@ -108,26 +77,37 @@ Ninja.Game.prototype = {
         this.chests.enableBody = true;
 
         var self = this;
-        Object.keys(this.chestLocs).forEach(function (loc) {
-            loc = loc.split(',');
-            loc = loc.map(function (item) {
-                return parseInt(item);
+        if (!this.chestLocs) {
+            map.createFromTiles(49,104,'chest',this.layer,this.chests);
+            this.chestLocs = {};
+            this.chests.forEach(function (child) {
+                self.chestLocs[child.x+','+child.y] = 0;
+                child.body.gravity.y = 0;
+            }, this);
+        }
+        else {
+            Object.keys(this.chestLocs).forEach(function (loc) {
+                loc = loc.split(',');
+                loc = loc.map(function (item) {
+                    return parseInt(item);
+                });
+                var chest = self.chests.create(loc[0], loc[1], 'chest');
+                chest.body.gravity.y = 0;
             });
-            var chest = self.chests.create(loc[0], loc[1], 'chest');
-            chest.body.gravity.y = 0;
-        });
-
+            map.replace(49,104);
+        }
+        
         this.fires = this.game.add.group();
         this.fires.enableBody = true;
-        var fireLocs = [[1280,64],[1280,80],[1280,96],[1280,112],
-                        [1296,64],[1296,112],[1312,64],[1312,112],
-                        [1328,64],[1328,80],[1328,96],[1328,112]];
-        fireLocs.forEach(function (loc) {
-            var fire = self.fires.create(loc[0], loc[1], 'fire');
-            fire.body.gravity.y = 0;
-        });
+        map.createFromTiles(55,104,'fire',this.layer,this.fires);
+        this.fires.forEach(function (child) {
+            child.body.gravity.y = 0;
+        }, this);
+        var fire = this.fires.create(48,32,'fire');
+        fire.body.gravity.y = 0;
 
-        var xTiles = 99;
+        // until we fill the whole map area
+        var xTiles = 150;
         var yTiles = 35;
         var notPlayer = function (randLoc) {
             return self.player.x !== randLoc[0] || self.player.y !== randLoc[1];
@@ -259,7 +239,7 @@ Ninja.Game.prototype = {
         //this.fires.removeAll();
         this.game.state.start('Boss', true, false, {
             initX: Math.floor(this.player.x / 16)*16,
-            initY: Math.floor(this.player.y / 16)*16+32,
+            initY: Math.floor(this.player.y / 16)*16+16,
             chestLocs: this.chestLocs,
             numUses: 1,
             playerHealth: 250,

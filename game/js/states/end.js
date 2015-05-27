@@ -48,9 +48,6 @@ Ninja.End.prototype = {
     },
     trans: function () {
         $("#dancing").hide();
-        var params = {
-            muted: !this.victory_music.mute ? false : true
-        };
 	    this.victory_music.stop();
         this.game.state.start('MainMenu');
     }

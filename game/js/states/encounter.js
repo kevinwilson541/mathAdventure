@@ -117,7 +117,12 @@ Ninja.Encounter.prototype = {
                 var lightning = new LightningStrike(self, self.enemy, self.player, dam);
                 lightning.start();
                 lightning.stop(1000);
-            }
+            },
+            cyclone: function (dam) {
+                var windattack = new Wind(self, self.enemy, self.player, dam);
+                windattack.start();
+                windattack.stop(1750);
+            },
         };
 
         this.arrow = this.game.add.sprite(this.player.width/2-24, -1*this.heartHeight-48,'arrow');
@@ -160,16 +165,16 @@ Ninja.Encounter.prototype = {
         $attack_menu.append($attack_anchor);
         var $attack_list = $("<ul id='attack_list'>");
         this.attacks = {
-            "Shadowhachi Kick": 25,
-            "Buraku Nunchaku": 50,
-            "Bullrog Smash": 75,
-            "Kenny's Ninja Star": 100
+            "Shadowhachi Kick": [25,easy],
+            "Buraku Nunchaku": [50,med],
+            "Bullrog Smash": [75,hard],
+            "Kenny's Ninja Star": [100,xhard]
         };
 
         var self = this;
         Object.keys(this.attacks).forEach(function (key) {
             var $elem = $("<li>");
-            var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
+            var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key][0].toString());
             $anchor.on("click", function () {
                 // do attack
 		        self.disableMenu();
@@ -291,9 +296,9 @@ Ninja.Encounter.prototype = {
     },
    
     enableMenu: function() {
-	var self = this;
-	self.attackMenuFuncs();
-	self.itemMenuFuncs();
+	    var self = this;
+	    self.attackMenuFuncs();
+	    self.itemMenuFuncs();
     },
 	
     update: function () {
@@ -348,21 +353,29 @@ Ninja.Encounter.prototype = {
             $but.attr('type', 'button');
             $but.text(buttons[item]);
             $shop.append($but);
-        })
+        });
+
+        var q = key[1]();
+        $("#question").text(q[1]);
+        $("#prompt").show();
+        $("#prompt").text(q[0]);
+        $("#answer").text(q[2]);
+        $("#chestAnswer").show();
+
         $("#acceptButton").hide();
         $("#chestButton").on('click', function () {
             var answer = $("#chestAnswer").val();
             $("#chestAnswer").hide();
             $("#prompt").hide();
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
-                if (key == 25)			
-                    self.player.attack.firebolt(key);
-                else if (key == 50)
-                    self.player.attack.cyclone(key);
-                else if (key == 75)
-                    self.player.attack.blizzard(key);
-                else if (key == 100)
-                    self.player.attack.ultimateBlast(key);
+                if (key[0] == 25)			
+                    self.player.attack.firebolt(key[0]);
+                else if (key[0] == 50)
+                    self.player.attack.cyclone(key[0]);
+                else if (key[0] == 75)
+                    self.player.attack.blizzard(key[0]);
+                else if (key[0] == 100)
+                    self.player.attack.ultimateBlast(key[0]);
                 else
                     console.log("error in questionAttacks functionl logic");
             }
@@ -374,21 +387,17 @@ Ninja.Encounter.prototype = {
             $("#chestAnswer").val('');
             $(this).hide();
             $("#closeButton").hide();
-	        var q = genDiff();
+	        /*var q = genDiff();
             $("#question").text(q[1]);
             $("#prompt").show();
             $("#prompt").text(q[0]);
             $("#answer").text(q[2]);
-            $("#chestAnswer").show();
+            $("#chestAnswer").show();*/
             overlay();
         });
         $("#closeButton").on('click', function () {
             self.cursors = self.game.input.keyboard.createCursorKeys();
             $("chestAnswer").val('');
-            var q = genDiff();
-            $("#question").text(q[1].toString());
-            $("#answer").text(q[2]);
-            $("#prompt").text(q[0]);
             overlay();
 	        self.enableMenu();
         });

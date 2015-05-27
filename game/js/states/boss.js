@@ -107,7 +107,7 @@ Ninja.Boss.prototype = {
             firebolt: function (dam) {
                 var fire = new BossFirebolt(self, self.enemy, self.player, dam);
                 fire.start();
-                fire.stop(1000);
+                fire.stop(2000);
             },
             blizzard: function (dam) {
                 var bliz = new BossBlizzard(self, self.enemy, self.player, dam);
@@ -116,8 +116,13 @@ Ninja.Boss.prototype = {
             },
             lightningStrike: function (dam) {
                 var lightning = new BossLightningStrike(self, self.enemy, self.player, dam);
-                lightning.start();
-                lightning.stop(1000);
+                lightning.start(1000);
+                lightning.stop(2500);
+            },
+            cyclone: function (dam) {
+                var windattack = new Wind(self, self.player, self.enemy, dam);
+                windattack.start();
+                windattack.stop(1750);
             }
         };
 
@@ -161,16 +166,16 @@ Ninja.Boss.prototype = {
         $attack_menu.append($attack_anchor);
         var $attack_list = $("<ul id='attack_list'>");
         this.attacks = {
-            "Shadowhachi Kick": 25,
-            "Buraku Nunchaku": 50,
-            "Bullrog Smash": 75,
-            "Kenny's Ninja Star": 100
+            "Shadowhachi Kick": [25,easy],
+            "Buraku Nunchaku": [50,med],
+            "Bullrog Smash": [75,hard],
+            "Kenny's Ninja Star": [100,xhard]
         };
 
         var self = this;
         Object.keys(this.attacks).forEach(function (key) {
             var $elem = $("<li>");
-            var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key].toString());
+            var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key][0].toString());
             $anchor.on("click", function () {
                 // do attack
 		        self.disableMenu();
@@ -235,14 +240,7 @@ Ninja.Boss.prototype = {
             }
         });
         
-        var $retreat = $("<div>");
-        var $retreat_anchor = $("<a>").text("Retreat");
-        $retreat_anchor.on("click", function () {
-            self.end();
-        });
-        $retreat.append($retreat_anchor);
-        
-        this.menu.append($attack_menu, $item_menu, $retreat);
+        this.menu.append($attack_menu, $item_menu);
         this.menu.show();
     },
 
@@ -300,13 +298,13 @@ Ninja.Boss.prototype = {
     update: function () {
         var self = this;
         if (this.fireball) {
-            this.physics.arcade.overlap(this.fireball, this.enemy, function () {
+            this.physics.arcade.overlap(this.fireball, this.enemy, function (fire, player) {
                 this.fireball_hit.play();
-                this.fireball.kill();
+                fire.kill();
             }, null, this);
-            this.physics.arcade.overlap(this.fireball, this.player, function () {
+            this.physics.arcade.overlap(this.fireball, this.player, function (player, fire) {
                 this.fireball_hit.play();
-                this.fireball.kill();
+                fire.kill();
             }, null, this);
         }
         if (this.wind) {
@@ -323,12 +321,10 @@ Ninja.Boss.prototype = {
             this.physics.arcade.overlap(this.blizzard, this.player, function (player, freeze) {
                 this.blizzard_hit.play();
                 freeze.kill();
-                this.blizzard.remove(freeze);
             }, null, this);
-            this.physics.arcade.overlap(this.blizzard, this.enemy, function (player, freeze) {
+            this.physics.arcade.overlap(this.blizzard, this.enemy, function (freeze, player) {
                 this.blizzard_hit.play();
                 freeze.kill();
-                //this.blizzard.remove(freeze);
             }, null, this);
         }
         if (self.finished) {
@@ -351,21 +347,29 @@ Ninja.Boss.prototype = {
             $but.attr('type', 'button');
             $but.text(buttons[item]);
             $shop.append($but);
-        })
+        });
+
+        var q = key[1]();
+        $("#question").text(q[1]);
+        $("#prompt").show();
+        $("#prompt").text(q[0]);
+        $("#answer").text(q[2]);
+        $("#chestAnswer").show();
+
         $("#acceptButton").hide();
         $("#chestButton").on('click', function () {
             var answer = $("#chestAnswer").val();
             $("#chestAnswer").hide();
             $("#prompt").hide();
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
-                if (key == 25)			
-                    self.player.attack.firebolt(key);
-                else if (key == 50)
-                    self.player.attack.cyclone(key);
-                else if (key == 75)
-                    self.player.attack.blizzard(key);
-                else if (key == 100)
-                    self.player.attack.ultimateBlast(key);
+                if (key[0] == 25)			
+                    self.player.attack.firebolt(key[0]);
+                else if (key[0] == 50)
+                    self.player.attack.cyclone(key[0]);
+                else if (key[0] == 75)
+                    self.player.attack.blizzard(key[0]);
+                else if (key[0] == 100)
+                    self.player.attack.ultimateBlast(key[0]);
                 else
                     console.log("error in questionAttacks functionl logic");
             }
@@ -377,21 +381,17 @@ Ninja.Boss.prototype = {
             $("#chestAnswer").val('');
             $(this).hide();
             $("#closeButton").hide();
-	        var q = genDiff();
+	        /*var q = genDiff();
             $("#question").text(q[1]);
             $("#prompt").show();
             $("#prompt").text(q[0]);
             $("#answer").text(q[2]);
-            $("#chestAnswer").show();
+            $("#chestAnswer").show();*/
             overlay();
         });
         $("#closeButton").on('click', function () {
             self.cursors = self.game.input.keyboard.createCursorKeys();
             $("chestAnswer").val('');
-            var q = genDiff();
-            $("#question").text(q[1].toString());
-            $("#answer").text(q[2]);
-            $("#prompt").text(q[0]);
             overlay();
 	        self.enableMenu();
         });
@@ -402,15 +402,15 @@ Ninja.Boss.prototype = {
         var randnum = Math.random();
         setTimeout(function () {
             if (randnum <= .4) {
-                self.enemy.attack.blizzard(50);
+                self.enemy.attack.firebolt(50);
             }
             else if (randnum <= .7) {
                 self.enemy.attack.blizzard(100);
             }
             else if (randnum <= .9) {
-                self.enemy.attack.blizzard(150);
+                self.enemy.attack.lightningStrike(150);
             }
-            else self.enemy.attack.blizzard(200);
+            else self.enemy.attack.lightningStrike(200);
         }, 1500);
     },
 

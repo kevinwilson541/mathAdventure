@@ -13,6 +13,21 @@ Ninja.Loader.prototype = {
         this.preloadBar = this.game.add.sprite(200, 188,'loader');
         this.load.setPreloadSprite(this.preloadBar);
 
+        this.game.load.audio('music', 'assets/dungeon_level.mp3');
+        this.game.load.audio('battle_theme', 'assets/battle.mp3');
+        this.game.load.audio('nocoinage', 'assets/nocoin.wav');
+        this.game.load.audio('urScrewed', 'assets/boss.mp3');
+        this.game.load.audio('lightningHit', 'assets/lightningHit.wav');
+        this.game.load.audio('victory', 'assets/victory.mp3');
+        this.game.load.audio('fireballHit', 'assets/fireball.wav');
+        this.game.load.audio('fireballLaunch', 'assets/fireball_launch.wav');
+        this.game.load.audio('blizzardLaunch', 'assets/blizzard_launch.wav');
+        this.game.load.audio('blizzardHit', 'assets/blizzard_hit.wav');
+        this.game.load.audio('windHit', 'assets/windhit.wav');
+        this.game.load.audio('windLaunch', 'assets/wind.wav');
+        this.game.load.audio('ultimateHit','assets/ultimate_hit.wav');
+        this.game.load.audio('ultimateBack', 'assets/ultimate_back.wav');
+
         // images
         this.game.load.tilemap('level1', 'assets/dungeon_map.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('dungeon_tiles', 'assets/dungeon.png');
@@ -39,22 +54,6 @@ Ninja.Loader.prototype = {
         this.game.load.image('arrow', 'assets/arrow.png');
         this.game.load.tilemap('battle', 'assets/battle.json', null, Phaser.Tilemap.TILED_JSON);
 
-        // audio
-        this.game.load.audio('music', 'assets/dungeon_level.mp3');
-        this.game.load.audio('battle_theme', 'assets/battle.mp3');
-        this.game.load.audio('coinage', 'assets/coin.wav');
-        this.game.load.audio('nocoinage', 'assets/nocoin.wav');
-        this.game.load.audio('urScrewed', 'assets/boss.mp3');
-        this.game.load.audio('lightningHit', 'assets/lightningHit.wav');
-        this.game.load.audio('victory', 'assets/victory.mp3');
-        this.game.load.audio('fireballHit', 'assets/fireball.wav');
-        this.game.load.audio('fireballLaunch', 'assets/fireball_launch.wav');
-        this.game.load.audio('blizzardLaunch', 'assets/blizzard_launch.wav');
-        this.game.load.audio('blizzardHit', 'assets/blizzard_hit.wav');
-        this.game.load.audio('windHit', 'assets/windhit.wav');
-        this.game.load.audio('windLaunch', 'assets/wind.wav');
-        this.game.load.audio('ultimateHit','assets/ultimate_hit.wav');
-        this.game.load.audio('ultimateBack', 'assets/ultimate_back.wav');
     },
 
     create: function () {
