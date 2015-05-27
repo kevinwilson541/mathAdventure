@@ -122,7 +122,7 @@ Ninja.Encounter.prototype = {
                 var windattack = new Wind(self, self.enemy, self.player, dam);
                 windattack.start();
                 windattack.stop(1750);
-            },
+            }
         };
 
         this.arrow = this.game.add.sprite(this.player.width/2-24, -1*this.heartHeight-48,'arrow');
