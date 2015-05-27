@@ -103,8 +103,6 @@ Ninja.Game.prototype = {
         this.fires.forEach(function (child) {
             child.body.gravity.y = 0;
         }, this);
-        var fire = this.fires.create(48,32,'fire');
-        fire.body.gravity.y = 0;
 
         // until we fill the whole map area
         var xTiles = 150;
