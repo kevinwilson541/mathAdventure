@@ -105,12 +105,12 @@ Ninja.Game.prototype = {
         }, this);
 
         // until we fill the whole map area
-        var xTiles = 150;
-        var yTiles = 35;
+        var xTiles = map.width;
+        var yTiles = map.height;
         var notPlayer = function (randLoc) {
             return self.player.x !== randLoc[0] || self.player.y !== randLoc[1];
         };
-        for (var i = 0; i < 18; ++i) {
+        for (var i = 0; i < 25; ++i) {
             var randx = Math.floor(Math.random()*xTiles)*16;
             var randy = Math.floor(Math.random()*yTiles)*16;
             if (this.chestLocs[randx+','+randy] === undefined &&

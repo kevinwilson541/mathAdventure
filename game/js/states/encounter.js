@@ -240,7 +240,7 @@ Ninja.Encounter.prototype = {
         });
         
         var $retreat = $("<div>");
-        var $retreat_anchor = $("<a>").text("Retreat");
+        var $retreat_anchor = $("<a id='retreat'>").text("Retreat");
         $retreat_anchor.on("click", function () {
             self.end();
         });
@@ -293,12 +293,16 @@ Ninja.Encounter.prototype = {
                 $anchor.off("click");
             });
         }
+        $("#retreat").off('click');
     },
    
     enableMenu: function() {
 	    var self = this;
 	    self.attackMenuFuncs();
 	    self.itemMenuFuncs();
+        $("#retreat").on('click', function () {
+            self.end(); 
+        });
     },
 	
     update: function () {
