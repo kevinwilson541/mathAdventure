@@ -1,3 +1,4 @@
+// class item.js
 function item(name, quantity) {
 	this.name = name;
 	this.quanitity = quantity;
