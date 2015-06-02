@@ -25,11 +25,11 @@ function med() {
 function hard() {
     var randnum = Math.floor(Math.random()*2);
     if (randnum % 2 === 0) {
-        var q = genOOO(1,10);
+        var q = genOOO(0,20);
         var ans = eval(q);
         return ['What is the answer to:',q,ans];
     }
-    var q = genAddMul(1,10);
+    var q = genAddMul(0,20);
     var ans = eval(q);
     return ['What is the answer to:',q,ans];
 }
