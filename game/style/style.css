@@ -42,4 +42,9 @@
 	margin: 0 auto;
 	width: 75px;
     }     
+
+    #dancing {
+        position: absolute;
+        z-index: 1000;
+    }
 </style>

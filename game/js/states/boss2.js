@@ -1,4 +1,4 @@
-Ninja.Encounter = function (game) {
+Ninja.Boss = function (game) {
     this.game = game;
     this.params;
     this.menu;
@@ -11,11 +11,11 @@ Ninja.Encounter = function (game) {
     this.heartHeight;
 };
 
-Ninja.Encounter.prototype = {
+Ninja.Boss.prototype = {
     init: function (param) {
         this.params = param;
         this.finished = false;
-        this.enemyHealth = 100 + Math.floor(Math.random()*100);
+        this.enemyHealth = 1000 + Math.floor(Math.random()*100);
         this.playerHealth = this.params.playerHealth;
         this.itemButtonOn = false, this.attackButtonOn = false;
     },
@@ -25,7 +25,7 @@ Ninja.Encounter.prototype = {
     },
 
     create: function () {
-        this.battle_music = this.game.add.audio('battle_theme');
+        this.battle_music = this.game.add.audio('urScrewed');
         this.battle_music.loop = true;
         if (!this.params.muted) this.battle_music.play();
         else this.battle_music.mute = true;
@@ -41,7 +41,7 @@ Ninja.Encounter.prototype = {
         this.heartHeight = 48;
 
         this.player = this.add.sprite(90, 325, 'ninja');
-        this.enemy = this.add.sprite(this.game.width-162, 325, 'enemy');
+        this.enemy = this.add.sprite(this.game.width-162, 325, 'boss');
         
         this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
         this.enemy.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.enemy.width)/2, -1*this.heartHeight, 'health'));
@@ -293,7 +293,8 @@ Ninja.Encounter.prototype = {
                 self.playerHealth -= 75;
             }
             else self.playerHealth -= 100;
-            self.enemy.body.velocity.x = -500;
+            //self.enemy.body.velocity.x = -500;
+
         }, 1500);
     },
 
@@ -302,6 +303,11 @@ Ninja.Encounter.prototype = {
         this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
-        this.game.state.start("Game", true, false, this.params);
+        if (this.playerHealth <= 0) {
+            this.game.state.start("Game", true, false, this.params);
+        }
+        else {
+            this.game.state.start('End');
+        }
     }
 }

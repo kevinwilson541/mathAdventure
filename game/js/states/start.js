@@ -15,6 +15,7 @@ Ninja.MainMenu.prototype = {
     },
     create: function () {
         this.start_music = this.game.add.audio('start_theme');
+        this.start_music.loop = true;
         this.start_music.play();
         this.font = this.game.add.retroFont('bluePink', 32, 32, Phaser.RetroFont.TEXT_SET2, 10);
         this.font.setText("Math Adventure", true, 0, 8, Phaser.RetroFont.ALIGN_CENTER);
@@ -34,7 +35,7 @@ Ninja.MainMenu.prototype = {
         this.effect = this.make.bitmapData();
         this.effect.load('atari');
 
-        this.image = this.game.add.image(this.world.centerX, this.world.centerY, this.effect);
+        this.image = this.game.add.image(this.world.centerX, 300, this.effect);
         this.image.anchor.set(0.5);
         this.image.smoothed = false;
 

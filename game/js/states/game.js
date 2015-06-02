@@ -10,48 +10,18 @@ Ninja.Game = function (game) {
     this.initY;
     this.chestLocs;
     this.encounterLocs;
+    this.bossEncounter;
     this.game_music;
 };
 
 Ninja.Game.prototype = {
     init: function (param) {
         this.encounterLocs = [];
-        this.chestLocs = {
-            '32,64': 0,
-            '64,64': 0,
-            '112,80': 0,
-            '16,208': 0,
-            '16,288': 0,
-            '16,336': 0,
-            '64,480': 0,
-            '288,352': 0,
-            '288,112': 0,
-            '464,448': 0,
-            '704,368': 0,
-            '560,80': 0,
-            '688,208': 0,
-            '832,256': 0,
-            '928,288': 0,
-            '1008,32': 0,
-            '784,560': 0,
-            '1120,528': 0,
-            '1088,528': 0,
-            '1136,224': 0,
-            '1168,224': 0,
-            '1456,544': 0, 
-            '1552,288': 0,
-            '1568,288': 0,
-            '1360,192': 0,
-            '1440,32': 0,
-            '1504,256': 0,
-            '1280,352': 0,
-            '1328,352': 0
-        };
         this.initX = 48;
         this.initY = 16;
         this.muted = false;
         if (param) {
-            this.chestLocs = param.chestLocs || this.chestLocs;
+            this.chestLocs = param.chestLocs;
             this.initX = param.initX || this.initX;
             this.initY = param.initY || this.initY;
             this.muted = param.muted;
@@ -69,24 +39,32 @@ Ninja.Game.prototype = {
         else {
             this.game_music.mute = true;
         }
+        this.coin_music = this.game.add.audio('coinage');
+        this.nocoin_music = this.game.add.audio('nocoinage');
+
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
         var map = this.add.tilemap("level1");
         map.addTilesetImage("dungeon", "dungeon_tiles");
-        map.setCollisionByExclusion([33,104]);
+        map.setCollisionByExclusion([33,104,49,55,21]);
         this.layer = map.createLayer("Tile Layer 1");
         this.layer.resizeWorld();
         this.player = this.add.sprite(this.initX, this.initY, 'dude');
-        this.portal = this.add.sprite(1288,64,'portal');
+        //this.portal = this.add.sprite(1288,64,'portal');
+        this.boss = this.add.sprite(119*16, 9*16, 'boss_idle');
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
-        this.physics.enable(this.portal, Phaser.Physics.ARCADE);
+        //this.physics.enable(this.portal, Phaser.Physics.ARCADE);
+        this.physics.enable(this.boss, Phaser.Physics.ARCADE);
 
         this.player.body.gravity.y = 0;
         this.player.body.collideWorldBounds = true;
         this.player.body.setSize(16,16);
 
-        this.portal.body.gravity.y = 0;
-        this.portal.body.collideWorldBounds = true;
+        //this.portal.body.gravity.y = 0;
+        //this.portal.body.collideWorldBounds = true;
+
+        this.boss.body.gravity.y = 0;
+        this.boss.body.collideWorldBounds = true;
 
         this.player.animations.add('left', [0,1,2,3], 10, true);
         this.player.animations.add('turn', [4], 10, true);
@@ -99,30 +77,65 @@ Ninja.Game.prototype = {
         this.chests.enableBody = true;
 
         var self = this;
-        Object.keys(this.chestLocs).forEach(function (loc) {
-            loc = loc.split(',');
-            loc = loc.map(function (item) {
-                return parseInt(item);
+        if (!this.chestLocs) {
+            map.createFromTiles(49,104,'chest',this.layer,this.chests);
+            this.chestLocs = {};
+            this.chests.forEach(function (child) {
+                self.chestLocs[child.x+','+child.y] = 0;
+                child.body.gravity.y = 0;
+            }, this);
+        }
+        else {
+            Object.keys(this.chestLocs).forEach(function (loc) {
+                loc = loc.split(',');
+                loc = loc.map(function (item) {
+                    return parseInt(item);
+                });
+                var chest = self.chests.create(loc[0], loc[1], 'chest');
+                chest.body.gravity.y = 0;
             });
-            var chest = self.chests.create(loc[0], loc[1], 'chest');
-            chest.body.gravity.y = 0;
-        });
+            map.replace(49,104);
+        }
+        
+        this.fires = this.game.add.group();
+        this.fires.enableBody = true;
+        map.createFromTiles(55,104,'fire',this.layer,this.fires);
+        this.fires.forEach(function (child) {
+            child.body.gravity.y = 0;
+        }, this);
 
-        var xTiles = 99;
+        // until we fill the whole map area
+        var xTiles = 150;
         var yTiles = 35;
-        for (var i = 0; i < 25; ++i) {
+        var notPlayer = function (randLoc) {
+            return self.player.x !== randLoc[0] || self.player.y !== randLoc[1];
+        };
+        for (var i = 0; i < 18; ++i) {
             var randx = Math.floor(Math.random()*xTiles)*16;
             var randy = Math.floor(Math.random()*yTiles)*16;
-            if (this.chestLocs[randx+','+randy] === undefined)
+            if (this.chestLocs[randx+','+randy] === undefined &&
+                notPlayer([randx, randy]))
                 this.encounterLocs[randx.toString()+','+randy.toString()] = 0;
+            
             if (randx+16 <= xTiles*16 && 
-                this.chestLocs[randx+16+','+randy] === undefined) this.encounterLocs[(randx+16).toString()+','+randy.toString()] = 0;
+                this.chestLocs[randx+16+','+randy] === undefined &&
+                notPlayer([randx+16,randy])) 
+                this.encounterLocs[(randx+16).toString()+','+randy.toString()] = 0;
+            
             if (randx-16 >= 0 &&
-                this.chestLocs[randx-16+','+randy] === undefined) this.encounterLocs[(randx-16).toString()+','+randy.toString()] = 0;
+                this.chestLocs[randx-16+','+randy] === undefined &&
+                notPlayer([randx-16,randy])) 
+                this.encounterLocs[(randx-16).toString()+','+randy.toString()] = 0;
+            
             if (randy+16 <= yTiles*16 &&
-                this.chestLocs[randx+','+randy+16] === undefined) this.encounterLocs[randx.toString()+','+(randy+16).toString()] = 0;
+                this.chestLocs[randx+','+randy+16] === undefined &&
+                notPlayer([randx, randy+16])) 
+                this.encounterLocs[randx.toString()+','+(randy+16).toString()] = 0;
+            
             if (randy-16 >= 0 &&
-                this.chestLocs[randx+','+randy-16] === undefined) this.encounterLocs[randx.toString()+','+(randy-16).toString()] = 0;
+                this.chestLocs[randx+','+randy-16] === undefined &&
+                notPlayer([randx, randy-16])) 
+                this.encounterLocs[randx.toString()+','+(randy-16).toString()] = 0;
         }
 
         var mute = this.game.input.keyboard.addKey(77);
@@ -149,10 +162,9 @@ Ninja.Game.prototype = {
         }, this);
     },
     update: function () {
-        //  Collide the player and the stars with the platforms
         this.physics.arcade.collide(this.player, this.layer);
-        this.physics.arcade.overlap(this.player, this.portal, this.finish, null, this);
         this.physics.arcade.overlap(this.player, this.chests, this.collect, null, this);
+        this.physics.arcade.overlap(this.player, this.fires, this.bossFight, null, this);
 
         //  Reset the players velocity (movement)
         this.player.body.velocity.x = 0;
@@ -220,6 +232,19 @@ Ninja.Game.prototype = {
 
     },
 
+    bossFight: function (player, fire) {
+        this.game_music.stop();
+        //this.fires.removeAll();
+        this.game.state.start('Boss', true, false, {
+            initX: Math.floor(this.player.x / 16)*16,
+            initY: Math.floor(this.player.y / 16)*16+16,
+            chestLocs: this.chestLocs,
+            numUses: 1,
+            playerHealth: 250,
+            muted: !this.game_music.mute ? false : true
+        });
+    },
+
     finish: function (player, door) {
         this.game_music.stop();
         var params = {
@@ -269,9 +294,11 @@ Ninja.Game.prototype = {
             $("#prompt").hide();
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
                 $("#question").text("CORRECT!");
+                self.coin_music.play();
             }
             else {
                 $("#question").text("INCORRECT");
+                self.nocoin_music.play();
             }
             $("#chestAnswer").val('');
             $(this).hide();

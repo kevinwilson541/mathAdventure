@@ -13,7 +13,7 @@ function easy() {
 function med() {
     var randnum = Math.floor(Math.random()*2);
     if (randnum % 2 === 0) {
-        var q = genOOO(1,10);
+        var q = genOOO(0,15);
         var ans = eval(q);
         return ['What is the answer to:',q,ans];
     }
@@ -81,7 +81,7 @@ function genSeq(ops, terms) {
     var det = '';
     for (var i = 1; i <= terms; ++i) {
         for (var j = 1; j <= ops; ++j) {
-            var num = Math.floor(Math.random()*5 + 1);
+            var num = Math.floor(Math.random()*3 + 1);
             var op = Math.floor(Math.random()*3) % 3;
             det += opTable[op]+num + ':';
         }
@@ -119,5 +119,6 @@ function genSeq(ops, terms) {
 function genSer(seq) {
     return seq.reduce(function (prev, curr) {
         prev.push(curr + prev[prev.length-1]);
+        return prev;
     }, [0]);
 }
