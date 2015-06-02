@@ -167,10 +167,10 @@ Ninja.Encounter.prototype = {
         $attack_menu.append($attack_anchor);
         var $attack_list = $("<ul id='attack_list'>");
         this.attacks = {
-            "Shadowhachi Kick": [25,easy],
-            "Buraku Nunchaku": [50,med],
-            "Bullrog Smash": [75,hard],
-            "Kenny's Ninja Star": [100,xhard]
+            "Shadowhachi Kick": [(25*this.player.attackPower),easy],
+            "Buraku Nunchaku": [(50*this.player.attackPower),med],
+            "Bullrog Smash": [(75*this.player.attackPower),hard],
+            "Kenny's Ninja Star": [(100*this.player.attackPower),xhard]
         };
 
         var self = this;
@@ -244,7 +244,13 @@ Ninja.Encounter.prototype = {
         var $retreat = $("<div>");
         var $retreat_anchor = $("<a id='retreat'>").text("Retreat");
         $retreat_anchor.on("click", function () {
-            self.end();
+            var ret = Math.random();
+		if (ret < self.player.retreatPower)
+			self.end();
+		else {	
+                	self.enemy.addChild(self.player.removeChildAt(1));
+                	self.enemyMove();
+		}
         });
         $retreat.append($retreat_anchor);
         

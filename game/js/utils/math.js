@@ -63,7 +63,6 @@ function genOOO(depth, lim) {
         else op = ' / ';
         return '('+genOOO(depth-1,lim)+')'+op+'('+genOOO(depth-1,lim)+')';
     }
->>>>>>> 9c6fd4ee1d39bfd511a73e100a73b2cc5344816c
 }
 
 function genSeq(ops, terms) {
