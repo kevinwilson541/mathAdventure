@@ -228,6 +228,7 @@ Ninja.Encounter.prototype = {
                         self.enemy.addChild(self.player.removeChildAt(1));
                         self.enemyMove();
                     }
+                    else self.enableMenu();
                 });
                 $elem.append($anchor);
                 $item_list.append($elem);
@@ -296,6 +297,7 @@ Ninja.Encounter.prototype = {
                         self.enemy.addChild(self.player.removeChildAt(1));
                         self.enemyMove();
                     }
+                    else self.enableMenu();
                 });
             });
         }
