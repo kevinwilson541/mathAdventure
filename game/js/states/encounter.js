@@ -397,7 +397,8 @@ Ninja.Encounter.prototype = {
         });
         $("#closeButton").on('click', function () {
             self.cursors = self.game.input.keyboard.createCursorKeys();
-            $("chestAnswer").val('');
+            $("#chestAnswer").val('');
+            $("#chestAnswer").show();
             overlay();
 	        self.enableMenu();
         });
