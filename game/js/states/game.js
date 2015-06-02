@@ -11,7 +11,10 @@ Ninja.Game = function (game) {
     this.chestLocs;
     this.encounterLocs;
     this.bossEncounter;
+    this.attackPower;
     this.game_music;
+    this.itemBag;
+    this.won;
 };
 
 Ninja.Game.prototype = {
@@ -20,27 +23,32 @@ Ninja.Game.prototype = {
         this.initX = 48;
         this.initY = 16;
         this.muted = false;
+        this.itemBag = new itemBag();
+        this.won = false;
+        this.attackPower = 1;
         if (param) {
             this.chestLocs = param.chestLocs;
             this.initX = param.initX || this.initX;
             this.initY = param.initY || this.initY;
-            this.muted = param.muted;
+            this.muted = param.muted || this.muted;
+            this.itemBag = param.itemBag || this.itemBag;
+            this.won = param.won || this.won;
+            this.attackPower = param.attackPower || this.attackPower;
         }
     },
     preload: function () {
-        this.game.load.crossOrigin = 'Anonymous'
+        this.game.load.crossOrigin = 'Anonymous';
     },
     create: function () {
         this.game_music = this.game.add.audio('music');
+        this.coin_music = this.game.add.audio('coinage');
+        this.nocoin_music = this.game.add.audio('nocoinage');
+
         this.game_music.loop = true;
         if (!this.muted) {
             this.game_music.play();
         }
-        else {
-            this.game_music.mute = true;
-        }
-        this.coin_music = this.game.add.audio('coinage');
-        this.nocoin_music = this.game.add.audio('nocoinage');
+        this.game_music.mute = true;
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -69,6 +77,9 @@ Ninja.Game.prototype = {
         this.player.animations.add('left', [0,1,2,3], 10, true);
         this.player.animations.add('turn', [4], 10, true);
         this.player.animations.add('right', [5,6,7,8], 10, true);
+        this.player.itemBag = this.itemBag;
+        this.player.health = 250;
+        this.player.maxHealth = 250;
 
         this.camera.follow(this.player);
         this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -104,7 +115,6 @@ Ninja.Game.prototype = {
             child.body.gravity.y = 0;
         }, this);
 
-        // until we fill the whole map area
         var xTiles = map.width;
         var yTiles = map.height;
         var notPlayer = function (randLoc) {
@@ -144,8 +154,8 @@ Ninja.Game.prototype = {
                 self.game_music.mute = true;
             }
             else {
-                if (!self.game_music.isPlaying) self.game_music.play();
                 self.game_music.mute = false;
+                if (!self.game_music.isPlaying) self.game_music.play();
             }
         }, this);
         var pause = this.game.input.keyboard.addKey(80);
@@ -160,6 +170,21 @@ Ninja.Game.prototype = {
                 self.game.paused = true;
             }
         }, this);
+
+        if (this.won) {
+            var item = self.genRandItem();
+            var $spoils = $("#items");
+            var $txt = $("<p id='desc'>").text('You have received 1 ' + item.name + '!');
+            var $accept = $("<button id='ok'>").text('OK');
+            $accept.on('click', function () {
+                self.coin_music.play();
+                self.player.itemBag.insert(item);
+                $("#spoils").empty();
+                $("#spoils").hide();
+            });
+            $spoils.append($txt, $accept);
+            $("#spoils").show();
+        }
     },
     update: function () {
         this.physics.arcade.collide(this.player, this.layer);
@@ -179,7 +204,9 @@ Ninja.Game.prototype = {
                 chestLocs: this.chestLocs,
                 numUses: 1,
                 playerHealth: 250,
-                muted: !this.game_music.mute ? false : true
+                muted: !this.game_music.mute ? false : true,
+                itemBag: this.player.itemBag,
+                attackPower: this.attackPower
             });
         }
 
@@ -241,7 +268,9 @@ Ninja.Game.prototype = {
             chestLocs: this.chestLocs,
             numUses: 1,
             playerHealth: 250,
-            muted: !this.game_music.mute ? false : true
+            muted: !this.game_music.mute ? false : true,
+            itemBag: this.player.itemBag,
+            attackPower: this.attackPower
         });
     },
 
@@ -257,17 +286,17 @@ Ninja.Game.prototype = {
     },
 
    genRandItem: function () {
-   var rand = Math.random();
-   var it;
-	if (rand < .05)
-		it = attackPotion("attackPotion", .1);
-	else if (rand < .3)
-		it = retreatPotion("retreatPotion", 1);
-	else
-		it = healthPotion("healthPotion", this.player.maxHealth);
+       var rand = Math.random();
+       var it;
+        if (rand < .05)
+            it = new attackPotion("Attack Potion", .1);
+        else if (rand < .3)
+            it = new retreatPotion("Retreat Potion", 1);
+        else
+            it = new healthPotion('Health Potion', this.player.maxHealth);
 
-	return it;
-},
+        return it;
+    },
 
 
     collect: function (player, chest) {
@@ -301,14 +330,20 @@ Ninja.Game.prototype = {
             $but.text(buttons[item]);
             $shop.append($but);
         })
+        $("#chestAnswer").show();
         $("#acceptButton").hide();
+        $("#prompt").show();
+        $("#question").show();
         $("#chestButton").on('click', function () {
             var answer = $("#chestAnswer").val();
             $("#chestAnswer").hide();
-            $("#prompt").hide();
+            //$("#prompt").hide();
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
-                $("#question").text("CORRECT!");
+                $("#prompt").text("CORRECT!");
                 self.coin_music.play();
+                var item = self.genRandItem();
+                self.player.itemBag.insert(item);
+                $("#question").text('You received 1 ' + item.name + '!');
             }
             else {
                 $("#question").text("INCORRECT");
@@ -321,7 +356,8 @@ Ninja.Game.prototype = {
         });
         $("#closeButton").on('click', function () {
             self.cursors = self.game.input.keyboard.createCursorKeys();
-            $("chestAnswer").val('');
+            $("#chestAnswer").val('');
+            $("#chestAnswer").show();
             var q = genDiff();
             $("#question").text(q[1].toString());
             $("#answer").text(q[2]);

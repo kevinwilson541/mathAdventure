@@ -25,6 +25,7 @@ Attack.prototype.stop = function () {
     setTimeout(function () {
         // crop health bar above receiver to new health
         // health bar height is 48, hence the magic number
+        self.receiver.getChildAt(0).crop();
         self.receiver.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.receiver.health/self.receiver.maxHealth)*self.receiver.getChildAt(0).width),48));
 
         // if receiver is dead, initiate return to next state
@@ -41,8 +42,7 @@ Attack.prototype.stop = function () {
             var arrow = self.attacker.removeChildAt(1);
             self.receiver.addChild(arrow);
             if (self.receiver === self.enc.player) {
-                self.enc.attackMenuFuncs();
-                self.enc.itemMenuFuncs();
+                self.enc.enableMenu();
             }
             else {
                 self.enc.enemyMove();

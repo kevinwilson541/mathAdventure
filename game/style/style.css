@@ -22,6 +22,18 @@
 	top: 150px;   	
     }
 
+    #spoils {
+        position: absolute;
+        width: 500px;
+        padding: 2px;
+        text-align: center;
+        background-color: #000;
+        border-radius: 15px;
+        z-index: 1000;
+        left: 150px;
+        top: 150px;
+    }
+
     #overlay div {
 	font-family: "8bit", sans serif;
 	font-size: 75%;
@@ -30,6 +42,16 @@
 	background-color: #A4A4A4;
 	border-radius: 15px;
         padding:15px;
+    }
+
+    #spoils div {
+        font-family: "8bit", sans serif;
+        font-size: 75%;
+        display: block;
+        margin: 0 auto;
+        background-color: #A4A4A4;
+        border-radius: 15px;
+        padding: 15px;
     }
 
     button {

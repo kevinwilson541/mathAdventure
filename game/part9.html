@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
     <title>Phaser - Making your first game, part 9</title>
     <script src='//code.jquery.com/jquery-2.0.3.min.js'></script>
-    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/phaser2.min.js"></script>
     <script type='text/javascript' src='js/utils/math.js'></script>
     <script type='text/javascript' src='js/utils/attacks.js'></script>
     <script type='text/javascript' src='js/utils/lightning.js'></script>
@@ -18,6 +18,7 @@
     <script type='text/javascript' src='js/states/boot.js'></script>
     <script type='text/javascript' src='js/states/start.js'></script>
     <script type='text/javascript' src='js/states/loader.js'></script>
+    <script type='text/javascript' src='js/states/item.js'></script>
     <script type='text/javascript' src='js/states/game.js'></script>
     <script type='text/javascript' src='js/states/encounter.js'></script>
     <script type='text/javascript' src='js/states/boss.js'></script>
@@ -101,6 +102,9 @@ function overlay() {
 	    <input id="chestAnswer" name="Enter Answer">
 	    <br>
 	</div>
+    </div>
+    <div id='spoils'>
+        <div id='items'></div>
     </div>
     <img id='dancing' src='assets/bitdance.gif'>
     <script type='text/javascript'>
