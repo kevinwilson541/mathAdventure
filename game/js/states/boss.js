@@ -220,7 +220,7 @@ Ninja.Boss.prototype = {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
                     if (item) {
-                        item.use(self.player);
+                        item.use(self.player, self);
                         if (self.player.itemBag.at(key).length === 0) {
                             $elem.empty();
                             $elem.remove();
@@ -228,8 +228,8 @@ Ninja.Boss.prototype = {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
-                        self.enemy.addChild(self.player.removeChildAt(1));
-                        self.enemyMove();
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
                     else self.enableMenu();
                 });
@@ -276,7 +276,7 @@ Ninja.Boss.prototype = {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
                     if (item) {
-                        item.use(self.player);
+                        item.use(self.player, self);
                         if (self.player.itemBag.at(key).length === 0) {
                             $(this).remove();
                             $($(this).parent()).remove();
@@ -284,8 +284,8 @@ Ninja.Boss.prototype = {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
-                        self.enemy.addChild(self.player.removeChildAt(1));
-                        self.enemyMove();
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
                     else self.enableMenu();
                 });
