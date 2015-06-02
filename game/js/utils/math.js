@@ -5,9 +5,9 @@ function easy() {
         var ans = eval(q);
         return ['What is the answer to:',q,ans];
     }
-    var seq = genSeq(1,1);
-    var ans = seq.pop();
-    return ['Find the next number in this sequence:',seq,ans];
+    var q = genAddMul(0,10);
+    var ans = eval(q);
+    return ['Find the next number in this sequence:',q,ans];
 }
 
 function med() {
@@ -17,31 +17,25 @@ function med() {
         var ans = eval(q);
         return ['What is the answer to:',q,ans];
     }
-    var seq = genSeq(2,1);
-    var ans = seq.pop();
-    return ['Find the next number in this sequence:',seq,ans];
+    var q = genAddMul(0,15);
+    var ans = eval(q);
+    return ['What is the answer to:',q,ans];
 }
 
 function hard() {
     var randnum = Math.floor(Math.random()*2);
     if (randnum % 2 === 0) {
-        var ser = genSer(genSeq(1,1));
-        var ans = ser.pop();
-        return ['Find the next number in this series:',ser,ans];
+        var q = genOOO(1,10);
+        var ans = eval(q);
+        return ['What is the answer to:',q,ans];
     }
-    var seq = genSeq(1,2);
-    var ans = seq.pop();
-    return ['Find the next number in this sequence:',seq,ans];
+    var q = genAddMul(1,10);
+    var ans = eval(q);
+    return ['What is the answer to:',q,ans];
 }
 
 function xhard() {
-    var randnum = Math.floor(Math.random()*2);
-    if (randnum % 2 === 0) {
-        var ser = genSer(genSeq(1,2));
-        var ans = ser.pop();
-        return ['Find the next number in this series:',ser,ans];
-    }
-    var seq = genSeq(2,2);
+    var seq = genSeq(1,1);
     var ans = seq.pop();
     return ['Find the next number in this sequence:',seq,ans];
 }
@@ -80,7 +74,7 @@ function genSeq(ops, terms) {
     var det = '';
     for (var i = 1; i <= terms; ++i) {
         for (var j = 1; j <= ops; ++j) {
-            var num = Math.floor(Math.random()*3 + 1);
+            var num = Math.floor(Math.random()*4 + 1);
             var op = Math.floor(Math.random()*3) % 3;
             det += opTable[op]+num + ':';
         }
@@ -120,4 +114,25 @@ function genSer(seq) {
         prev.push(curr + prev[prev.length-1]);
         return prev;
     }, [0]);
+}
+
+function genAddMul(depth, lim) {
+    if (depth === 0) {
+        var randnum = Math.floor(Math.random()*3);
+        var op = '';
+        if (randnum % 3 === 0) op = ' + ';
+        else if (randnum === 1) op = ' - ';
+        else if (randnum === 2) op = ' * ';
+        var num1 = Math.floor(Math.random()*lim+1);
+        var num2 = Math.floor(Math.random()*lim+1);
+        return num1+op+num2;
+    }
+    else {
+        var randnum = Math.floor(Math.random()*3);
+        var op = '';
+        if (randnum % 3 === 0)  op = ' + ';
+        else if (randnum === 1) op = ' - ';
+        else if (randnum === 2) op = ' * ';
+        return '('+genOOO(depth-1,lim)+')'+op+'('+genOOO(depth-1,lim)+')';
+    }
 }
