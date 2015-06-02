@@ -9,7 +9,6 @@ Ninja.Boot.prototype = {
         this.load.audio('start_theme', 'assets/start_theme.mp3');
         this.load.audio('music', 'assets/dungeon_level.mp3');
         this.load.audio('battle_theme', 'assets/battle.mp3');
-        this.load.audio('coinage','assets/coin.wav');
 
         this.load.image('atari', 'assets/atari.png');
         this.load.image('raster', 'assets/pink-raster.png');
@@ -24,11 +23,5 @@ Ninja.Boot.prototype = {
         setTimeout(function () {
             this.game.state.start('MainMenu');
         },7000);
-        for (var i = 0; i < 7; ++i) {
-            setTimeout(function () {
-                var audio = this.game.add.audio('coinage');
-                audio.play();
-            }, i*1000);
-        }
     }
 };

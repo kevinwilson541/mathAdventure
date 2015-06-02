@@ -17,7 +17,7 @@ Ninja.Game = function (game) {
 Ninja.Game.prototype = {
     init: function (param) {
         this.encounterLocs = [];
-        this.initX = 48;
+	this.initX = 48;
         this.initY = 16;
         this.muted = false;
         if (param) {
@@ -295,7 +295,9 @@ Ninja.Game.prototype = {
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
                 $("#question").text("CORRECT!");
                 self.coin_music.play();
-            }
+                //ADD ITEMS HERE
+	    
+	    }
             else {
                 $("#question").text("INCORRECT");
                 self.nocoin_music.play();
@@ -323,7 +325,7 @@ Ninja.Game.prototype = {
             $("#prompt").text(q[0]);
             $("#answer").text(q[2]);
             $("#chestAnswer").show();
-            overlay();
+	    overlay();
         });
     }
 }
