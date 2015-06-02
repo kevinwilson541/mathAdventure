@@ -53,7 +53,9 @@ Ninja.Encounter.prototype = {
         this.player = this.add.sprite(90, 325, 'ninja');
         this.player.health = this.playerHealth;
         this.player.maxHealth = this.playerHealth;
-       
+      	this.player.retreatPower = .75;
+	this.player.attackPower = 1;
+ 
 	this.chooseEnemy(); 
 	this.enemy.health = this.enemyHealth;
         this.enemy.maxHealth = this.enemyHealth;

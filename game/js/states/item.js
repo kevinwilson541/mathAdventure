@@ -13,7 +13,7 @@ function healthPotion(name, quantity) {
 };
 
 healthPotion.prototype.use = function (player) {
-	player.health += this.quantity;
+	player.health = this.quantity;
 };
 
 function attackPotion(name, quantity) {
@@ -29,5 +29,5 @@ function retreatPotion(name, quantity) {
 };
 
 retreatPotion.prototype.use = function (player) {
-	player.retreatPotion += this.quantity;
+	player.retreatPotion = 1;
 };

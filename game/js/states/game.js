@@ -256,6 +256,20 @@ Ninja.Game.prototype = {
         this.game.state.start('Game', true, false, params);
     },
 
+   genRandItem: function () {
+   var rand = Math.random();
+   var it;
+	if (rand < .05)
+		it = attackPotion("attackPotion", .1);
+	else if (rand < .3)
+		it = retreatPotion("retreatPotion", 1);
+	else
+		it = healthPotion("healthPotion", this.player.maxHealth);
+
+	return it;
+},
+
+
     collect: function (player, chest) {
         //this.game.paused = true;
         this.player.body.velocity.x = 0;
