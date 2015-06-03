@@ -7,7 +7,7 @@ function easy() {
     }
     var q = genAddMul(0,10);
     var ans = eval(q);
-    return ['Find the next number in this sequence:',q,ans];
+    return ['What is the answer to:',q,ans];
 }
 
 function med() {

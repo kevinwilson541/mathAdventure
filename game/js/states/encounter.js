@@ -9,6 +9,8 @@ Ninja.Encounter = function (game) {
     this.itemButtonOn, this.attackButtonOn;
     this.heartWidth;
     this.heartHeight;
+    this.itemBag;
+    this.muted;
 };
 
 Ninja.Encounter.prototype = {
@@ -18,6 +20,8 @@ Ninja.Encounter.prototype = {
         this.enemyHealth = 100 + Math.floor(Math.random()*100);
         this.playerHealth = this.params.playerHealth;
         this.itemButtonOn = false, this.attackButtonOn = false;
+        this.itemBag = this.params.itemBag;
+        this.muted = this.params.muted || false;
     },
     
     preload: function () {
@@ -27,9 +31,6 @@ Ninja.Encounter.prototype = {
     create: function () {
         var self = this;
         this.battle_music = this.game.add.audio('battle_theme');
-        this.battle_music.loop = true;
-        if (!this.params.muted) this.battle_music.play();
-        else this.battle_music.mute = true;
         this.lightning_hit = this.game.add.audio('lightningHit');
         this.fireball_hit = this.game.add.audio('fireballHit');
         this.fireball_launch = this.game.add.audio('fireballLaunch');
@@ -39,6 +40,10 @@ Ninja.Encounter.prototype = {
         this.blizzard_hit = this.game.add.audio('blizzardHit');
         this.ultimate_hit = this.game.add.audio('ultimateHit');
         this.ultimate_back = this.game.add.audio('ultimateBack');
+
+        this.battle_music.loop = true;
+        if (this.muted) this.battle_music.mute = true;
+        else this.battle_music.play();
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -54,10 +59,11 @@ Ninja.Encounter.prototype = {
         this.player.health = this.playerHealth;
         this.player.maxHealth = this.playerHealth;
       	this.player.retreatPower = .75;
-	this.player.attackPower = 1;
+	    this.player.attackPower = this.params.attackPower;
+        this.player.itemBag = this.itemBag;
  
-	this.chooseEnemy(); 
-	this.enemy.health = this.enemyHealth;
+	    this.chooseEnemy(); 
+	    this.enemy.health = this.enemyHealth;
         this.enemy.maxHealth = this.enemyHealth;
                 
         this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
@@ -132,13 +138,11 @@ Ninja.Encounter.prototype = {
 
         var muted = this.game.input.keyboard.addKey(77);
         muted.onDown.add(function () {
-            if (!self.battle_music.mute) {
-                self.battle_music.mute = true;
-            }
-            else {
+            if (self.battle_music.mute) {
+                self.battle_music.mute  = false;
                 if (!self.battle_music.isPlaying) self.battle_music.play();
-                self.battle_music.mute = false;
             }
+            else self.battle_music.mute = true;
         }, this);
 
         var paused = this.game.input.keyboard.addKey(80);
@@ -167,10 +171,10 @@ Ninja.Encounter.prototype = {
         $attack_menu.append($attack_anchor);
         var $attack_list = $("<ul id='attack_list'>");
         this.attacks = {
-            "Shadowhachi Kick": [25,easy],
-            "Buraku Nunchaku": [50,med],
-            "Bullrog Smash": [75,hard],
-            "Kenny's Ninja Star": [100,xhard]
+            "Shadowhachi Kick": [(25*this.player.attackPower),easy],
+            "Buraku Nunchaku": [(50*this.player.attackPower),med],
+            "Bullrog Smash": [(75*this.player.attackPower),hard],
+            "Kenny's Ninja Star": [(100*this.player.attackPower),xhard]
         };
 
         var self = this;
@@ -203,25 +207,31 @@ Ninja.Encounter.prototype = {
         var $item_anchor = $("<a name='items'>").text("Items");
         $item_menu.append($item_anchor);
         var $item_list = $("<ul id='item_list'>");
-        if (this.params.itemBag === undefined) {
+        if (this.player.itemBag.empty()) {
             $item_list.append($("<li>").text("Empty"));
         }
         else {
-            Object.keys(this.params.itemBag).forEach(function (key) {
-                var $elem = $("<li>");
-                var $anchor = $("<a id='"+key.replace("'",'').split(' ').join('_')+"'>").text(key + "  x"
-                    + self.params.itemBag[key][0]);
+            Object.keys(this.player.itemBag.items).forEach(function (key) {
+                var name = key.replace("'",'').split(' ').join('_');
+                var $elem = $("<li id='li_"+name+"'>");
+                var $anchor = $("<a id='"+name+"'>").text(key + "  x"
+                    + self.player.itemBag.at(key).length);
                 $anchor.on("click", function () {
                     self.disableMenu();
-                    self.params.itemBag[key][0]--;
-                    self.useItem(self.player, self.params.itemBag[key][1]);
-                    if (self.params.itemBag[key][0] == 0) {
-                        delete self.params.itemBag[key];
-                        $item_list.remove($elem);
-                        if ($item_list.children().length === 0) {
-                            $item_list.append($("<li>").text("Empty"));
+                    var item = self.player.itemBag.remove(key);
+                    if (item) {
+                        item.use(self.player, self);
+                        if (self.player.itemBag.at(key).length == 0) {
+                            $elem.empty();
+                            $elem.remove();
+                            if ($item_list.children().length === 0) {
+                                $item_list.append($("<li>").text("Empty"));
+                            }
                         }
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
+                    else self.enableMenu();
                 });
                 $elem.append($anchor);
                 $item_list.append($elem);
@@ -244,7 +254,15 @@ Ninja.Encounter.prototype = {
         var $retreat = $("<div>");
         var $retreat_anchor = $("<a id='retreat'>").text("Retreat");
         $retreat_anchor.on("click", function () {
-            self.end();
+            self.disableMenu();
+            var ret = Math.random();
+		    if (ret < self.player.retreatPower)
+			    self.end(false);
+		    else {	
+                console.log('enemy moving');
+                self.enemy.addChild(self.player.removeChildAt(1));
+                self.enemyMove();
+		    }
         });
         $retreat.append($retreat_anchor);
         
@@ -265,20 +283,26 @@ Ninja.Encounter.prototype = {
 
     itemMenuFuncs: function () {
         var self = this;
-        if (this.params.itemBag !== undefined) {
-            Object.keys(this.params.itemBag).forEach(function (key) {
-                var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
+        if (!this.player.itemBag.empty()) {
+            Object.keys(this.player.itemBag.items).forEach(function (key) {
+                var name = key.replace("'",'').split(' ').join('_');
+                var $anchor = $("#"+name);
                 $anchor.on("click", function () {
                     self.disableMenu();
-                    self.params.itemBag[key][0]--;
-                    self.useItem(self.player, self.params.itemBag[key][1]);
-                    if (self.params.itemBag[key][0] == 0) {
-                        delete self.params.itemBag[key];
-                        $item_list.remove($elem);
-                        if ($item_list.children().length === 0) {
-                            $item_list.append($("<li>").text("Empty"));
+                    var item = self.player.itemBag.remove(key);
+                    if (item) {
+                        item.use(self.player, self);
+                        if (self.player.itemBag.at(key).length == 0) {
+                            $("#li_"+name).empty();
+                            $("#li_"+name).remove();
+                            if ($("#item_list").children().length === 0) {
+                                $("#item_list").append($("<li>").text("Empty"));
+                            }
                         }
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
+                    else self.enableMenu();
                 });
             });
         }
@@ -289,8 +313,8 @@ Ninja.Encounter.prototype = {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.off('click');
         });
-        if (this.params.itemBag !== undefined) {
-            Object.keys(this.params.itemBag).forEach(function (key) {
+        if (!this.player.itemBag.empty()) {
+            Object.keys(this.player.itemBag.items).forEach(function (key) {
                 var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
                 $anchor.off("click");
             });
@@ -303,7 +327,17 @@ Ninja.Encounter.prototype = {
 	    self.attackMenuFuncs();
 	    self.itemMenuFuncs();
         $("#retreat").on('click', function () {
-            self.end(); 
+            self.disableMenu();
+            var ret = Math.random();
+            console.log(ret);
+		    if (ret < self.player.retreatPower) {
+			    self.end(false);
+            }
+		    else {	
+                console.log('enemy moving');
+                self.enemy.addChild(self.player.removeChildAt(1));
+                self.enemyMove();
+		    }
         });
     },
 	
@@ -391,8 +425,8 @@ Ninja.Encounter.prototype = {
                 self.enemyMove();
             }
             $("#chestAnswer").val('');
-            $(this).hide();
-            $("#closeButton").hide();
+            //$(this).hide();
+            //$("#closeButton").hide();
 	        /*var q = genDiff();
             $("#question").text(q[1]);
             $("#prompt").show();
@@ -446,8 +480,13 @@ Ninja.Encounter.prototype = {
         }, 1500);
     },
 
-    end: function () {
-        this.params.muted = !this.battle_music.mute ? false : true;
+    end: function (won) {
+        this.params.muted = this.battle_music.mute ? true : false;
+        this.params.itemBag = this.player.itemBag;
+        if (won !== undefined) this.params.won = won;
+        else if (this.player.health > 0) this.params.won = true;
+        else this.params.won = false;
+        this.params.attackPower = this.player.attackPower;
         this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();

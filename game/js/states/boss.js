@@ -9,6 +9,7 @@ Ninja.Boss = function (game) {
     this.itemButtonOn, this.attackButtonOn;
     this.heartWidth;
     this.heartHeight;
+    this.itemBag;
 };
 
 Ninja.Boss.prototype = {
@@ -18,6 +19,7 @@ Ninja.Boss.prototype = {
         this.enemyHealth = 1000; 
         this.playerHealth = this.params.playerHealth;
         this.itemButtonOn = false, this.attackButtonOn = false;
+        this.itemBag = this.params.itemBag;
     },
     
     preload: function () {
@@ -54,6 +56,9 @@ Ninja.Boss.prototype = {
         this.player = this.add.sprite(90, 325, 'ninja');
         this.player.health = this.playerHealth;
         this.player.maxHealth = this.playerHealth;
+        this.player.retreatPower = .75;
+        this.player.attackPower = this.params.attackPower;
+        this.player.itemBag = this.itemBag.clone();
       
         this.enemy = this.add.sprite(this.game.width-162,325,'boss');
 	    this.enemy.health = this.enemyHealth;
@@ -202,25 +207,31 @@ Ninja.Boss.prototype = {
         var $item_anchor = $("<a name='items'>").text("Items");
         $item_menu.append($item_anchor);
         var $item_list = $("<ul id='item_list'>");
-        if (this.params.itemBag === undefined) {
+        if (this.player.itemBag.empty()) {
             $item_list.append($("<li>").text("Empty"));
         }
         else {
-            Object.keys(this.params.itemBag).forEach(function (key) {
-                var $elem = $("<li>");
-                var $anchor = $("<a id='"+key.replace("'",'').split(' ').join('_')+"'>").text(key + "  x"
+            Object.keys(this.player.itemBag.items).forEach(function (key) {
+                var name = key.replace("'",'').split(' ').join('_');
+                var $elem = $("<li id='"+name+"'>");
+                var $anchor = $("<a id='"+name+"'>").text(key + "  x"
                     + self.params.itemBag[key][0]);
                 $anchor.on("click", function () {
                     self.disableMenu();
-                    self.params.itemBag[key][0]--;
-                    self.useItem(self.player, self.params.itemBag[key][1]);
-                    if (self.params.itemBag[key][0] == 0) {
-                        delete self.params.itemBag[key];
-                        $item_list.remove($elem);
-                        if ($item_list.children().length === 0) {
-                            $item_list.append($("<li>").text("Empty"));
+                    var item = self.player.itemBag.remove(key);
+                    if (item) {
+                        item.use(self.player, self);
+                        if (self.player.itemBag.at(key).length === 0) {
+                            $elem.empty();
+                            $elem.remove();
+                            if ($item_list.children().length === 0) {
+                                $item_list.append($("<li>").text("Empty"));
+                            }
                         }
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
+                    else self.enableMenu();
                 });
                 $elem.append($anchor);
                 $item_list.append($elem);
@@ -257,20 +268,26 @@ Ninja.Boss.prototype = {
 
     itemMenuFuncs: function () {
         var self = this;
-        if (this.params.itemBag !== undefined) {
-            Object.keys(this.params.itemBag).forEach(function (key) {
-                var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
+        if (!thisplayer.itemBag.empty()) {
+            Object.keys(this.player.itemBag.items).forEach(function (key) {
+                var name = key.replace("'",'').split(' ').join('_');
+                var $anchor = $("#"+name);
                 $anchor.on("click", function () {
                     self.disableMenu();
-                    self.params.itemBag[key][0]--;
-                    self.useItem(self.player, self.params.itemBag[key][1]);
-                    if (self.params.itemBag[key][0] == 0) {
-                        delete self.params.itemBag[key];
-                        $item_list.remove($elem);
-                        if ($item_list.children().length === 0) {
-                            $item_list.append($("<li>").text("Empty"));
+                    var item = self.player.itemBag.remove(key);
+                    if (item) {
+                        item.use(self.player, self);
+                        if (self.player.itemBag.at(key).length === 0) {
+                            $(this).remove();
+                            $($(this).parent()).remove();
+                            if ($item_list.children().length === 0) {
+                                $item_list.append($("<li>").text("Empty"));
+                            }
                         }
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
+                    else self.enableMenu();
                 });
             });
         }
@@ -392,6 +409,7 @@ Ninja.Boss.prototype = {
         $("#closeButton").on('click', function () {
             self.cursors = self.game.input.keyboard.createCursorKeys();
             $("chestAnswer").val('');
+            $("#chestAnswer").show();
             overlay();
 	        self.enableMenu();
         });

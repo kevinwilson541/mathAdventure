@@ -6,6 +6,8 @@ Ninja.Boot = function (game) {
 Ninja.Boot.prototype = {
     preload: function () {
         $("#menu").hide();
+        $("#game_menu").hide();
+        $("#spoils").hide();
         this.load.audio('start_theme', 'assets/start_theme.mp3');
         this.load.audio('music', 'assets/dungeon_level.mp3');
         this.load.audio('battle_theme', 'assets/battle.mp3');
