@@ -15,6 +15,7 @@ Ninja.Game = function (game) {
     this.game_music;
     this.itemBag;
     this.won;
+    this.itemButtonOn;
 };
 
 Ninja.Game.prototype = {
@@ -26,6 +27,7 @@ Ninja.Game.prototype = {
         this.itemBag = new itemBag();
         this.won = false;
         this.attackPower = 1;
+        this.itemButtonOn = false;
         if (param) {
             this.chestLocs = param.chestLocs;
             this.initX = param.initX || this.initX;
@@ -48,7 +50,7 @@ Ninja.Game.prototype = {
         if (!this.muted) {
             this.game_music.play();
         }
-        this.game_music.mute = true;
+        else this.game_music.mute = true;
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -179,11 +181,101 @@ Ninja.Game.prototype = {
             $accept.on('click', function () {
                 self.coin_music.play();
                 self.player.itemBag.insert(item);
+                self.updateMenu(item.name);
                 $("#spoils").empty();
                 $("#spoils").hide();
             });
             $spoils.append($txt, $accept);
             $("#spoils").show();
+        }
+
+        this.initJQuery();
+    },
+    initJQuery: function () {
+        var self = this;
+        this.menu = $("#game_menu");
+        this.menu.append($("<h2>").text("Game Menu"));
+        var $item_menu = $("<div>");
+        var $item_anchor = $("<a name='items'>").text("Items");
+        $item_menu.append($item_anchor);
+        var $item_list = $("<ul id='item_list'>");
+        if (this.player.itemBag.empty()) {
+            $item_list.append($("<li>").text("Empty"));
+        }
+        else {
+            Object.keys(this.player.itemBag.items).forEach(function (key) {
+                var name = key.replace("'",'').split(' ').join('_');
+                var $elem = $("<li id='li_"+name+"'>");
+                var $anchor = $("<a id='"+name+"'>").text(key + "  x"
+                    + self.player.itemBag.at(key).length);
+                $anchor.on("click", function () {
+                    var item = self.player.itemBag.remove(key);
+                    if (item) {
+                        item.use(self.player, self);
+                        if (self.player.itemBag.at(key).length == 0) {
+                            $elem.empty();
+                            $elem.remove();
+                            if ($item_list.children().length === 0) {
+                                $item_list.append($("<li>").text("Empty"));
+                            }
+                        }
+                    }
+                });
+                $elem.append($anchor);
+                $item_list.append($elem);
+            });
+        }
+
+        $item_list.hide();
+        $item_menu.append($item_list);
+        $item_anchor.on("click", function () {
+            if (!self.itemButtonOn) {
+                self.itemButtonOn = true;
+                $item_list.show();
+            }
+            else {
+                self.itemButtonOn = false;
+                $item_list.hide();
+            }
+        });
+
+        var $save = $("<div>");
+        var $save_anchor = $("<a id='save'>").text("Save");
+        //place save functionality here
+        $save.append($save_anchor);
+        
+        this.menu.append($item_menu, $save);
+        this.menu.show();
+    },
+    updateMenu: function (key) {
+        var self = this;
+        var name = key.replace("'",'').split(' ').join('_');
+
+        if (this.player.itemBag.at(key).length === 1) {
+            var $elem = $("<li id='li_"+name+"'>");
+            var $item_list = $("#item_list");
+             if ($($item_list.children()[0]).text() === 'Empty') {
+                $item_list.empty();
+            }
+            var $anchor = $("<a id='"+name+"'>").text(key + '   x'+this.player.itemBag.at(key).length);
+            $anchor.on("click", function () {
+                var item = self.player.itemBag.remove(key);
+                if (item) {
+                    item.use(self.player, self);
+                    if (self.player.itemBag.at(key).length == 0) {
+                        $elem.empty();
+                        $elem.remove();
+                        if ($item_list.children().length === 0) {
+                            $item_list.append($("<li>").text("Empty"));
+                        }
+                    }
+                }
+            });
+            $elem.append($anchor);
+            $item_list.append($elem);
+        }
+        else {
+            $("#"+name).text(key+"   x"+this.player.itemBag.at(key).length);
         }
     },
     update: function () {
@@ -198,6 +290,8 @@ Ninja.Game.prototype = {
         if ((typeof this.encounterLocs[loc]) !== 'undefined') {
             delete this.encounterLocs[loc];
             this.game_music.stop();
+            this.menu.empty();
+            this.menu.hide();
             this.game.state.start('Encounter', true, false, {
                 initX: Math.floor(this.player.x / 16)*16,
                 initY: Math.floor(this.player.y / 16)*16,
@@ -261,6 +355,8 @@ Ninja.Game.prototype = {
 
     bossFight: function (player, fire) {
         this.game_music.stop();
+        this.menu.empty();
+        this.menu.hide();
         //this.fires.removeAll();
         this.game.state.start('Boss', true, false, {
             initX: Math.floor(this.player.x / 16)*16,
@@ -276,6 +372,8 @@ Ninja.Game.prototype = {
 
     finish: function (player, door) {
         this.game_music.stop();
+        this.menu.empty();
+        this.menu.hide();
         var params = {
             'initX': 64,
             'initY': 16,
@@ -343,6 +441,7 @@ Ninja.Game.prototype = {
                 self.coin_music.play();
                 var item = self.genRandItem();
                 self.player.itemBag.insert(item);
+                self.updateMenu(item.name);
                 $("#question").text('You received 1 ' + item.name + '!');
             }
             else {

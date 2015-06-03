@@ -4,35 +4,62 @@ function item(name, quantity) {
 	this.quantity = quantity;
 };
 
-item.prototype.use = function (entity) {
-	console.log(entity);
+item.prototype.use = function (entity, env) {
+    this.env = env;
+    this.player = entity;
+    var self = this;
+    if (self.env.enemy !== undefined) {
+        setTimeout(function () {
+            self.env.enemy.addChild(self.player.removeChildAt(1));
+            self.env.enemyMove();
+        }, 1100);
+    }
 };
 
 function healthPotion(name, quantity) {
 	item.call(this, name, quantity);
 };
 
-healthPotion.prototype.use = function (player) {
-	player.health = this.quantity;
-    var hp = player.getChildAt(0);
-    hp.crop();
-    hp.crop(new Phaser.Rectangle(0,0,player.health/player.maxHealth*hp.width,48));
+healthPotion.prototype.use = function (player, env) {
+    item.prototype.use.apply(this, [player, env]);
+    this.effect = this.env.game.add.tween(this.player).to({tint: 0xFF0000}, 1000, Phaser.Easing.Linear.InOut, true, 0, 0, true);
+    var self = this;
+    setTimeout(function () {
+        self.player.health = self.quantity;
+        if (self.player.children.length) {
+            var hp = self.player.getChildAt(0);
+            hp.crop();
+            hp.crop(new Phaser.Rectangle(0,0,self.player.health/self.player.maxHealth*hp.width,48));
+        }
+    }, 1000);
 };
 
-function attackPotion(name, quantity) {
+function attackPotion(name, quantity, env) {
 	item.call(this, name, quantity);
 };
 
-attackPotion.prototype.use = function (player) {
-	player.attackPower += this.quantity;
+attackPotion.prototype.use = function (player, env) {
+    item.prototype.use.apply(this, [player, env]);
+    this.effect = this.env.game.add.tween(this.player).to({tint: 0x00FF00}, 1000, Phaser.Easing.Linear.InOut, true, 0, 0, true);
+    var self = this;
+    setTimeout(function () {
+        self.player.attackPower += self.quantity;
+    }, 1000);
 };
 
 function retreatPotion(name, quantity) {
 	item.call(this, name, quantity);
 };
 
-retreatPotion.prototype.use = function (player) {
-	player.retreatPower = this.quantity;
+retreatPotion.prototype.use = function (player, env) {
+    item.prototype.use.apply(this, [player, env]);
+    this.effect = this.env.game.add.tween(this.player).to({tint: 0x0000FF}, 1000, Phaser.Easing.Linear.InOut, true, 0, 0, true);
+    var self = this;
+    if (self.player.retreatPower) {
+        setTimeout(function () {
+            self.player.retreatPower = self.quantity;
+        }, 1000);
+    }
 };
 
 function itemBag() {

@@ -42,8 +42,8 @@ Ninja.Encounter.prototype = {
         this.ultimate_back = this.game.add.audio('ultimateBack');
 
         this.battle_music.loop = true;
-        this.battle_music.play();
         if (this.muted) this.battle_music.mute = true;
+        else this.battle_music.play();
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -138,7 +138,10 @@ Ninja.Encounter.prototype = {
 
         var muted = this.game.input.keyboard.addKey(77);
         muted.onDown.add(function () {
-            if (self.battle_music.mute) self.battle_music.mute  = false;
+            if (self.battle_music.mute) {
+                self.battle_music.mute  = false;
+                if (!self.battle_music.isPlaying) self.battle_music.play();
+            }
             else self.battle_music.mute = true;
         }, this);
 
@@ -217,7 +220,7 @@ Ninja.Encounter.prototype = {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
                     if (item) {
-                        item.use(self.player);
+                        item.use(self.player, self);
                         if (self.player.itemBag.at(key).length == 0) {
                             $elem.empty();
                             $elem.remove();
@@ -225,8 +228,8 @@ Ninja.Encounter.prototype = {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
-                        self.enemy.addChild(self.player.removeChildAt(1));
-                        self.enemyMove();
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
                     else self.enableMenu();
                 });
@@ -251,12 +254,14 @@ Ninja.Encounter.prototype = {
         var $retreat = $("<div>");
         var $retreat_anchor = $("<a id='retreat'>").text("Retreat");
         $retreat_anchor.on("click", function () {
+            self.disableMenu();
             var ret = Math.random();
 		    if (ret < self.player.retreatPower)
 			    self.end(false);
 		    else {	
-                	self.enemy.addChild(self.player.removeChildAt(1));
-                	self.enemyMove();
+                console.log('enemy moving');
+                self.enemy.addChild(self.player.removeChildAt(1));
+                self.enemyMove();
 		    }
         });
         $retreat.append($retreat_anchor);
@@ -286,7 +291,7 @@ Ninja.Encounter.prototype = {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
                     if (item) {
-                        item.use(self.player);
+                        item.use(self.player, self);
                         if (self.player.itemBag.at(key).length == 0) {
                             $("#li_"+name).empty();
                             $("#li_"+name).remove();
@@ -294,8 +299,8 @@ Ninja.Encounter.prototype = {
                                 $("#item_list").append($("<li>").text("Empty"));
                             }
                         }
-                        self.enemy.addChild(self.player.removeChildAt(1));
-                        self.enemyMove();
+                        //self.enemy.addChild(self.player.removeChildAt(1));
+                        //self.enemyMove();
                     }
                     else self.enableMenu();
                 });
@@ -322,10 +327,14 @@ Ninja.Encounter.prototype = {
 	    self.attackMenuFuncs();
 	    self.itemMenuFuncs();
         $("#retreat").on('click', function () {
+            self.disableMenu();
             var ret = Math.random();
-		    if (ret < self.player.retreatPower)
+            console.log(ret);
+		    if (ret < self.player.retreatPower) {
 			    self.end(false);
+            }
 		    else {	
+                console.log('enemy moving');
                 self.enemy.addChild(self.player.removeChildAt(1));
                 self.enemyMove();
 		    }
