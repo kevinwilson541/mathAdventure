@@ -42,8 +42,8 @@ Ninja.Encounter.prototype = {
         this.ultimate_back = this.game.add.audio('ultimateBack');
 
         this.battle_music.loop = true;
-        this.battle_music.play();
         if (this.muted) this.battle_music.mute = true;
+        else this.battle_music.play();
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
@@ -138,7 +138,10 @@ Ninja.Encounter.prototype = {
 
         var muted = this.game.input.keyboard.addKey(77);
         muted.onDown.add(function () {
-            if (self.battle_music.mute) self.battle_music.mute  = false;
+            if (self.battle_music.mute) {
+                self.battle_music.mute  = false;
+                if (!self.battle_music.isPlaying) self.battle_music.play();
+            }
             else self.battle_music.mute = true;
         }, this);
 

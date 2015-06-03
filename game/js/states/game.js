@@ -48,7 +48,7 @@ Ninja.Game.prototype = {
         if (!this.muted) {
             this.game_music.play();
         }
-        this.game_music.mute = true;
+        else this.game_music.mute = true;
 
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
