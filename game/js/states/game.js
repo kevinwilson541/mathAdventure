@@ -449,17 +449,14 @@ Ninja.Game.prototype = {
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
                 $("#prompt").text("CORRECT!");
                 self.coin_music.play();
-<<<<<<< HEAD
                 //ADD ITEMS HERE
 	    
 	    }
-=======
                 var item = self.genRandItem();
                 self.player.itemBag.insert(item);
                 self.updateMenu(item.name);
                 $("#question").text('You received 1 ' + item.name + '!');
             }
->>>>>>> 502ce24125fa2c44e00b4169041c8d579eb43e5d
             else {
                 $("#question").text("INCORRECT");
                 self.nocoin_music.play();
