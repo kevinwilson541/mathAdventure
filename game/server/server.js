@@ -64,7 +64,7 @@ var UserSchema = mongoose.Schema({   user: String,
                                      password: String,
                                      compromised: [String],
 				     state: Object});
-
+// added object
 var User = mongoose.model("User", UserSchema);
 
 //routes for login page
