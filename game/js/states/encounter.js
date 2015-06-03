@@ -254,12 +254,14 @@ Ninja.Encounter.prototype = {
         var $retreat = $("<div>");
         var $retreat_anchor = $("<a id='retreat'>").text("Retreat");
         $retreat_anchor.on("click", function () {
+            self.disableMenu();
             var ret = Math.random();
 		    if (ret < self.player.retreatPower)
 			    self.end(false);
 		    else {	
-                	self.enemy.addChild(self.player.removeChildAt(1));
-                	self.enemyMove();
+                console.log('enemy moving');
+                self.enemy.addChild(self.player.removeChildAt(1));
+                self.enemyMove();
 		    }
         });
         $retreat.append($retreat_anchor);
@@ -325,10 +327,14 @@ Ninja.Encounter.prototype = {
 	    self.attackMenuFuncs();
 	    self.itemMenuFuncs();
         $("#retreat").on('click', function () {
+            self.disableMenu();
             var ret = Math.random();
-		    if (ret < self.player.retreatPower)
+            console.log(ret);
+		    if (ret < self.player.retreatPower) {
 			    self.end(false);
+            }
 		    else {	
+                console.log('enemy moving');
                 self.enemy.addChild(self.player.removeChildAt(1));
                 self.enemyMove();
 		    }
