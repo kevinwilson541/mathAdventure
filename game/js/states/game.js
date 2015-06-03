@@ -451,7 +451,6 @@ Ninja.Game.prototype = {
                 self.coin_music.play();
                 //ADD ITEMS HERE
 	    
-	    }
                 var item = self.genRandItem();
                 self.player.itemBag.insert(item);
                 self.updateMenu(item.name);
