@@ -242,6 +242,16 @@ Ninja.Game.prototype = {
         var $save = $("<div>");
         var $save_anchor = $("<a id='save'>").text("Save");
         //place save functionality here
+	$save_anchor.on("click", function () {
+		var state = {playerx: self.player.x, playery: self.player.y, playerhealth: self.player.health, chestlocs: self.chestLocs,
+			     playeritems: JSON.stringify(self.player.itemBag)};
+		console.log(self.player.itemBag);
+		console.log("ihfidhfidhifhsipdhf");
+		var test = {jname: "jason", gname: "grant", aname: "adam"};
+		$.post("/save", state, function (data) {
+			console.log("KEVINNN");
+		});
+	});
         $save.append($save_anchor);
         
         this.menu.append($item_menu, $save);

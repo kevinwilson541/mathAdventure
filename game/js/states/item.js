@@ -68,6 +68,8 @@ function itemBag() {
 };
 
 itemBag.prototype.insert = function (item) {
+    if (!item)
+	return;
     if (this.items[item.name] !== undefined) {
         this.items[item.name].push(item);
     }

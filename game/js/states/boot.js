@@ -11,13 +11,16 @@ Ninja.Boot.prototype = {
         this.load.audio('start_theme', 'assets/start_theme.mp3');
         this.load.audio('music', 'assets/dungeon_level.mp3');
         this.load.audio('battle_theme', 'assets/battle.mp3');
+        this.load.audio('start_theme', '../../assets/start_theme.mp3');
+        this.load.audio('music', '../../assets/dungeon_level.mp3');
+        this.load.audio('battle_theme', '../../assets/battle.mp3');
 
-        this.load.image('atari', 'assets/atari.png');
-        this.load.image('raster', 'assets/pink-raster.png');
-        this.load.image('floor', 'assets/checker-floor.png');
-        this.load.image('bluePink', 'assets/bluepink_font.png');
-        this.load.image('loader', 'assets/loading.jpg');
-        this.load.bitmapFont('carrier_command', 'assets/carrier_command.png', 'assets/carrier_command.xml');
+        this.load.image('atari', '../../assets/atari.png');
+        this.load.image('raster', '../../assets/pink-raster.png');
+        this.load.image('floor', '../../assets/checker-floor.png');
+        this.load.image('bluePink', '../../assets/bluepink_font.png');
+        this.load.image('loader', '../../assets/loading.jpg');
+        this.load.bitmapFont('carrier_command', '../../assets/carrier_command.png', '../../assets/carrier_command.xml');
     },
 
     create: function () {
