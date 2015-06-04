@@ -487,17 +487,19 @@ Ninja.Encounter.prototype = {
     end: function (won) {
         this.params.muted = this.battle_music.mute ? true : false;
         this.params.itemBag = this.player.itemBag;
-	this.battle_music.stop();
+	    this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
         if (this.player.health <= 0) {
-		this.params.playerHealth = 250;
-		this.game.state.start('Game', this.params); 
-		return;
-	}
-	if (won !== undefined) this.params.won = won;
+            this..params = {};
+            this.params.muted = this.battle_music.mute ? true : false;
+		    this.params.playerHealth = 250;
+		    this.game.state.start('Game', this.params); 
+		    return;
+	    }
+        if (won !== undefined) this.params.won = won;
         else if (this.player.health > 0) this.params.won = true;
-	else this.params.won = false;
+        else this.params.won = false;
         this.params.attackPower = this.player.attackPower;
         this.params.playerHealth = this.player.health;
         this.game.state.start("Game", true, false, this.params);
