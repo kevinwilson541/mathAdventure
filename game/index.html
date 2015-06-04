@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+
+  <head>
+
+      <style>
+
+          .directions {
+                        font-size: x-large;
+                        color: red
+                      }
+
+      </style>
+
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+      <script>
+
+       function handleLoginResult(resp_body) {
+                      console.log( resp_body );
+                      $("#feedback").text( JSON.stringify( resp_body) );
+                      if( resp_body.url ) window.location = resp_body.url; //load main app page
+                  };
+
+       function handleRegisterResult(resp_body) {
+              console.log( resp_body );
+              $("#feedback").text( JSON.stringify( resp_body) )
+              if( resp_body.url ) window.location = resp_body.url;
+          };
+
+        var main = function (){
+
+              $("button#login").on("click", function (event){ 
+                    $.get("login.json",
+                           {"name": $("#old_name").val(), "password": $("#old_pass").val() },
+                           handleLoginResult);
+               });
+
+               $("button#register").on("click", function (event){ 
+                    $.post("register.json",
+                           {"name": $("#new_name").val(), "password": $("#new_pass").val() },
+                           handleRegisterResult);
+               });
+
+        }
+        $(document).ready(main);
+      </script>
+  </head>
+
+  <body>
+
+    <h1>User Login</h1>
+
+     <section id="register">
+        <span class="directions">Choose login name: </span>
+        <input id="new_name" type="text">
+        <p>
+         <span class="directions">Choose login password: </span>
+        <input id="new_pass" type="text">
+        <p>
+        <button id="register">Register</button>
+    </section>
+
+    <section id="login">
+        <span class="directions">Login if have name: </span>
+        <input id="old_name" type="text">
+        <p>
+        <span class="directions">and password: </span>
+        <input id="old_pass" type="text">
+        <p>
+        <button id="login">Log In</button>
+    </section>
+    
+    <section id="result">
+        <h2>Feedback: <span id="feedback"></span></h2>
+    </section>
+
+  </body>
+</html>
+
