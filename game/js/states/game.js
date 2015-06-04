@@ -32,7 +32,7 @@ Ninja.Game.prototype = {
             this.chestLocs = param.chestLocs;
             this.initX = param.initX || this.initX;
             this.initY = param.initY || this.initY;
-	    this.playerHealth = param.playerHealth || 250;
+	        this.playerHealth = param.playerHealth || 250;
             this.muted = param.muted || this.muted;
             this.itemBag = param.itemBag || this.itemBag;
             this.won = param.won || this.won;
@@ -243,16 +243,13 @@ Ninja.Game.prototype = {
         var $save = $("<div>");
         var $save_anchor = $("<a id='save'>").text("Save");
         //place save functionality here
-	$save_anchor.on("click", function () {
-		var state = {playerx: self.player.x, playery: self.player.y, playerHealth: self.player.health, chestLocs: self.chestLocs,
-			     playeritems: JSON.stringify(self.player.itemBag)};
-		console.log(self.player.itemBag);
-		console.log("ihfidhfidhifhsipdhf");
-		var test = {jname: "jason", gname: "grant", aname: "adam"};
-		$.post("/save", state, function (data) {
-			console.log("KEVINNN");
-		});
-	});
+	    $save_anchor.on("click", function () {
+            var state = {playerx: Math.floor(self.player.x), playery: Math.floor(self.player.y), playerHealth: self.player.health, chestLocs: self.chestLocs, playeritems: JSON.stringify(self.player.itemBag)};
+            var test = {jname: "jason", gname: "grant", aname: "adam"};
+            $.post("/save", state, function (data) {
+                console.log("Successful save of state");
+		    });
+	    });
         $save.append($save_anchor);
         
         this.menu.append($item_menu, $save);

@@ -70,13 +70,14 @@ Ninja.MainMenu.prototype = {
             muted: !this.start_music.mute ? false : true
         };
 	    this.start_music.stop();
+        var self = this;
         $.get("/retrieve", function (data) {
-		console.log("brooo?");
-		params["initX"] =  data.playerx;
-		params["initY"] = data.playery;
-		params["chestLocs"] = data.chestLocs;
-		params["playerhealth"] = data.playerhealth;
-		this.game.state.start('Loader', true, false, params);
-	});
+            params["initX"] =  parseInt(data.playerx);
+            params["initY"] = parseInt(data.playery);
+            params["chestLocs"] = data.chestLocs;
+            params["playerhealth"] = parseInt(data.playerHealth);
+            params['itemBag'] = new itemBag(JSON.parse(data.playeritems));
+            self.game.state.start('Loader', true, false, params);
+	    });
     }
 }

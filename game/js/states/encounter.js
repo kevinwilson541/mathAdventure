@@ -259,7 +259,6 @@ Ninja.Encounter.prototype = {
 		    if (ret < self.player.retreatPower)
 			    self.end(false);
 		    else {	
-                console.log('enemy moving');
                 self.enemy.addChild(self.player.removeChildAt(1));
                 self.enemyMove();
 		    }
@@ -329,12 +328,10 @@ Ninja.Encounter.prototype = {
         $("#retreat").on('click', function () {
             self.disableMenu();
             var ret = Math.random();
-            console.log(ret);
 		    if (ret < self.player.retreatPower) {
 			    self.end(false);
             }
 		    else {	
-                console.log('enemy moving');
                 self.enemy.addChild(self.player.removeChildAt(1));
                 self.enemyMove();
 		    }

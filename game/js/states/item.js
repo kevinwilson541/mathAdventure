@@ -62,9 +62,20 @@ retreatPotion.prototype.use = function (player, env) {
     }
 };
 
-function itemBag() {
+function itemBag(bag) {
     this.size = 0;
     this.items = {};
+    if (bag) {
+        var itemGen = new ItemGenerator();
+        this.size = bag.size;
+        var self = this;
+        Object.keys(bag.items).forEach(function (item) {
+            self.items[item] = [];
+            bag.items[item].forEach(function (obj) {
+                self.items[item].push(itemGen.generate(obj));
+            });
+        });
+    }
 };
 
 itemBag.prototype.insert = function (item) {
@@ -81,7 +92,11 @@ itemBag.prototype.remove = function (item) {
     if (this.items[item] !== undefined &&
         this.items[item].length > 0) {
         this.size--;
-        return this.items[item].pop();
+        var returnItem = this.items[item].pop();
+        if (this.items[item].length === 0) {
+            delete this.items[item];
+        }
+        return returnItem;
     };
     return null;
 };
@@ -95,7 +110,7 @@ itemBag.prototype.size = function () {
 };
 
 itemBag.prototype.at = function (item) {
-    return this.items[item];
+    return this.items[item] || [];
 };
 
 itemBag.prototype.clone = function () {
@@ -109,3 +124,19 @@ itemBag.prototype.clone = function () {
     });
     return ib;
 };
+
+function ItemGenerator() {
+    this.suffixes = {
+        'Health Potion': healthPotion,
+        'Retreat Potion': retreatPotion,
+        'Attack Potion': attackPotion
+    };
+}
+
+ItemGenerator.prototype.generate = function (item) {
+    if (this.suffixes[item.name] !== undefined) {
+        return new this.suffixes[item.name](item.name, item.quantity);
+    }
+    else return new item(item.name, item.quantity);
+};
+
