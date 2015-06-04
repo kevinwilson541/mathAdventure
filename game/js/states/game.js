@@ -32,6 +32,7 @@ Ninja.Game.prototype = {
             this.chestLocs = param.chestLocs;
             this.initX = param.initX || this.initX;
             this.initY = param.initY || this.initY;
+	    this.playerHealth = param.playerHealth || 250;
             this.muted = param.muted || this.muted;
             this.itemBag = param.itemBag || this.itemBag;
             this.won = param.won || this.won;
@@ -80,7 +81,7 @@ Ninja.Game.prototype = {
         this.player.animations.add('turn', [4], 10, true);
         this.player.animations.add('right', [5,6,7,8], 10, true);
         this.player.itemBag = this.itemBag;
-        this.player.health = 250;
+        this.player.health = this.playerHealth;
         this.player.maxHealth = 250;
 
         this.camera.follow(this.player);
@@ -243,7 +244,7 @@ Ninja.Game.prototype = {
         var $save_anchor = $("<a id='save'>").text("Save");
         //place save functionality here
 	$save_anchor.on("click", function () {
-		var state = {playerx: self.player.x, playery: self.player.y, playerhealth: self.player.health, chestlocs: self.chestLocs,
+		var state = {playerx: self.player.x, playery: self.player.y, playerHealth: self.player.health, chestLocs: self.chestLocs,
 			     playeritems: JSON.stringify(self.player.itemBag)};
 		console.log(self.player.itemBag);
 		console.log("ihfidhfidhifhsipdhf");
