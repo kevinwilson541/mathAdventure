@@ -1,0 +1,52 @@
+
+body {
+    margin: 0;
+    font-family: 'Verdana', Helvetica, Arial, sans-serif !important;
+    background-image: url("background.png");
+}
+
+
+section#register{
+	text-align: center;
+	margin-top: 50px;
+}
+
+
+section#login{
+
+	margin-top: 75px;
+	text-align: center;
+}
+
+
+@font-face {
+	font-family: "8bit";
+	src: url(8bit.ttf) format("truetype");
+} 
+
+@font-face {
+	font-family: "ninjastar";
+	src: url(ninja-star.ttf) format("truetype");
+} 
+
+
+h1{
+font-size: 60pt;
+color: white;
+font-family:"ninjastar";
+text-align: center;
+
+
+}
+
+.directions {
+font-family: "8bit";
+font-size: large;
+color: red;
+font-family:"8bit";
+}
+
+button {
+	font-family: "8bit", sans serif;
+	font-size: auto;
+}
