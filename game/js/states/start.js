@@ -70,6 +70,13 @@ Ninja.MainMenu.prototype = {
             muted: !this.start_music.mute ? false : true
         };
 	    this.start_music.stop();
-        this.game.state.start('Loader', true, false, params);
+        $.get("/retrieve", function (data) {
+		console.log("brooo?");
+		params["initX"] =  data.playerx;
+		params["initY"] = data.playery;
+		params["chestLocs"] = data.chestLocs;
+		params["playerhealth"] = data.playerhealth;
+		this.game.state.start('Loader', true, false, params);
+	});
     }
 }

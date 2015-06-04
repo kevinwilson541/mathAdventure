@@ -86,7 +86,6 @@ app.get("/retrieve", getSaveState);
 //route handlers - should refactor into separate files
 
 function getSaveState(req, res) {
-  console.log("the cookie on get", req.signedCookies);
   var user = req.signedCookies.user; // gets user cookie
   if (user) {
     res.cookie('user', user, cookie_options);	// sets user cookie
@@ -98,11 +97,16 @@ function getSaveState(req, res) {
 }
 
 function postSaveState(req, res) {
-  console.log("the cookie on get", req.signedCookies);
   var user = req.signedCookies.user;
   if (user) {
-    console.log("requested " + JSON.stringify(req.body));
-    console.log("user is " + user);   
+     User.update({'user': user}, {$set: {state: JSON.parse(JSON.stringify(req.body))}}, function (err, result) {
+	if (err)
+	    return console.log(err);
+	if (result)
+		console.log("updated database");
+	});	    
+    //console.log("requested " + JSON.stringify(req.body));
+    //console.log("user is " + user);   
     res.cookie('user', user, cookie_options);
     res.json({'answer': 'whatever'});
   } else {
