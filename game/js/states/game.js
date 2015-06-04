@@ -32,8 +32,7 @@ Ninja.Game.prototype = {
             this.chestLocs = param.chestLocs;
             this.initX = param.initX || this.initX;
             this.initY = param.initY || this.initY;
-	    this.playerHealth = param.playerHealth || 250;
-	    console.log("param " + param.playerHealth);
+	        this.playerHealth = param.playerHealth || 250;
             this.muted = param.muted || this.muted;
             this.itemBag = param.itemBag || this.itemBag;
             this.won = param.won || this.won;

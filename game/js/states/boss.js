@@ -411,13 +411,7 @@ Ninja.Boss.prototype = {
             $("#chestAnswer").val('');
             $(this).hide();
             $("#closeButton").hide();
-	        /*var q = genDiff();
-            $("#question").text(q[1]);
-            $("#prompt").show();
-            $("#prompt").text(q[0]);
-            $("#answer").text(q[2]);
-            $("#chestAnswer").show();*/
-            overlay();
+	        overlay();
         });
         $("#closeButton").on('click', function () {
             self.cursors = self.game.input.keyboard.createCursorKeys();
@@ -446,13 +440,21 @@ Ninja.Boss.prototype = {
     },
 
     end: function () {
+        this.params = {};
         this.params.muted = !this.battle_music.mute ? false : true;
         this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
         if (this.player.health <= 0) {
-	    this.params.playerHealth = 250;
-            this.game.state.start('Game', this.params);
+	        this.params.playerHealth = 250;
+            var q = genDiff();
+            $("#question").text(q[1]);
+            console.log($("#question").text());
+            $("#prompt").show();
+            $("#prompt").text(q[0]);
+            $("#answer").text(q[2]);
+            $("#chestAnswer").show();
+            this.game.state.start('Game', true, false, this.params);
 	    return;
         }
         else {
