@@ -1,0 +1,50 @@
+<style type="text/css">
+    body {
+        margin: 0;
+        font-family: 'Verdana', Helvetica, Arial, sans-serif !important;
+    }
+
+    @font-face {
+	font-family: "8bit";
+ 	src: url(../assets/8bit.ttf) format("truetype");
+    } 
+    
+    #overlay {
+	visibility: hidden;
+    position: absolute;
+	width: 500px;
+	padding: 2px;
+    text-align:center;
+	background-color: #000;
+	border-radius: 15px;
+    z-index: 1000;
+	left: 150px;
+	top: 150px;   	
+    }
+
+    #overlay div {
+	font-family: "8bit", sans serif;
+	font-size: 75%;
+	display: block;
+	margin: 0 auto;
+	background-color: #A4A4A4;
+	border-radius: 15px;
+        padding:15px;
+    }
+
+    button {
+    	font-family: "8bit", sans serif;
+    	font-size: 25%;
+    }
+
+    #chestAnswer {
+	display: block;
+	margin: 0 auto;
+	width: 75px;
+    }     
+
+    #dancing {
+        position: absolute;
+        z-index: 1000;
+    }
+</style>
