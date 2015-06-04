@@ -3,28 +3,18 @@
 
   <head>
 
-      <style>
 
-          .directions {
-                        font-size: x-large;
-                        color: red
-                      }
-
-      </style>
-
-      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-
+      <script src="//code.jquery.com/jquery-latest.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="style/login-style.css">
       <script>
 
        function handleLoginResult(resp_body) {
                       console.log( resp_body );
-                      $("#feedback").text( JSON.stringify( resp_body) );
                       if( resp_body.url ) window.location = resp_body.url; //load main app page
                   };
 
        function handleRegisterResult(resp_body) {
               console.log( resp_body );
-              $("#feedback").text( JSON.stringify( resp_body) )
               if( resp_body.url ) window.location = resp_body.url;
           };
 
@@ -49,31 +39,28 @@
 
   <body>
 
-    <h1>User Login</h1>
+    <h1>Math Adventure</h1>
 
      <section id="register">
-        <span class="directions">Choose login name: </span>
+        <span class="directions">Register username: </span>
         <input id="new_name" type="text">
         <p>
-         <span class="directions">Choose login password: </span>
+         <span class="directions">Register password: </span>
         <input id="new_pass" type="text">
         <p>
         <button id="register">Register</button>
     </section>
 
     <section id="login">
-        <span class="directions">Login if have name: </span>
+        <span class="directions">Username: </span>
         <input id="old_name" type="text">
         <p>
-        <span class="directions">and password: </span>
-        <input id="old_pass" type="text">
+        <span class="directions">Password: </span>
+        <input id="old_pass" type="password">
         <p>
         <button id="login">Log In</button>
     </section>
     
-    <section id="result">
-        <h2>Feedback: <span id="feedback"></span></h2>
-    </section>
 
   </body>
 </html>

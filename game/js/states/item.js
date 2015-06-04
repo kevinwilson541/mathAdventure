@@ -9,7 +9,8 @@ item.prototype.use = function (entity, env) {
     this.player = entity;
     var self = this;
     if (self.env.enemy !== undefined) {
-        setTimeout(function () {
+        console.log(self.player.children);
+	setTimeout(function () {
             self.env.enemy.addChild(self.player.removeChildAt(1));
             self.env.enemyMove();
         }, 1100);
@@ -117,7 +118,7 @@ itemBag.prototype.clone = function () {
     var ib = new itemBag();
     var self = this;
     Object.keys(this.items).forEach(function (item) {
-        var l = self.items[key];
+        var l = self.items[item];
         for (var i = 0; i < l.length; ++i) {
             ib.insert(l[i]);
         }

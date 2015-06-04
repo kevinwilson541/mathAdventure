@@ -57,7 +57,7 @@ Ninja.Encounter.prototype = {
 
         this.player = this.add.sprite(90, 325, 'ninja');
         this.player.health = this.playerHealth;
-        this.player.maxHealth = this.playerHealth;
+        this.player.maxHealth = 250;
       	this.player.retreatPower = .75;
 	    this.player.attackPower = this.params.attackPower;
         this.player.itemBag = this.itemBag;
@@ -65,11 +65,12 @@ Ninja.Encounter.prototype = {
 	    this.chooseEnemy(); 
 	    this.enemy.health = this.enemyHealth;
         this.enemy.maxHealth = this.enemyHealth;
-                
-        this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
+        
+	this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
         this.enemy.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.enemy.width)/2, -1*this.heartHeight, 'health'));
-
-        this.physics.enable(this.player, Phaser.Physics.ARCADE);
+	this.player.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.player.health/self.player.maxHealth)*self.player.getChildAt(0).width), 48));
+        
+	this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.enemy, Phaser.Physics.ARCADE);
 
         this.player.body.gravity.y = 0;
@@ -228,6 +229,9 @@ Ninja.Encounter.prototype = {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
+			else {
+				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			}
                         //self.enemy.addChild(self.player.removeChildAt(1));
                         //self.enemyMove();
                     }
@@ -298,6 +302,9 @@ Ninja.Encounter.prototype = {
                                 $("#item_list").append($("<li>").text("Empty"));
                             }
                         }
+			else {
+				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			}
                         //self.enemy.addChild(self.player.removeChildAt(1));
                         //self.enemyMove();
                     }
@@ -480,14 +487,19 @@ Ninja.Encounter.prototype = {
     end: function (won) {
         this.params.muted = this.battle_music.mute ? true : false;
         this.params.itemBag = this.player.itemBag;
-        if (won !== undefined) this.params.won = won;
-        else if (this.player.health > 0) this.params.won = true;
-        else this.params.won = false;
-        this.params.attackPower = this.player.attackPower;
-        this.params.playerHealth = this.player.health;
 	this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
+        if (this.player.health <= 0) {
+		this.params.playerHealth = 250;
+		this.game.state.start('Game', this.params); 
+		return;
+	}
+	if (won !== undefined) this.params.won = won;
+        else if (this.player.health > 0) this.params.won = true;
+	else this.params.won = false;
+        this.params.attackPower = this.player.attackPower;
+        this.params.playerHealth = this.player.health;
         this.game.state.start("Game", true, false, this.params);
     }
 }

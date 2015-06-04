@@ -75,7 +75,8 @@ Ninja.MainMenu.prototype = {
             params["initX"] =  parseInt(data.playerx);
             params["initY"] = parseInt(data.playery);
             params["chestLocs"] = data.chestLocs;
-            params["playerhealth"] = parseInt(data.playerHealth);
+            params["playerHealth"] = parseInt(data.playerHealth);
+	    console.log(data.playerHealth);
             params['itemBag'] = new itemBag(JSON.parse(data.playeritems));
             self.game.state.start('Loader', true, false, params);
 	    });

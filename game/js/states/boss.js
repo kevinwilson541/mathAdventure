@@ -55,7 +55,7 @@ Ninja.Boss.prototype = {
 
         this.player = this.add.sprite(90, 325, 'ninja');
         this.player.health = this.playerHealth;
-        this.player.maxHealth = this.playerHealth;
+        this.player.maxHealth = 250;
         this.player.retreatPower = .75;
         this.player.attackPower = this.params.attackPower;
         this.player.itemBag = this.itemBag.clone();
@@ -66,8 +66,9 @@ Ninja.Boss.prototype = {
                 
         this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
         this.enemy.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.enemy.width)/2, -1*this.heartHeight, 'health'));
-
-        this.physics.enable(this.player, Phaser.Physics.ARCADE);
+	this.player.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.player.health/self.player.maxHealth)*self.player.getChildAt(0).width), 48));
+        
+	this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.enemy, Phaser.Physics.ARCADE);
 
         this.player.body.gravity.y = 0;
@@ -125,7 +126,7 @@ Ninja.Boss.prototype = {
                 lightning.stop(2500);
             },
             cyclone: function (dam) {
-                var windattack = new Wind(self, self.player, self.enemy, dam);
+                var windattack = new Wind(self, self.enemy, self.player, dam);
                 windattack.start();
                 windattack.stop(1750);
             }
@@ -213,21 +214,27 @@ Ninja.Boss.prototype = {
         else {
             Object.keys(this.player.itemBag.items).forEach(function (key) {
                 var name = key.replace("'",'').split(' ').join('_');
-                var $elem = $("<li id='"+name+"'>");
+                var $elem = $("<li id='li_"+name+"'>");
                 var $anchor = $("<a id='"+name+"'>").text(key + "  x"
-                    + self.params.itemBag[key][0]);
+                    + self.player.itemBag.at(key).length);
                 $anchor.on("click", function () {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
                     if (item) {
                         item.use(self.player, self);
+			console.log("item used");
+			console.log(self.player.itemBag.at(key).length);
                         if (self.player.itemBag.at(key).length === 0) {
                             $elem.empty();
                             $elem.remove();
-                            if ($item_list.children().length === 0) {
+                            console.log($item_list.children().length);
+				if ($item_list.children().length === 0) {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
+			else {
+				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			}
                         //self.enemy.addChild(self.player.removeChildAt(1));
                         //self.enemyMove();
                     }
@@ -268,7 +275,7 @@ Ninja.Boss.prototype = {
 
     itemMenuFuncs: function () {
         var self = this;
-        if (!thisplayer.itemBag.empty()) {
+        if (!this.player.itemBag.empty()) {
             Object.keys(this.player.itemBag.items).forEach(function (key) {
                 var name = key.replace("'",'').split(' ').join('_');
                 var $anchor = $("#"+name);
@@ -277,13 +284,19 @@ Ninja.Boss.prototype = {
                     var item = self.player.itemBag.remove(key);
                     if (item) {
                         item.use(self.player, self);
-                        if (self.player.itemBag.at(key).length === 0) {
-                            $(this).remove();
-                            $($(this).parent()).remove();
-                            if ($item_list.children().length === 0) {
-                                $item_list.append($("<li>").text("Empty"));
+			console.log("item used in itemMenuFuncs");
+			console.log(self.player.itemBag.at(key).length);
+                        if (self.player.itemBag.at(key).length == 0) {
+                            $("#li_"+name).empty();
+                            $("#li_"+name).remove(); 
+                            console.log($("#item_list").children().length);
+				 if ($("#item_list").children().length === 0) {
+                                $("#item_list").append($("<li>").text("Empty"));
                             }
                         }
+			else {
+				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			}
                         //self.enemy.addChild(self.player.removeChildAt(1));
                         //self.enemyMove();
                     }
@@ -298,8 +311,8 @@ Ninja.Boss.prototype = {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.off('click');
         });
-        if (this.params.itemBag !== undefined) {
-            Object.keys(this.params.itemBag).forEach(function (key) {
+        if (!this.player.itemBag.empty()) {
+            Object.keys(this.player.itemBag.items).forEach(function (key) {
                 var $anchor = $("#"+key.replace("'",'').split(' ').join('_'));
                 $anchor.off("click");
             });
@@ -438,7 +451,9 @@ Ninja.Boss.prototype = {
         this.menu.empty();
         this.menu.hide();
         if (this.player.health <= 0) {
-            this.game.state.start('Game', true, false, this.params);
+	    this.params.playerHealth = 250;
+            this.game.state.start('Game', this.params);
+	    return;
         }
         else {
             this.game.state.start('End');
