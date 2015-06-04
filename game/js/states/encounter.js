@@ -484,7 +484,8 @@ Ninja.Encounter.prototype = {
         else if (this.player.health > 0) this.params.won = true;
         else this.params.won = false;
         this.params.attackPower = this.player.attackPower;
-        this.battle_music.stop();
+        this.params.playerHealth = this.player.health;
+	this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
         this.game.state.start("Game", true, false, this.params);

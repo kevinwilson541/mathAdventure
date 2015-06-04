@@ -123,7 +123,7 @@ Ninja.Game.prototype = {
         var notPlayer = function (randLoc) {
             return self.player.x !== randLoc[0] || self.player.y !== randLoc[1];
         };
-        for (var i = 0; i < 25; ++i) {
+        for (var i = 0; i < 150; ++i) {
             var randx = Math.floor(Math.random()*xTiles)*16;
             var randy = Math.floor(Math.random()*yTiles)*16;
             if (this.chestLocs[randx+','+randy] === undefined &&
@@ -176,6 +176,7 @@ Ninja.Game.prototype = {
 
         if (this.won) {
             var item = self.genRandItem();
+	    console.log("item is " + item);
             var $spoils = $("#items");
             var $txt = $("<p id='desc'>").text('You have received 1 ' + item.name + '!');
             var $accept = $("<button id='ok'>").text('OK');
@@ -183,7 +184,7 @@ Ninja.Game.prototype = {
                 self.coin_music.play();
                 self.player.itemBag.insert(item);
                 self.updateMenu(item.name);
-                $("#spoils").empty();
+                $spoils.empty();
                 $("#spoils").hide();
             });
             $spoils.append($txt, $accept);
@@ -220,6 +221,10 @@ Ninja.Game.prototype = {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
+			else {
+				$("#"+name).text(key+"   x"+self.player.itemBag.at(key).length);
+			}
+			
                     }
                 });
                 $elem.append($anchor);
@@ -305,7 +310,7 @@ Ninja.Game.prototype = {
                 initY: Math.floor(this.player.y / 16)*16,
                 chestLocs: this.chestLocs,
                 numUses: 1,
-                playerHealth: 250,
+                playerHealth: this.player.health,
                 muted: !this.game_music.mute ? false : true,
                 itemBag: this.player.itemBag,
                 attackPower: this.attackPower
@@ -371,7 +376,7 @@ Ninja.Game.prototype = {
             initY: Math.floor(this.player.y / 16)*16+16,
             chestLocs: this.chestLocs,
             numUses: 1,
-            playerHealth: 250,
+            playerHealth: this.player.health,
             muted: !this.game_music.mute ? false : true,
             itemBag: this.player.itemBag,
             attackPower: this.attackPower
