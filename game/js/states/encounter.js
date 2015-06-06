@@ -491,7 +491,7 @@ Ninja.Encounter.prototype = {
         this.menu.empty();
         this.menu.hide();
         if (this.player.health <= 0) {
-            this..params = {};
+            this.params = {};
             this.params.muted = this.battle_music.mute ? true : false;
 		    this.params.playerHealth = 250;
 		    this.game.state.start('Game', this.params); 
