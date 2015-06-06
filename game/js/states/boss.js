@@ -66,15 +66,17 @@ Ninja.Boss.prototype = {
                 
         this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
         this.enemy.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.enemy.width)/2, -1*this.heartHeight, 'health'));
-	this.player.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.player.health/self.player.maxHealth)*self.player.getChildAt(0).width), 48));
+        // crop player heart to how much health they have
+	    this.player.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.player.health/self.player.maxHealth)*self.player.getChildAt(0).width), 48));
         
-	this.physics.enable(this.player, Phaser.Physics.ARCADE);
+	    this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.enemy, Phaser.Physics.ARCADE);
 
         this.player.body.gravity.y = 0;
         this.player.body.collideWorldBounds = true;
         this.player.body.setSize(16,16);
 
+        // define player attacks
         this.player.attack = {
             firebolt: function (dam) {
                 var fire = new Firebolt(self, self.player, self.enemy, dam);
@@ -106,9 +108,10 @@ Ninja.Boss.prototype = {
                 windattack.stop(1750);
             }
         }
-
+        
         this.enemy.body.gravity.y = 0;
         this.enemy.body.collideWorldBounds = true;
+        // define enemy attacks
         this.enemy.attack = {
             firebolt: function (dam) {
                 var fire = new BossFirebolt(self, self.enemy, self.player, dam);
@@ -132,6 +135,7 @@ Ninja.Boss.prototype = {
             }
         };
 
+        // add arrow sprite to player to indicate turn
         this.arrow = this.game.add.sprite(this.player.width/2-24, -1*this.heartHeight-48,'arrow');
         this.player.addChild(this.arrow);
 
@@ -141,7 +145,7 @@ Ninja.Boss.prototype = {
                 self.battle_music.mute = true;
             }
             else {
-                if (!self.battle_music.isPlaying) self.battle_music.play();
+                if (!self.battle_music.isPlaying) self.battle_music.play(); // we don't start music if starting at muted
                 self.battle_music.mute = false;
             }
         }, this);
@@ -165,20 +169,23 @@ Ninja.Boss.prototype = {
     
     initJQuery: function () {
         this.menu = $("#menu");
+        // title
         this.menu.append($("<h2>").text("Battle Menu"));
         
         var $attack_menu = $("<div>");
+        // attack submenu
         var $attack_anchor = $("<a name='attacks'>").text("Attack");
         $attack_menu.append($attack_anchor);
         var $attack_list = $("<ul id='attack_list'>");
         this.attacks = {
-            "Shadowhachi Kick": [25,easy],
-            "Buraku Nunchaku": [50,med],
-            "Bullrog Smash": [75,hard],
-            "Kenny's Ninja Star": [100,xhard]
+            "Shadowhachi Kick": [25*this.player.attackPower,easy],
+            "Buraku Nunchaku": [50*this.player.attackPower,med],
+            "Bullrog Smash": [75*this.player.attackPower,hard],
+            "Kenny's Ninja Star": [100*this.player.attackPower,xhard]
         };
 
         var self = this;
+        // for each attack, create a list element with an anchor
         Object.keys(this.attacks).forEach(function (key) {
             var $elem = $("<li>");
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key][0].toString());
@@ -193,6 +200,7 @@ Ninja.Boss.prototype = {
 
         $attack_list.hide();
         $attack_menu.append($attack_list);
+        // hide or show attack submenu based on state of click
         $attack_anchor.on("click", function () {
             if (!self.attackButtonOn) {
                 self.attackButtonOn = true;
@@ -205,12 +213,17 @@ Ninja.Boss.prototype = {
         });
         
         var $item_menu = $("<div>");
+        // item submenu
         var $item_anchor = $("<a name='items'>").text("Items");
         $item_menu.append($item_anchor);
         var $item_list = $("<ul id='item_list'>");
+        
+        // if the itembag is empty, place an empty list element
         if (this.player.itemBag.empty()) {
             $item_list.append($("<li>").text("Empty"));
         }
+
+        // otherwise, populate with the player's items
         else {
             Object.keys(this.player.itemBag.items).forEach(function (key) {
                 var name = key.replace("'",'').split(' ').join('_');
@@ -219,24 +232,25 @@ Ninja.Boss.prototype = {
                     + self.player.itemBag.at(key).length);
                 $anchor.on("click", function () {
                     self.disableMenu();
+                    
+                    // consume item
                     var item = self.player.itemBag.remove(key);
+                    
+                    // if any item wasa consumed, use it and update item menu
                     if (item) {
                         item.use(self.player, self);
-			console.log("item used");
-			console.log(self.player.itemBag.at(key).length);
                         if (self.player.itemBag.at(key).length === 0) {
                             $elem.empty();
                             $elem.remove();
-                            console.log($item_list.children().length);
-				if ($item_list.children().length === 0) {
+                            
+                            // if the whole bag is empty, populate item menu with empty li
+				            if ($item_list.children().length === 0) {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
-			else {
-				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
-			}
-                        //self.enemy.addChild(self.player.removeChildAt(1));
-                        //self.enemyMove();
+			            else {
+				            $("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			            }
                     }
                     else self.enableMenu();
                 });
@@ -263,6 +277,7 @@ Ninja.Boss.prototype = {
     },
 
     attackMenuFuncs: function () {
+        // renable attack functions
         var self = this;
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
@@ -274,6 +289,7 @@ Ninja.Boss.prototype = {
     },
 
     itemMenuFuncs: function () {
+        // renable item use functions
         var self = this;
         if (!this.player.itemBag.empty()) {
             Object.keys(this.player.itemBag.items).forEach(function (key) {
@@ -282,23 +298,23 @@ Ninja.Boss.prototype = {
                 $anchor.on("click", function () {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
+
+                    // if item can be consumed, use it and update menu
                     if (item) {
                         item.use(self.player, self);
-			console.log("item used in itemMenuFuncs");
-			console.log(self.player.itemBag.at(key).length);
                         if (self.player.itemBag.at(key).length == 0) {
                             $("#li_"+name).empty();
                             $("#li_"+name).remove(); 
                             console.log($("#item_list").children().length);
-				 if ($("#item_list").children().length === 0) {
+
+                            // if item bag is empty, populate item menu with empty li
+				            if ($("#item_list").children().length === 0) {
                                 $("#item_list").append($("<li>").text("Empty"));
                             }
                         }
-			else {
-				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
-			}
-                        //self.enemy.addChild(self.player.removeChildAt(1));
-                        //self.enemyMove();
+			            else {
+				            $("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			            }
                     }
                     else self.enableMenu();
                 });
@@ -307,6 +323,7 @@ Ninja.Boss.prototype = {
     },
 	
     disableMenu: function () {
+        // turn off attack menu and item menu use
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.off('click');
@@ -320,6 +337,7 @@ Ninja.Boss.prototype = {
     },
    
     enableMenu: function() {
+        // reenable menu use
 	    var self = this;
 	    self.attackMenuFuncs();
 	    self.itemMenuFuncs();
@@ -327,7 +345,12 @@ Ninja.Boss.prototype = {
 	
     update: function () {
         var self = this;
+
+        // difference from encounter, in that fireball and blizzard are groups for boss which 
+        // is why parameters are passed into overlap callback
+        // if fireball exists, check collisions
         if (this.fireball) {
+            // in the case of fireballs, we play fireball hit and kill the sprite
             this.physics.arcade.overlap(this.fireball, this.enemy, function (fire, player) {
                 this.fireball_hit.play();
                 fire.kill();
@@ -337,6 +360,7 @@ Ninja.Boss.prototype = {
                 fire.kill();
             }, null, this);
         }
+        // if wind exists, check collisions
         if (this.wind) {
             this.physics.arcade.overlap(this.wind, this.enemy, function () {
                 self.wind_hit.play();
@@ -347,6 +371,7 @@ Ninja.Boss.prototype = {
                 self.wind.kill();
             }, null, this);
         }
+        // if blizzard exists, check collisions
         if (this.blizzard) {
             this.physics.arcade.overlap(this.blizzard, this.player, function (player, freeze) {
                 this.blizzard_hit.play();
@@ -378,7 +403,8 @@ Ninja.Boss.prototype = {
             $but.text(buttons[item]);
             $shop.append($but);
         });
-
+        
+        // generate question,and update pop up with question information
         var q = key[1]();
         $("#question").text(q[1]);
         $("#prompt").show();
@@ -387,10 +413,13 @@ Ninja.Boss.prototype = {
         $("#chestAnswer").show();
 
         $("#acceptButton").hide();
+
+        // submission button
         $("#chestButton").on('click', function () {
             var answer = $("#chestAnswer").val();
             $("#chestAnswer").hide();
             $("#prompt").hide();
+            // if question is answered correctly, initiate player attack
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
                 if (key[0] == 25)			
                     self.player.attack.firebolt(key[0]);
@@ -403,6 +432,8 @@ Ninja.Boss.prototype = {
                 else
                     console.log("error in questionAttacks functionl logic");
             }
+            
+            // otherwise, give turn to player
             else {
                 $("#question").text("INCORRECT");
                 self.enemy.addChild(self.player.removeChildAt(1));
@@ -413,8 +444,8 @@ Ninja.Boss.prototype = {
             $("#closeButton").hide();
 	        overlay();
         });
+        // on close, reenable menu
         $("#closeButton").on('click', function () {
-            self.cursors = self.game.input.keyboard.createCursorKeys();
             $("chestAnswer").val('');
             $("#chestAnswer").show();
             overlay();
@@ -423,6 +454,7 @@ Ninja.Boss.prototype = {
     },
 	
     enemyMove: function () {
+        // determine enemy attack at random
         var self = this;
         var randnum = Math.random();
         setTimeout(function () {
@@ -445,6 +477,8 @@ Ninja.Boss.prototype = {
         this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
+
+        // if player is dead, bring player back to beginning of game (darnnnnnnn)
         if (this.player.health <= 0) {
 	        this.params.playerHealth = 250;
             var q = genDiff();
@@ -455,8 +489,10 @@ Ninja.Boss.prototype = {
             $("#answer").text(q[2]);
             $("#chestAnswer").show();
             this.game.state.start('Game', true, false, this.params);
-	    return;
+	        return;
         }
+
+        // otherwise, you win!!!!!
         else {
             this.game.state.start('End');
         }

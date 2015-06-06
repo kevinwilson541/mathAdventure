@@ -56,27 +56,32 @@ Ninja.Encounter.prototype = {
         this.heartHeight = 48;
 
         this.player = this.add.sprite(90, 325, 'ninja');
+        
+        // initialize player health, stats, and item bag
         this.player.health = this.playerHealth;
         this.player.maxHealth = 250;
       	this.player.retreatPower = .75;
 	    this.player.attackPower = this.params.attackPower;
         this.player.itemBag = this.itemBag;
  
+        // select random enemy to fight
 	    this.chooseEnemy(); 
 	    this.enemy.health = this.enemyHealth;
         this.enemy.maxHealth = this.enemyHealth;
         
-	this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
+	    this.player.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.player.width)/2, -1*this.heartHeight, 'health'));
         this.enemy.addChild(new Phaser.Sprite(this.game, -1*(this.heartWidth-this.enemy.width)/2, -1*this.heartHeight, 'health'));
-	this.player.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.player.health/self.player.maxHealth)*self.player.getChildAt(0).width), 48));
+        // crop player health bar to that of their health
+	    this.player.getChildAt(0).crop(new Phaser.Rectangle(0,0,((self.player.health/self.player.maxHealth)*self.player.getChildAt(0).width), 48));
         
-	this.physics.enable(this.player, Phaser.Physics.ARCADE);
+	    this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.physics.enable(this.enemy, Phaser.Physics.ARCADE);
 
         this.player.body.gravity.y = 0;
         this.player.body.collideWorldBounds = true;
         this.player.body.setSize(16,16);
 
+        // initialize player attacks
         this.player.attack = {
             firebolt: function (dam) {
                 var fire = new Firebolt(self, self.player, self.enemy, dam);
@@ -111,6 +116,8 @@ Ninja.Encounter.prototype = {
 
         this.enemy.body.gravity.y = 0;
         this.enemy.body.collideWorldBounds = true;
+
+        // initialize enemy attacks
         this.enemy.attack = {
             firebolt: function (dam) {
                 var fire = new Firebolt(self, self.enemy, self.player, dam);
@@ -134,6 +141,7 @@ Ninja.Encounter.prototype = {
             }
         };
 
+        // place arrow on player, to signal their turn
         this.arrow = this.game.add.sprite(this.player.width/2-24, -1*this.heartHeight-48,'arrow');
         this.player.addChild(this.arrow);
 
@@ -179,6 +187,7 @@ Ninja.Encounter.prototype = {
         };
 
         var self = this;
+        // for each attack, generate button handler
         Object.keys(this.attacks).forEach(function (key) {
             var $elem = $("<li>");
             var $anchor = $("<a id='"+key.replace("'", '').split(' ').join('_')+"'>").text(key + "  " + self.attacks[key][0].toString());
@@ -193,6 +202,8 @@ Ninja.Encounter.prototype = {
 
         $attack_list.hide();
         $attack_menu.append($attack_list);
+        
+        //display attack menu based on state of click
         $attack_anchor.on("click", function () {
             if (!self.attackButtonOn) {
                 self.attackButtonOn = true;
@@ -208,18 +219,26 @@ Ninja.Encounter.prototype = {
         var $item_anchor = $("<a name='items'>").text("Items");
         $item_menu.append($item_anchor);
         var $item_list = $("<ul id='item_list'>");
+
+        // item bag is empty, reflect so in item submenu
         if (this.player.itemBag.empty()) {
             $item_list.append($("<li>").text("Empty"));
         }
+
+        // otherwise, populate menu with player's items
         else {
             Object.keys(this.player.itemBag.items).forEach(function (key) {
                 var name = key.replace("'",'').split(' ').join('_');
                 var $elem = $("<li id='li_"+name+"'>");
                 var $anchor = $("<a id='"+name+"'>").text(key + "  x"
                     + self.player.itemBag.at(key).length);
+                
+                // on click, use item and update item submenu
                 $anchor.on("click", function () {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
+
+                    // if item can be used, use it
                     if (item) {
                         item.use(self.player, self);
                         if (self.player.itemBag.at(key).length == 0) {
@@ -229,11 +248,9 @@ Ninja.Encounter.prototype = {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
-			else {
-				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
-			}
-                        //self.enemy.addChild(self.player.removeChildAt(1));
-                        //self.enemyMove();
+			            else {
+				            $("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			            }
                     }
                     else self.enableMenu();
                 });
@@ -257,6 +274,8 @@ Ninja.Encounter.prototype = {
         
         var $retreat = $("<div>");
         var $retreat_anchor = $("<a id='retreat'>").text("Retreat");
+
+        // can only retreat, on average, percentage based on player retreat power
         $retreat_anchor.on("click", function () {
             self.disableMenu();
             var ret = Math.random();
@@ -274,6 +293,7 @@ Ninja.Encounter.prototype = {
     },
 
     attackMenuFuncs: function () {
+        // restore attack submenu
         var self = this;
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
@@ -285,6 +305,7 @@ Ninja.Encounter.prototype = {
     },
 
     itemMenuFuncs: function () {
+        // restore item submenu
         var self = this;
         if (!this.player.itemBag.empty()) {
             Object.keys(this.player.itemBag.items).forEach(function (key) {
@@ -293,6 +314,8 @@ Ninja.Encounter.prototype = {
                 $anchor.on("click", function () {
                     self.disableMenu();
                     var item = self.player.itemBag.remove(key);
+                    
+                    // if we can actually use item, use it
                     if (item) {
                         item.use(self.player, self);
                         if (self.player.itemBag.at(key).length == 0) {
@@ -302,11 +325,9 @@ Ninja.Encounter.prototype = {
                                 $("#item_list").append($("<li>").text("Empty"));
                             }
                         }
-			else {
-				$("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
-			}
-                        //self.enemy.addChild(self.player.removeChildAt(1));
-                        //self.enemyMove();
+			            else {
+				            $("#" + name).text(key + "   x" + self.player.itemBag.at(key).length);
+			            }
                     }
                     else self.enableMenu();
                 });
@@ -315,6 +336,7 @@ Ninja.Encounter.prototype = {
     },
 	
     disableMenu: function () {
+        // disable menu activity
         Object.keys(this.attacks).forEach(function (key) {
             var $anchor = $("#" + key.replace("'",'').split(' ').join('_'))
             $anchor.off('click');
@@ -329,6 +351,7 @@ Ninja.Encounter.prototype = {
     },
    
     enableMenu: function() {
+        // restore menu functionality
 	    var self = this;
 	    self.attackMenuFuncs();
 	    self.itemMenuFuncs();
@@ -347,6 +370,8 @@ Ninja.Encounter.prototype = {
 	
     update: function () {
         var self = this;
+
+        // if fireball exists, kill the sprite upon impact
         if (this.fireball) {
             this.physics.arcade.overlap(this.fireball, this.enemy, function () {
                 this.fireball_hit.play();
@@ -357,6 +382,8 @@ Ninja.Encounter.prototype = {
                 this.fireball.kill();
             }, null, this);
         }
+
+        // same goes for wind
         if (this.wind) {
             this.physics.arcade.overlap(this.wind, this.enemy, function () {
                 self.wind_hit.play();
@@ -367,6 +394,8 @@ Ninja.Encounter.prototype = {
                 self.wind.kill();
             }, null, this);
         }
+
+        // and blizzard
         if (this.blizzard) {
             this.physics.arcade.overlap(this.blizzard, this.player, function () {
                 this.blizzard_hit.play();
@@ -407,10 +436,14 @@ Ninja.Encounter.prototype = {
         $("#chestAnswer").show();
 
         $("#acceptButton").hide();
+
+        // submits answer
         $("#chestButton").on('click', function () {
             var answer = $("#chestAnswer").val();
             $("#chestAnswer").hide();
             $("#prompt").hide();
+
+            // if user is correct, initialize their attack
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
                 if (key[0] == 25)			
                     self.player.attack.firebolt(key[0]);
@@ -423,6 +456,8 @@ Ninja.Encounter.prototype = {
                 else
                     console.log("error in questionAttacks functionl logic");
             }
+
+            // otherwise initiate enemy turn
             else {
                 $("#question").text("INCORRECT");
                 self.enemy.addChild(self.player.removeChildAt(1));
@@ -439,8 +474,9 @@ Ninja.Encounter.prototype = {
             $("#chestAnswer").show();*/
             overlay();
         });
+
+        // reenable menu for player
         $("#closeButton").on('click', function () {
-            self.cursors = self.game.input.keyboard.createCursorKeys();
             $("#chestAnswer").val('');
             $("#chestAnswer").show();
             overlay();
@@ -449,7 +485,7 @@ Ninja.Encounter.prototype = {
     },
 	
     chooseEnemy: function () {
-
+        // pick random enemy based off of available sprites
     	var self = this;
         var randnum = Math.random();
             if (randnum <= .2) 
@@ -468,6 +504,8 @@ Ninja.Encounter.prototype = {
     },
 
     enemyMove: function () {
+
+        // select which attack the enemy will use
         var self = this;
         var randnum = Math.random();
         setTimeout(function () {
@@ -490,6 +528,7 @@ Ninja.Encounter.prototype = {
 	    this.battle_music.stop();
         this.menu.empty();
         this.menu.hide();
+        // if player lost, take them back to start of game (darnnnnn)
         if (this.player.health <= 0) {
             this.params = {};
             this.params.muted = this.battle_music.mute ? true : false;

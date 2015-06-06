@@ -61,18 +61,13 @@ Ninja.Game.prototype = {
         this.layer = map.createLayer("Tile Layer 1");
         this.layer.resizeWorld();
         this.player = this.add.sprite(this.initX, this.initY, 'dude');
-        //this.portal = this.add.sprite(1288,64,'portal');
         this.boss = this.add.sprite(119*16, 9*16, 'boss_idle');
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
-        //this.physics.enable(this.portal, Phaser.Physics.ARCADE);
         this.physics.enable(this.boss, Phaser.Physics.ARCADE);
 
         this.player.body.gravity.y = 0;
         this.player.body.collideWorldBounds = true;
         this.player.body.setSize(16,16);
-
-        //this.portal.body.gravity.y = 0;
-        //this.portal.body.collideWorldBounds = true;
 
         this.boss.body.gravity.y = 0;
         this.boss.body.collideWorldBounds = true;
@@ -80,6 +75,8 @@ Ninja.Game.prototype = {
         this.player.animations.add('left', [0,1,2,3], 10, true);
         this.player.animations.add('turn', [4], 10, true);
         this.player.animations.add('right', [5,6,7,8], 10, true);
+
+        // initialize player states and item bag
         this.player.itemBag = this.itemBag;
         this.player.health = this.playerHealth;
         this.player.maxHealth = 250;
@@ -91,6 +88,8 @@ Ninja.Game.prototype = {
         this.chests.enableBody = true;
 
         var self = this;
+        // if chestLocs isn't defined, create them based off of tiles with
+        // tile code 49
         if (!this.chestLocs) {
             map.createFromTiles(49,104,'chest',this.layer,this.chests);
             this.chestLocs = {};
@@ -111,6 +110,8 @@ Ninja.Game.prototype = {
             map.replace(49,104);
         }
         
+        // create fires group, which surround boss and initiate boss fight
+        // upon overlap
         this.fires = this.game.add.group();
         this.fires.enableBody = true;
         map.createFromTiles(55,104,'fire',this.layer,this.fires);
@@ -123,6 +124,8 @@ Ninja.Game.prototype = {
         var notPlayer = function (randLoc) {
             return self.player.x !== randLoc[0] || self.player.y !== randLoc[1];
         };
+
+        // place random encounters, ignoring player location and chets locations
         for (var i = 0; i < 150; ++i) {
             var randx = Math.floor(Math.random()*xTiles)*16;
             var randy = Math.floor(Math.random()*yTiles)*16;
@@ -174,9 +177,9 @@ Ninja.Game.prototype = {
             }
         }, this);
 
+        // if user won previous encounter, give them an item
         if (this.won) {
             var item = self.genRandItem();
-	    console.log("item is " + item);
             var $spoils = $("#items");
             var $txt = $("<p id='desc'>").text('You have received 1 ' + item.name + '!');
             var $accept = $("<button id='ok'>").text('OK');
@@ -196,11 +199,16 @@ Ninja.Game.prototype = {
     initJQuery: function () {
         var self = this;
         this.menu = $("#game_menu");
+        // menu title
         this.menu.append($("<h2>").text("Game Menu"));
+
+        // item submenu
         var $item_menu = $("<div>");
         var $item_anchor = $("<a name='items'>").text("Items");
         $item_menu.append($item_anchor);
         var $item_list = $("<ul id='item_list'>");
+
+        // if item bag is empty, populate item submenu with empty li
         if (this.player.itemBag.empty()) {
             $item_list.append($("<li>").text("Empty"));
         }
@@ -212,6 +220,8 @@ Ninja.Game.prototype = {
                     + self.player.itemBag.at(key).length);
                 $anchor.on("click", function () {
                     var item = self.player.itemBag.remove(key);
+
+                    // if item can be used, use it
                     if (item) {
                         item.use(self.player, self);
                         if (self.player.itemBag.at(key).length == 0) {
@@ -221,10 +231,9 @@ Ninja.Game.prototype = {
                                 $item_list.append($("<li>").text("Empty"));
                             }
                         }
-			else {
-				$("#"+name).text(key+"   x"+self.player.itemBag.at(key).length);
-			}
-			
+			            else {
+				            $("#"+name).text(key+"   x"+self.player.itemBag.at(key).length);
+			            }
                     }
                 });
                 $elem.append($anchor);
@@ -234,6 +243,8 @@ Ninja.Game.prototype = {
 
         $item_list.hide();
         $item_menu.append($item_list);
+
+        // show item submenu based on state of click
         $item_anchor.on("click", function () {
             if (!self.itemButtonOn) {
                 self.itemButtonOn = true;
@@ -247,10 +258,16 @@ Ninja.Game.prototype = {
 
         var $save = $("<div>");
         var $save_anchor = $("<a id='save'>").text("Save");
-        //place save functionality here
+
+        // place game info into database for player's username
 	    $save_anchor.on("click", function () {
-            var state = {playerx: Math.floor(self.player.x), playery: Math.floor(self.player.y), playerHealth: self.player.health, chestLocs: self.chestLocs, playeritems: JSON.stringify(self.player.itemBag)};
-	    console.log(self.player.health);
+            var state = {
+                playerx: Math.floor(self.player.x), 
+                playery: Math.floor(self.player.y), 
+                playerHealth: self.player.health, 
+                chestLocs: self.chestLocs, 
+                playeritems: JSON.stringify(self.player.itemBag)
+            };
             var test = {jname: "jason", gname: "grant", aname: "adam"};
             $.post("/save", state, function (data) {
                 console.log("Successful save of state");
@@ -265,10 +282,11 @@ Ninja.Game.prototype = {
         var self = this;
         var name = key.replace("'",'').split(' ').join('_');
 
+        // if we just placed an item with this key into item bag, initialize jquery element
         if (this.player.itemBag.at(key).length === 1) {
             var $elem = $("<li id='li_"+name+"'>");
             var $item_list = $("#item_list");
-             if ($($item_list.children()[0]).text() === 'Empty') {
+            if ($($item_list.children()[0]).text() === 'Empty') {
                 $item_list.empty();
             }
             var $anchor = $("<a id='"+name+"'>").text(key + '   x'+this.player.itemBag.at(key).length);
@@ -301,6 +319,8 @@ Ninja.Game.prototype = {
         this.player.body.velocity.x = 0;
         this.player.body.velocity.y = 0;
         var loc = [Math.floor(this.player.x / 16) * 16, Math.floor(this.player.y / 16)*16].toString();
+
+        // if we interesect an encounter location, initiate encounter
         if ((typeof this.encounterLocs[loc]) !== 'undefined') {
             delete this.encounterLocs[loc];
             this.game_music.stop();
@@ -310,7 +330,6 @@ Ninja.Game.prototype = {
                 initX: Math.floor(this.player.x / 16)*16,
                 initY: Math.floor(this.player.y / 16)*16,
                 chestLocs: this.chestLocs,
-                numUses: 1,
                 playerHealth: this.player.health,
                 muted: !this.game_music.mute ? false : true,
                 itemBag: this.player.itemBag,
@@ -371,30 +390,15 @@ Ninja.Game.prototype = {
         this.game_music.stop();
         this.menu.empty();
         this.menu.hide();
-        //this.fires.removeAll();
         this.game.state.start('Boss', true, false, {
             initX: Math.floor(this.player.x / 16)*16,
             initY: Math.floor(this.player.y / 16)*16+16,
             chestLocs: this.chestLocs,
-            numUses: 1,
             playerHealth: this.player.health,
             muted: !this.game_music.mute ? false : true,
             itemBag: this.player.itemBag,
             attackPower: this.attackPower
         });
-    },
-
-    finish: function (player, door) {
-        this.game_music.stop();
-        this.menu.empty();
-        this.menu.hide();
-        var params = {
-            'initX': 64,
-            'initY': 16,
-            'chestLocs': this.chestLocs,
-            'muted': !this.game_music.mute ? false : true
-        }
-        this.game.state.start('Game', true, false, params);
     },
 
    genRandItem: function () {
@@ -412,7 +416,6 @@ Ninja.Game.prototype = {
 
 
     collect: function (player, chest) {
-        //this.game.paused = true;
         this.player.body.velocity.x = 0;
         this.player.body.velocity.y = 0;
         this.game.input.keyboard.removeKey(Phaser.Keyboard.UP);
@@ -425,6 +428,8 @@ Ninja.Game.prototype = {
             left: {isDown: false},
             right: {isDown: false}
         };
+
+        // delete this chest from memory
         delete this.chestLocs[chest.x.toString()+','+chest.y.toString()];
         chest.kill();
 	    overlay();
@@ -446,10 +451,13 @@ Ninja.Game.prototype = {
         $("#acceptButton").hide();
         $("#prompt").show();
         $("#question").show();
+
+        // answer submission
         $("#chestButton").on('click', function () {
             var answer = $("#chestAnswer").val();
             $("#chestAnswer").hide();
-            //$("#prompt").hide();
+
+            // if user's answer is correct, give them item
             if (answer.search("[^0-9/.\-]") < 0 && eval(answer) == eval($("#answer").text())) {
                 $("#prompt").text("CORRECT!");
                 self.coin_music.play();
@@ -478,7 +486,6 @@ Ninja.Game.prototype = {
             overlay();
         });
         $("#acceptButton").on('click', function () {
-            //add items to bag
             self.cursors = self.game.input.keyboard.createCursorKeys();
             var q = genDiff();
             $("#question").text(q[1]);

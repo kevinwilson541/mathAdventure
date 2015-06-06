@@ -8,23 +8,24 @@ var mongoose = require('mongoose'),
 app = express();
 
 var dboptions = {
-user: "mathadmin",
-pass: "mathadventurecis399",
-server: {
-	ssl: true,
-    sslValidate: false,
-	auto_reconnect: true,
-	sslCert: fs.readFileSync('/home/users/kwilson8/.ssl/mongodb-cert.crt'),
-	sslKey: fs.readFileSync('/home/users/kwilson8/.ssl/mongodb-cert.key') 
+    user: "mathadmin",
+    pass: "mathadventurecis399",
+    server: {
+        ssl: true,
+        sslValidate: false,
+        auto_reconnect: true,
+        sslCert: fs.readFileSync('/home/users/kwilson8/.ssl/mongodb-cert.crt'),
+        sslKey: fs.readFileSync('/home/users/kwilson8/.ssl/mongodb-cert.key') 
 	}
 };
 
 var dbconnect = "mongodb://localhost:4184/admin";
 mongoose.connect(dbconnect, dboptions);
 
-var weboptions= { key: fs.readFileSync('/home/users/kwilson8/.ssl/agentkey.pem'),
-		  cert: fs.readFileSync('/home/users/kwilson8/.ssl/agentcert.crt')
-	      };
+var weboptions= { 
+    key: fs.readFileSync('/home/users/kwilson8/.ssl/agentkey.pem'),
+    cert: fs.readFileSync('/home/users/kwilson8/.ssl/agentcert.crt')
+};
 
 var server = http.createServer(app);
 server.listen(port, function () {
@@ -43,8 +44,6 @@ mongoose.connection.on('disconnected', function () {
      console.log('Mongoose disconnected');
 });
 
-
-
 app.use(express.urlencoded());  //this allows req.body
 
 // set up a static file directory to use for default routing
@@ -60,10 +59,13 @@ var cookie_options = {'signed': true,
 
 //schemas (see http://mongoosejs.com/docs/3.6.x/docs/schematypes.html)
 
-var UserSchema = mongoose.Schema({   user: String,
-                                     password: String,
-                                     compromised: [String],
-				     state: Object});
+var UserSchema = mongoose.Schema({   
+    user: String,
+    password: String,
+    compromised: [String],
+    state: Object
+});
+
 // added object
 var User = mongoose.model("User", UserSchema);
 
@@ -72,7 +74,7 @@ var User = mongoose.model("User", UserSchema);
 app.get("/", function (req, res) {
 	console.log("connection to " + req);
 	res.sendfile("./index.html");
-	});
+});
 
 
 app.get("/login.json", loginHandler);
@@ -86,30 +88,32 @@ app.get("/retrieve", getSaveState);
 //route handlers - should refactor into separate files
 
 function getSaveState(req, res) {
-  console.log("the cookie on get", req.signedCookies);
-  var user = req.signedCookies.user; // gets user cookie
-  if (user) {
-    res.cookie('user', user, cookie_options);	// sets user cookie
-    User.findOne({'user': user}, function (err, data) {
-        if (err) res.json({'error': err});
-        else {
-            console.log(data);
-            if (data.state) res.json(data.state);
-            else res.json({});
-        }
-    });
-  } else {
-    res.clearCookie('user');
-    res.json({'url': './index.html'}); // cookie didn't exist (why you trying to hack me bro)
-  }   
+    var user = req.signedCookies.user; // gets user cookie
+    if (user) {
+      res.cookie('user', user, cookie_options);	// sets user cookie
+
+      // Find the one user for this login name and send game data
+      User.findOne({'user': user}, function (err, data) {
+          if (err) res.json({'error': err});
+          else {
+              if (data.state) res.json(data.state);
+              else res.json({});
+          }
+      });
+    } 
+    else {
+      res.clearCookie('user');
+      //res.json({'url': './index.html'}); // cookie didn't exist (why you trying to hack me bro)
+      res.redirect('/');
+    }   
 }
 
 function postSaveState(req, res) {
-  console.log("the cookie on post", req.signedCookies);
   var user = req.signedCookies.user;
   if (user) {
-    console.log("requested " + JSON.stringify(req.body));
     res.cookie('user', user, cookie_options);
+
+    // update game data for user
     User.update({'user': user}, {$set: {state: req.body}}, function (err, data) {
         if (err) {
             console.log(err);
@@ -121,7 +125,9 @@ function postSaveState(req, res) {
     });
   } else {
     res.clearCookie('user');
-    res.json({'url': './index.html'});
+    // send person back to login page
+    //res.json({'url': './index.html'});
+    res.redirect('/');
   }
 }
 

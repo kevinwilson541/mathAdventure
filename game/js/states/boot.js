@@ -5,6 +5,7 @@ Ninja.Boot = function (game) {
 
 Ninja.Boot.prototype = {
     preload: function () {
+        // hide all the menus and pop ups
         $("#menu").hide();
         $("#game_menu").hide();
         $("#spoils").hide();
@@ -23,14 +24,15 @@ Ninja.Boot.prototype = {
 
     create: function () {
         this.game.add.sprite(200,188,'loader');
+        // give audio time to load (to avoid delayed playing)
         setTimeout(function () {
             this.game.state.start('MainMenu');
         },7000);
-        for (var i = 0; i < 7; ++i) {
+        /*for (var i = 0; i < 7; ++i) {
             setTimeout(function () {
                 var audio = this.game.add.audio('coinage');
                 audio.play();
             }, i*1000);
-        }
+        }*/
     }
 };
